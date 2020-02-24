@@ -1,0 +1,5 @@
+# GlacierAPI
+
+AICEVOTE API SERVER
+
+(C) 2020 YUJI
