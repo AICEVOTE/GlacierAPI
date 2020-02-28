@@ -95,8 +95,8 @@ const FeedbackSchema = new mongoose.Schema<IFeedbackModel>({
     feedbackType: String
 });
 
-export const User = mongoose.model<IUserModel>("User", UserSchema, "info");
-export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "result");
-export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comment");
-export const Transition = mongoose.model<ITransitionModel>("Transition", TransitionSchema, "transition");
-export const Feedback = mongoose.model<IFeedbackModel>("Feedback", FeedbackSchema, "feedback");
+export const User = mongoose.model<IUserModel>("User", UserSchema, "users");
+export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");
+export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comments");
+export const Transition = mongoose.model<ITransitionModel>("Transition", TransitionSchema, "transitions");
+export const Feedback = mongoose.model<IFeedbackModel>("Feedback", FeedbackSchema, "feedbacks");
