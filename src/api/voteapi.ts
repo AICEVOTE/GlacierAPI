@@ -28,7 +28,7 @@ export async function getVotes(id: number, sessionID: string) {
         if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
         const votes = (await Promise.all(doc.friends.map(async (userID) => {
-            const doc = await model.Result.findOne({ id: id, userID: userID }).exec();
+            const doc = await model.Result.findOne({ id: Themes[id].id, userID: userID }).exec();
             if (!doc) { return null; }
             return {
                 answer: doc.answer,
@@ -37,7 +37,7 @@ export async function getVotes(id: number, sessionID: string) {
             }
         }))).filter(<T>(x: T): x is Exclude<T, null> => { return x != null; });
 
-        const votesFromInfluencer = (await model.Result.find({ id: id, isInfluencer: true }).exec()).
+        const votesFromInfluencer = (await model.Result.find({ id: Themes[id].id, isInfluencer: true }).exec()).
             map((doc) => {
                 return {
                     answer: doc.answer,
@@ -64,7 +64,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
     try {
-        await model.Result.updateOne({ id: id, userID: doc.userID },
+        await model.Result.updateOne({ id: Themes[id].id, userID: doc.userID },
             {
                 $set: {
                     answer: answer, name: doc.name,
@@ -91,7 +91,7 @@ export async function getComments(id: number) {
     if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
-        const comments = (await model.Comment.find({ id: id }).exec()).
+        const comments = (await model.Comment.find({ id: Themes[id].id }).exec()).
             map((doc) => {
                 return {
                     message: doc.message,
@@ -118,7 +118,7 @@ export async function postComment(id: number, sessionID: string, message: string
         if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
         await new model.Comment({
-            id: id,
+            id: Themes[id].id,
             message: utilAPI.sanitize(message),
             createdAt: Date.now() + 1000 * 60 * 60 * 9,
             good: 0,
