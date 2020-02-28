@@ -6,6 +6,7 @@ import * as newsAPI from "./api/newsapi";
 import * as utilAPI from "./api/utilapi";
 
 export function initialize(io: SocketIO.Server) {
+    io.origins("*:*");
     setInterval(() => {
         for (let i = 0; i < Themes.length; i++) {
             try {
