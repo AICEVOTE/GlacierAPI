@@ -64,7 +64,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
     try {
-        await model.Result.updateOne({ id: Themes[id].id, userID: doc.userID },
+        await model.Result.updateOne({ id: Themes[id].id, userID: doc.userID, userProvider: doc.userProvider },
             {
                 $set: {
                     answer: answer, name: doc.name,
