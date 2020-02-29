@@ -25,7 +25,7 @@ export async function getVotes(id: number, sessionID: string) {
 
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
         const votes = (await Promise.all(doc.friends.map(async (userID) => {
             const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID }).exec();
@@ -61,7 +61,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     if (!isCompatibleAnswer(answer)) { throw new utilAPI.GlacierAPIError("The answer is invalid"); }
 
     const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-    if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
+    if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
     try {
         await model.Result.updateOne({ id: themeLoader.themes[id].id, userID: doc.userID, userProvider: doc.userProvider },
@@ -114,7 +114,7 @@ export async function postComment(id: number, sessionID: string, message: string
 
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
         await new model.Comment({
             id: themeLoader.themes[id].id,
