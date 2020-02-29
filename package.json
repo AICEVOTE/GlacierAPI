@@ -10,6 +10,7 @@
     "prestart": "yarn run tsc",
     "start": "yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
     "stop": "yarn pm2 stop GlacierAPI",
+    "prerestart": "yarn run tsc",
     "restart": "yarn pm2 restart GlacierAPI"
   },
   "dependencies": {
