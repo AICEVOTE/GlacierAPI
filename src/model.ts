@@ -24,8 +24,7 @@ interface IUserModel extends mongoose.Document {
     friends: Array<string>,
     imageURI: string,
     numOfFollowers: number,
-    sessionID: string,
-    sessionExpire: number
+    sessionID: string
 }
 
 interface IResultModel extends mongoose.Document {
@@ -79,8 +78,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
     friends: [String],
     imageURI: String,
     numOfFollowers: Number,
-    sessionID: String,
-    sessionExpire: Number
+    sessionID: String
 });
 
 const ResultSchema = new mongoose.Schema<IResultModel>({

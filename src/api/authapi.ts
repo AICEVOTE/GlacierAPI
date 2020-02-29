@@ -31,8 +31,7 @@ passport.use(new TwitterStrategy({
                 friends: res.ids,
                 imageURI: profile.photos ? profile.photos[0]?.value || "" : "",
                 numOfFollowers: profile._json.followers_count,
-                sessionID: sessionID,
-                sessionExpire: Date.now() + 15 * 60 * 1000
+                sessionID: sessionID
             }
         }, { upsert: true });
     } catch (e) {
@@ -45,19 +44,6 @@ passport.use(new TwitterStrategy({
 
 passport.serializeUser((user, done) => { done(null, user); });
 passport.deserializeUser((user, done) => { done(null, user); });
-
-setInterval(async () => {
-    try {
-        await model.User.updateMany({ sessionID: { $gt: Date.now() } }, {
-            $set: {
-                sessionID: utilAPI.generateSessionID(),
-                sessionExpire: Date.now() + 15 * 60 * 1000
-            }
-        });
-    } catch (e) {
-        throw e;
-    }
-}, 5 * 60 * 1000);
 
 export function authenticate(callback?: (err: any, user: any, info: any) => void) {
     return passport.authenticate("twitter", { session: false }, (err, user, info) => {
