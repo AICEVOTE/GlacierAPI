@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "prestart": "yarn run tsc",
-    "start": "node ./dist/bin/www.js"
+    "start": "yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
+    "stop": "yarn pm2 stop GlacierAPI",
+    "restart": "yarn pm2 restart GlacierAPI"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -43,6 +45,7 @@
     "@types/twitter": "^1.7.0",
     "@types/xss-filters": "^0.0.27",
     "express-generator": "^4.16.1",
+    "pm2": "^4.2.3",
     "typescript": "^3.8.2"
   }
 }
