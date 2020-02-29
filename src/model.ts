@@ -81,7 +81,6 @@ const CommentSchema = new mongoose.Schema<ICommentModel>({
     message: String,
     name: String,
     createdAt: Number,
-    good: Number,
     imageURI: String,
     isInfluencer: Boolean
 });

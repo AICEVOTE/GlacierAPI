@@ -120,7 +120,6 @@ export async function postComment(id: number, sessionID: string, message: string
             id: Themes[id].id,
             message: utilAPI.sanitize(message),
             createdAt: Date.now() + 1000 * 60 * 60 * 9,
-            good: 0,
             name: doc.name,
             imageURI: doc.imageURI,
             isInfluencer: isInfluencer(doc.numOfFollowers)
