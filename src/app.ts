@@ -27,8 +27,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.use(cors());
-app.options("*", cors());
+app.use(cors({
+    origin: process.env.URI_CORS_ORIGIN || "",
+    credentials: true
+}));
+app.options("*", cors({
+    origin: process.env.URI_CORS_ORIGIN || "",
+    credentials: true
+}));
 
 app.use(session({
     secret: process.env.SESSION_SECRET || "",
