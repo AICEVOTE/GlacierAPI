@@ -97,7 +97,8 @@ router.put("/votes/:id", async (req, res, next) => {
     }
 
     try {
-        res.json(await voteAPI.putVote(id, sessionID, parseInt(answer, 10)));
+        await voteAPI.putVote(id, sessionID, parseInt(answer, 10));
+        res.json(await voteAPI.getVotes(id, sessionID));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -136,7 +137,8 @@ router.post("/comments/:id", async (req, res, next) => {
     }
 
     try {
-        res.status(201).json(await voteAPI.postComment(id, sessionID, message));
+        await voteAPI.postComment(id, sessionID, message);
+        res.status(201).json(await voteAPI.getComments(id));
     } catch (e) {
         console.log(e);
         next(createError(400));

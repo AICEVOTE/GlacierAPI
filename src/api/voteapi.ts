@@ -75,7 +75,6 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     } catch (e) {
         throw e;
     }
-    return await getVotes(id, sessionID);
 }
 
 export function getTransition(id: number) {
@@ -129,5 +128,4 @@ export async function postComment(id: number, sessionID: string, message: string
     } catch (e) {
         throw e;
     }
-    return await getComments(id);
 }
