@@ -1,4 +1,4 @@
-import Themes from "./theme";
+import themeLoader from "./theme";
 import * as model from "../model";
 import * as utilAPI from "../api/utilapi";
 
@@ -15,8 +15,8 @@ export function getResult(id: number) {
     if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
     return {
         id: id,
-        results: Themes[id].realtimeResult,
-        counts: Themes[id].realtimeCount
+        results: themeLoader.themes[id].realtimeResult,
+        counts: themeLoader.themes[id].realtimeCount
     }
 }
 
@@ -28,7 +28,7 @@ export async function getVotes(id: number, sessionID: string) {
         if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
         const votes = (await Promise.all(doc.friends.map(async (userID) => {
-            const doc = await model.Result.findOne({ id: Themes[id].id, userID: userID }).exec();
+            const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID }).exec();
             if (!doc) { return null; }
             return {
                 answer: doc.answer,
@@ -37,7 +37,7 @@ export async function getVotes(id: number, sessionID: string) {
             }
         }))).filter(<T>(x: T): x is Exclude<T, null> => { return x != null; });
 
-        const votesFromInfluencer = (await model.Result.find({ id: Themes[id].id, isInfluencer: true }).exec()).
+        const votesFromInfluencer = (await model.Result.find({ id: themeLoader.themes[id].id, isInfluencer: true }).exec()).
             map((doc) => {
                 return {
                     answer: doc.answer,
@@ -64,7 +64,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
     try {
-        await model.Result.updateOne({ id: Themes[id].id, userID: doc.userID, userProvider: doc.userProvider },
+        await model.Result.updateOne({ id: themeLoader.themes[id].id, userID: doc.userID, userProvider: doc.userProvider },
             {
                 $set: {
                     answer: answer, name: doc.name,
@@ -81,8 +81,8 @@ export function getTransition(id: number) {
     if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
     return {
         id: id,
-        shortTransition: Themes[id].shortTransition,
-        longTransition: Themes[id].longTransition
+        shortTransition: themeLoader.themes[id].shortTransition,
+        longTransition: themeLoader.themes[id].longTransition
     };
 }
 
@@ -90,7 +90,7 @@ export async function getComments(id: number) {
     if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
-        const comments = (await model.Comment.find({ id: Themes[id].id }).exec()).
+        const comments = (await model.Comment.find({ id: themeLoader.themes[id].id }).exec()).
             map((doc) => {
                 return {
                     message: doc.message,
@@ -117,7 +117,7 @@ export async function postComment(id: number, sessionID: string, message: string
         if (!doc) { throw new utilAPI.GlacierAPIError("The vote-id is invalid"); }
 
         await new model.Comment({
-            id: Themes[id].id,
+            id: themeLoader.themes[id].id,
             message: utilAPI.sanitize(message),
             createdAt: Date.now() + 1000 * 60 * 60 * 9,
             name: doc.name,

@@ -1,4 +1,4 @@
-import Themes from "./theme";
+import themeLoader from "./theme";
 import * as model from "../model";
 import XSSFilters from "xss-filters";
 
@@ -22,7 +22,7 @@ export function isNumber(obj: unknown | null | undefined): obj is number {
 }
 
 export function isCompatibleId(id: number) {
-    return Number.isInteger(id) && id >= 0 && id < Themes.length;
+    return Number.isInteger(id) && id >= 0 && id < themeLoader.themes.length;
 }
 
 export function generateSessionID() {

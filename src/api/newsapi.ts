@@ -1,4 +1,4 @@
-import Themes from "./theme";
+import themeLoader from "./theme";
 import * as utilAPI from "../api/utilapi";
 
 const NewsAPI = require("newsapi");
@@ -72,7 +72,7 @@ async function getHeadline(pageSize: number = 15) {
 async function updateAll() {
     return {
         latest: await getHeadline(),
-        related: await Promise.all(Themes.map(async (Theme) => {
+        related: await Promise.all(themeLoader.themes.map(async (Theme) => {
             return (await Promise.all(Theme.keywords.map(async (keyword) => {
                 return await getEverything(keyword, 6 / Theme.keywords.length);
             }))).reduce((prev, cur) => prev.concat(cur));

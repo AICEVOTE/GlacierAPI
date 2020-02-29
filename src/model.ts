@@ -4,6 +4,15 @@ mongoose.connect(process.env.URI_DB || "", { useNewUrlParser: true, useUnifiedTo
 
 export type IAnswerType<T> = [T, T, T, T, T, T, T, T, T, T];
 
+interface IThemeModel extends mongoose.Document {
+    id: number,
+    title: string,
+    description: string,
+    choices: IAnswerType<string>,
+    keywords: Array<string>,
+    formula: string
+}
+
 interface IUserModel extends mongoose.Document {
     name: string,
     userID: string,
@@ -12,7 +21,7 @@ interface IUserModel extends mongoose.Document {
         AT: string,
         RT: string
     },
-    friends: string[],
+    friends: Array<string>,
     imageURI: string,
     numOfFollowers: number,
     sessionID: string,
@@ -49,6 +58,15 @@ interface IFeedbackModel extends mongoose.Document {
     message: string,
     feedbackType: string
 }
+
+const ThemeSchema = new mongoose.Schema<IThemeModel>({
+    id: Number,
+    title: String,
+    description: String,
+    choices: [String],
+    keywords: [String],
+    formula: String
+})
 
 const UserSchema = new mongoose.Schema<IUserModel>({
     name: String,
@@ -96,6 +114,7 @@ const FeedbackSchema = new mongoose.Schema<IFeedbackModel>({
     feedbackType: String
 });
 
+export const Theme = mongoose.model<IThemeModel>("Theme", ThemeSchema, "themes");
 export const User = mongoose.model<IUserModel>("User", UserSchema, "users");
 export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");
 export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comments");

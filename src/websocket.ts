@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 
-import Themes from "./api/theme";
+import themeLoader from "./api/theme";
 import * as voteAPI from "./api/voteapi";
 import * as newsAPI from "./api/newsapi";
 import * as utilAPI from "./api/utilapi";
@@ -8,7 +8,7 @@ import * as utilAPI from "./api/utilapi";
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");
     setInterval(() => {
-        for (let i = 0; i < Themes.length; i++) {
+        for (let i = 0; i < themeLoader.themes.length; i++) {
             try {
                 io.emit("result", voteAPI.getResult(i));
             } catch (e) {
