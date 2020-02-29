@@ -18,7 +18,7 @@ passport.use(new TwitterStrategy({
             access_token_key: accessToken,
             access_token_secret: refreshToken
         });
-        const res = await twitterClient.get('friends/ids',
+        const res = await twitterClient.get("friends/ids",
             { user_id: profile.id, stringify_ids: true });
 
         await model.User.updateOne({ userID: profile.id, userProvider: profile.provider }, {
