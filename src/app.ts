@@ -28,11 +28,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.use(cors({
-    origin: process.env.URI_CORS_ORIGIN || "",
+    origin: process.env.CORS_ORIGIN || "",
     credentials: true
 }));
 app.options("*", cors({
-    origin: process.env.URI_CORS_ORIGIN || "",
+    origin: process.env.CORS_ORIGIN || "",
     credentials: true
 }));
 

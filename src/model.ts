@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-mongoose.connect(process.env.URI_DB || "", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.DB_URI || "", { useNewUrlParser: true, useUnifiedTopology: true });
 
 export type IAnswerType<T> = [T, T, T, T, T, T, T, T, T, T];
 

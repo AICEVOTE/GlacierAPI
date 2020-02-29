@@ -7,7 +7,7 @@ import Twitter from "twitter";
 passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY || "",
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET || "",
-    callbackURL: process.env.URI_TWITTER_CALLBACK || ""
+    callbackURL: process.env.TWITTER_CALLBACK || ""
 }, async (accessToken, refreshToken, profile, done) => {
     const sessionID = utilAPI.generateSessionID();
 
