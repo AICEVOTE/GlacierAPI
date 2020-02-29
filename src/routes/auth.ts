@@ -55,7 +55,7 @@ router.get("/twitter/callback", (req, res, next) => {
         req.logIn(user, (err) => {
             if (err) { return next(err); }
             if (!utilAPI.isString(user)) { return next(createError(400)); }
-            res.end();
+            res.send("<script>window.open('','_self').close();</script>");
         });
     })(req, res, next);
 });
