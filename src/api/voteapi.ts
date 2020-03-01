@@ -3,8 +3,9 @@ import * as model from "../model";
 import * as utilAPI from "../api/utilapi";
 
 declare const answerType: model.IAnswerType<never>;
-function isCompatibleAnswer(answer: number) {
-    return Number.isInteger(answer) && answer >= 0 && answer < answerType.length;
+function isCompatibleAnswer(id: number, answer: number) {
+    return Number.isInteger(answer) && answer >= 0 && answer < answerType.length &&
+        themeLoader.themes[id].choices[answer] != "";
 }
 
 function isInfluencer(numOfFollowers: number) {
@@ -58,7 +59,7 @@ export async function getVotes(id: number, sessionID: string) {
 
 export async function putVote(id: number, sessionID: string, answer: number) {
     if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    if (!isCompatibleAnswer(answer)) { throw new utilAPI.GlacierAPIError("The answer is invalid"); }
+    if (!isCompatibleAnswer(id, answer)) { throw new utilAPI.GlacierAPIError("The answer is invalid"); }
 
     const doc = await model.User.findOne({ sessionID: sessionID }).exec();
     if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
