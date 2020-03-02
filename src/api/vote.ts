@@ -9,44 +9,47 @@ function isInfluencer(numOfFollowers: number) {
 
 export function getResult(id: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return {
-        id: id,
-        results: themeLoader.themes[id].realtimeResult,
-        counts: themeLoader.themes[id].realtimeCount
+    return themeLoader.themes[id].realtimeResult;
+}
+
+export function getCount(id: number) {
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    return themeLoader.themes[id].realtimeCount;
+}
+
+export async function getInfluencerVotes(id: number) {
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+
+    try {
+        return (await model.Result.find({ id: themeLoader.themes[id].id, isInfluencer: true }).exec()).
+            map((doc) => {
+                return {
+                    answer: doc.answer,
+                    name: doc.name,
+                    imageURI: doc.imageURI
+                };
+            });
+    } catch (e) {
+        throw e;
     }
 }
 
-export async function getVotes(id: number, sessionID: string) {
+export async function getFriendVotes(id: number, sessionID: string) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
-        const votes = (await Promise.all(doc.friends.map(async (userID) => {
+        return (await Promise.all(doc.friends.map(async (userID) => {
             const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID }).exec();
             if (!doc) { return null; }
             return {
                 answer: doc.answer,
                 name: doc.name,
                 imageURI: doc.imageURI
-            }
+            };
         }))).filter(<T>(x: T): x is Exclude<T, null> => { return x != null; });
-
-        const votesFromInfluencer = (await model.Result.find({ id: themeLoader.themes[id].id, isInfluencer: true }).exec()).
-            map((doc) => {
-                return {
-                    answer: doc.answer,
-                    name: doc.name,
-                    imageURI: doc.imageURI
-                }
-            });
-
-        return {
-            id: id,
-            votes: votes,
-            votesFromInfluencer: votesFromInfluencer
-        };
     } catch (e) {
         throw e;
     }
@@ -75,20 +78,21 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     }
 }
 
-export function getTransition(id: number) {
+export function getShortTransition(id: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return {
-        id: id,
-        shortTransition: themeLoader.themes[id].shortTransition,
-        longTransition: themeLoader.themes[id].longTransition
-    };
+    return themeLoader.themes[id].shortTransition;
+}
+
+export function getLongTransition(id: number) {
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    return themeLoader.themes[id].longTransition;
 }
 
 export async function getComments(id: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
-        const comments = (await model.Comment.find({ id: themeLoader.themes[id].id }).exec()).
+        return (await model.Comment.find({ id: themeLoader.themes[id].id }).exec()).
             map((doc) => {
                 return {
                     message: doc.message,
@@ -96,12 +100,8 @@ export async function getComments(id: number) {
                     name: doc.name,
                     imageURI: doc.imageURI,
                     isInfluencer: doc.isInfluencer
-                }
+                };
             });
-        return {
-            id: id,
-            comments: comments
-        };
     } catch (e) {
         throw e;
     }

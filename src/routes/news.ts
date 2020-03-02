@@ -34,7 +34,10 @@ router.get("/articles/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
     try {
-        res.json(newsAPI.getRelatedArticles(id));
+        res.json({
+            id: id,
+            articles: newsAPI.getRelatedArticles(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(404));

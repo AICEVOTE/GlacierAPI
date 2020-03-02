@@ -64,7 +64,11 @@ router.get("/results/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
     try {
-        res.json(voteAPI.getResult(id));
+        res.json({
+            id: id,
+            results: voteAPI.getResult(id),
+            counts: voteAPI.getCount(id),
+        });
     } catch (e) {
         console.log(e);
         next(createError(404));
@@ -75,12 +79,12 @@ router.get("/votes/:id", async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
     const sessionID: unknown = req.session?.passport?.user || req.query.sessionid;
 
-    if (!utilAPI.isString(sessionID)) {
-        return next(createError(400));
-    }
-
     try {
-        res.json(await voteAPI.getVotes(id, sessionID));
+        res.json({
+            id: id,
+            votes: utilAPI.isString(sessionID) ? await voteAPI.getFriendVotes(id, sessionID) : [],
+            votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -98,7 +102,11 @@ router.put("/votes/:id", async (req, res, next) => {
 
     try {
         await voteAPI.putVote(id, sessionID, parseInt(answer, 10));
-        res.json(await voteAPI.getVotes(id, sessionID));
+        res.json({
+            id: id,
+            votes: await voteAPI.getFriendVotes(id, sessionID),
+            votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -109,7 +117,11 @@ router.get("/transitions/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
     try {
-        res.json(voteAPI.getTransition(id));
+        res.json({
+            id: id,
+            shortTransition: voteAPI.getShortTransition(id),
+            longTransition: voteAPI.getLongTransition(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(404));
@@ -120,7 +132,10 @@ router.get("/comments/:id", async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
     try {
-        res.json(await voteAPI.getComments(id));
+        res.json({
+            id: id,
+            comments: await voteAPI.getComments(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(404));
@@ -138,7 +153,10 @@ router.post("/comments/:id", async (req, res, next) => {
 
     try {
         await voteAPI.postComment(id, sessionID, message);
-        res.status(201).json(await voteAPI.getComments(id));
+        res.status(201).json({
+            id: id,
+            comments: await voteAPI.getComments(id)
+        });
     } catch (e) {
         console.log(e);
         next(createError(400));

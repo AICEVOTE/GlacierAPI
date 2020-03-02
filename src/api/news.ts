@@ -96,8 +96,5 @@ export function getRelatedArticles(id: number) {
         throw new utilAPI.GlacierAPIError("The id is invalid");
     }
 
-    return {
-        id: id,
-        articles: articles.related[id]
-    };
+    return articles.related[id];
 }

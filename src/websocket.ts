@@ -30,65 +30,76 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
     socket.on("get result", ({ id }: { id: unknown }) => {
         try {
             if (utilAPI.isNumber(id)) {
-                io.to(socketID).emit("result", voteAPI.getResult(id));
+                io.to(socketID).emit("result", {
+                    id: id,
+                    results: voteAPI.getResult(id),
+                    counts: voteAPI.getCount(id),
+                });
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("get transition", (req: { id: unknown }) => {
+    socket.on("get transition", ({ id }: { id: unknown }) => {
         try {
-            if (utilAPI.isNumber(req.id)) {
-                io.to(socketID).emit("transition",
-                    voteAPI.getTransition(req.id));
+            if (utilAPI.isNumber(id)) {
+                io.to(socketID).emit("transition", {
+                    id: id,
+                    shortTransition: voteAPI.getShortTransition(id),
+                    longTransition: voteAPI.getLongTransition(id)
+                });
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("get comments", async (req: { id: unknown }) => {
+    socket.on("get comments", async ({ id }: { id: unknown }) => {
         try {
-            if (utilAPI.isNumber(req.id)) {
-                io.to(socketID).emit("comments",
-                    await voteAPI.getComments(req.id));
+            if (utilAPI.isNumber(id)) {
+                io.to(socketID).emit("comments", {
+                    id: id,
+                    comments: await voteAPI.getComments(id)
+                });
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("get votes", async (req: { id: unknown, sessionID: unknown }) => {
+    socket.on("get votes", async ({ id, sessionID }: { id: unknown, sessionID: unknown }) => {
         try {
-            if (utilAPI.isNumber(req.id) &&
-                utilAPI.isString(req.sessionID)) {
-                io.to(socketID).emit("votes",
-                    await voteAPI.getVotes(req.id, req.sessionID));
+            if (utilAPI.isNumber(id)) {
+                io.to(socketID).emit("votes", {
+                    id: id,
+                    votes: utilAPI.isString(sessionID) ? await voteAPI.getFriendVotes(id, sessionID) : [],
+                    votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
+                });
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("put vote", async (req: { id: unknown, sessionID: unknown, answer: unknown }) => {
+    socket.on("put vote", async ({ id, sessionID, answer }: { id: unknown, sessionID: unknown, answer: unknown }) => {
         try {
-            if (utilAPI.isNumber(req.id) &&
-                utilAPI.isString(req.sessionID) &&
-                utilAPI.isNumber(req.answer)) {
-                await voteAPI.putVote(req.id, req.sessionID, req.answer);
+            if (utilAPI.isNumber(id) &&
+                utilAPI.isString(sessionID) &&
+                utilAPI.isNumber(answer)) {
+                await voteAPI.putVote(id, sessionID, answer);
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("post comment", async (req: { id: unknown, sessionID: unknown, message: unknown }) => {
+    socket.on("post comment", async ({ id, sessionID, message }: { id: unknown, sessionID: unknown, message: unknown }) => {
         try {
-            if (utilAPI.isNumber(req.id) &&
-                utilAPI.isString(req.sessionID) &&
-                utilAPI.isString(req.message)) {
-                await voteAPI.postComment(req.id, req.sessionID, req.message);
+            if (utilAPI.isNumber(id) &&
+                utilAPI.isString(sessionID) &&
+                utilAPI.isString(message)) {
+                await voteAPI.postComment(id, sessionID, message);
             }
         } catch (e) {
             console.log(e);
