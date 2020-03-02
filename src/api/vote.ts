@@ -7,16 +7,6 @@ function isInfluencer(numOfFollowers: number) {
     return numOfFollowers > 50000;
 }
 
-export function getResult(id: number) {
-    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return themeLoader.themes[id].realtimeResult;
-}
-
-export function getCount(id: number) {
-    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return themeLoader.themes[id].realtimeCount;
-}
-
 export async function getInfluencerVotes(id: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
@@ -76,16 +66,6 @@ export async function putVote(id: number, sessionID: string, answer: number) {
     } catch (e) {
         throw e;
     }
-}
-
-export function getShortTransition(id: number) {
-    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return themeLoader.themes[id].shortTransition;
-}
-
-export function getLongTransition(id: number) {
-    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    return themeLoader.themes[id].longTransition;
 }
 
 export async function getComments(id: number) {

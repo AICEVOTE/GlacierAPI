@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 
+import themeLoader from "../api/theme";
 import * as voteAPI from "../api/vote";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
@@ -63,14 +64,14 @@ router.get("/", (_req, res, _next) => {
 router.get("/results/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
-    try {
+    if (themeLoader.themes[id] != undefined) {
         res.json({
             id: id,
-            results: voteAPI.getResult(id),
-            counts: voteAPI.getCount(id),
+            results: themeLoader.themes[id].realtimeResult,
+            counts: themeLoader.themes[id].realtimeCount
         });
-    } catch (e) {
-        console.log(e);
+    } else {
+        console.log("The id is invalid");
         next(createError(404));
     }
 });
@@ -116,14 +117,14 @@ router.put("/votes/:id", async (req, res, next) => {
 router.get("/transitions/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
-    try {
+    if (themeLoader.themes[id] != undefined) {
         res.json({
             id: id,
-            shortTransition: voteAPI.getShortTransition(id),
-            longTransition: voteAPI.getLongTransition(id)
+            shortTransition: themeLoader.themes[id].shortTransition,
+            longTransition: themeLoader.themes[id].longTransition
         });
-    } catch (e) {
-        console.log(e);
+    } else {
+        console.log("The id is invalid");
         next(createError(404));
     }
 });

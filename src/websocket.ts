@@ -10,7 +10,11 @@ export function initialize(io: SocketIO.Server) {
     setInterval(() => {
         for (let i = 0; i < themeLoader.themes.length; i++) {
             try {
-                io.emit("result", voteAPI.getResult(i));
+                io.emit("result", {
+                    id: i,
+                    results: themeLoader.themes[i].realtimeResult,
+                    counts: themeLoader.themes[i].realtimeCount,
+                });
             } catch (e) {
                 console.log(e);
             }
@@ -28,30 +32,26 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
     });
 
     socket.on("get result", ({ id }: { id: unknown }) => {
-        try {
-            if (utilAPI.isNumber(id)) {
-                io.to(socketID).emit("result", {
-                    id: id,
-                    results: voteAPI.getResult(id),
-                    counts: voteAPI.getCount(id),
-                });
-            }
-        } catch (e) {
-            console.log(e);
+        if (utilAPI.isNumber(id) && themeLoader.themes[id] != undefined) {
+            io.to(socketID).emit("result", {
+                id: id,
+                results: themeLoader.themes[id].realtimeResult,
+                counts: themeLoader.themes[id].realtimeCount
+            });
+        } else {
+            console.log("The id is invalid");
         }
     });
 
     socket.on("get transition", ({ id }: { id: unknown }) => {
-        try {
-            if (utilAPI.isNumber(id)) {
-                io.to(socketID).emit("transition", {
-                    id: id,
-                    shortTransition: voteAPI.getShortTransition(id),
-                    longTransition: voteAPI.getLongTransition(id)
-                });
-            }
-        } catch (e) {
-            console.log(e);
+        if (utilAPI.isNumber(id) && themeLoader.themes[id] != undefined) {
+            io.to(socketID).emit("result", {
+                id: id,
+                shortTransition: themeLoader.themes[id].shortTransition,
+                longTransition: themeLoader.themes[id].longTransition
+            });
+        } else {
+            console.log("The id is invalid");
         }
     });
 
