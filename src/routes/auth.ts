@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-import * as authAPI from "../api/authapi";
-import * as utilAPI from "../api/utilapi";
+import * as authAPI from "../api/auth";
+import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
 router.get("/", (_req, res, _next) => {

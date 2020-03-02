@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-import * as voteAPI from "../api/voteapi";
-import * as utilAPI from "../api/utilapi";
+import * as voteAPI from "../api/vote";
+import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
 router.get("/", (_req, res, _next) => {

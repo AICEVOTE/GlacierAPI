@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import * as utilAPI from "../api/utilapi";
+import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
 /* GET home page. */

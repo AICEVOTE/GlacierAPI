@@ -1,6 +1,6 @@
 import themeLoader from "./theme";
 import * as model from "../model";
-import * as utilAPI from "../api/utilapi";
+import * as utilAPI from "./util";
 import XSSFilters from "xss-filters";
 
 function isInfluencer(numOfFollowers: number) {

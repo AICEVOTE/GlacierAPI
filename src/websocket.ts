@@ -1,9 +1,9 @@
 import SocketIO from "socket.io";
 
 import themeLoader from "./api/theme";
-import * as voteAPI from "./api/voteapi";
-import * as newsAPI from "./api/newsapi";
-import * as utilAPI from "./api/utilapi";
+import * as voteAPI from "./api/vote";
+import * as newsAPI from "./api/news";
+import * as utilAPI from "./api/util";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");

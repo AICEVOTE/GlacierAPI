@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import * as newsAPI from "../api/newsapi";
+import * as newsAPI from "../api/news";
 import createError from "http-errors";
 
 router.get("/", (_req, res, _next) => {

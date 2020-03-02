@@ -1,5 +1,5 @@
 import themeLoader from "./theme";
-import * as utilAPI from "../api/utilapi";
+import * as utilAPI from "./util";
 
 const NewsAPI = require("newsapi");
 const newsapi = new NewsAPI(process.env.NEWSAPI_KEY || "");
