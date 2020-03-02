@@ -11,8 +11,8 @@ interface IThemeModel extends mongoose.Document {
     id: number,
     title: string,
     description: string,
-    choices: Array<string>,
-    keywords: Array<string>,
+    choices: string[],
+    keywords: string[],
     formula: string
 }
 
@@ -24,7 +24,7 @@ interface IUserModel extends mongoose.Document {
         AT: string,
         RT: string
     },
-    friends: Array<string>,
+    friends: string[],
     imageURI: string,
     numOfFollowers: number,
     sessionID: string
@@ -53,7 +53,7 @@ interface ICommentModel extends mongoose.Document {
 interface ITransitionModel extends mongoose.Document {
     id: number,
     timestamp: number,
-    percentage: Array<number>
+    percentage: number[]
 }
 
 interface IFeedbackModel extends mongoose.Document {

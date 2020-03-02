@@ -1,18 +1,18 @@
 import * as model from "../model";
 
-interface ITransition { timestamp: number, percentage: Array<number> };
+interface ITransition { timestamp: number, percentage: number[] };
 
 class Theme {
-    private _realtimeCount: Array<number> = [];
-    private _realtimeResult: Array<number> = [];
-    private _shortTransition: Array<ITransition> = [];
-    private _longTransition: Array<ITransition> = [];
+    private _realtimeCount: number[] = [];
+    private _realtimeResult: number[] = [];
+    private _shortTransition: ITransition[] = [];
+    private _longTransition: ITransition[] = [];
 
     constructor(public readonly id: number,
         public readonly title: string,
         public readonly description: string,
-        public readonly choices: Array<string>,
-        public readonly keywords: Array<string>,
+        public readonly choices: string[],
+        public readonly keywords: string[],
         private readonly _formula: (val: number) => number) {
 
         setInterval(() => this.updateResult(), 2 * 1000);
@@ -76,7 +76,7 @@ class Theme {
 
 class ThemeLoader {
     private _isLoaded = false;
-    private _themes: Array<Theme> = [];
+    private _themes: Theme[] = [];
     constructor() {
         try {
             model.Theme.find().exec().then((themes) => {
@@ -93,7 +93,7 @@ class ThemeLoader {
     get themes() {
         if (!this._isLoaded) {
             console.log("GlacierAPIError: Themes are not loaded");
-            return null as any as Array<Theme>;
+            return null as any as Theme[];
         }
         return this._themes;
     }
