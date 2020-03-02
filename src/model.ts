@@ -7,13 +7,11 @@ mongoose.connect(process.env.DB_URI || "", {
     useUnifiedTopology: true
 });
 
-export type IAnswerType<T> = [T, T, T, T, T, T, T, T, T, T];
-
 interface IThemeModel extends mongoose.Document {
     id: number,
     title: string,
     description: string,
-    choices: IAnswerType<string>,
+    choices: Array<string>,
     keywords: Array<string>,
     formula: string
 }
@@ -55,7 +53,7 @@ interface ICommentModel extends mongoose.Document {
 interface ITransitionModel extends mongoose.Document {
     id: number,
     timestamp: number,
-    percentage: IAnswerType<number>
+    percentage: Array<number>
 }
 
 interface IFeedbackModel extends mongoose.Document {

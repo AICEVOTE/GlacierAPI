@@ -1,17 +1,17 @@
 import * as model from "../model";
 
-interface ITransition { timestamp: number, percentage: model.IAnswerType<number> };
+interface ITransition { timestamp: number, percentage: Array<number> };
 
 class Theme {
-    private _realtimeCount: model.IAnswerType<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private _realtimeResult: model.IAnswerType<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private _realtimeCount: Array<number> = [];
+    private _realtimeResult: Array<number> = [];
     private _shortTransition: Array<ITransition> = [];
     private _longTransition: Array<ITransition> = [];
 
     constructor(public readonly id: number,
         public readonly title: string,
         public readonly description: string,
-        public readonly choices: model.IAnswerType<string>,
+        public readonly choices: Array<string>,
         public readonly keywords: Array<string>,
         private readonly _formula: (val: number) => number) {
 
@@ -30,8 +30,8 @@ class Theme {
             const docs = await model.Result.find({ id: this.id }).exec();
 
             const now = Date.now();
-            let counts: model.IAnswerType<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            let points: model.IAnswerType<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            let counts = Array<number>(this.choices.length).fill(0);
+            let points = Array<number>(this.choices.length).fill(0);
 
             for (const doc of docs) {
                 counts[doc.answer]++;
@@ -43,7 +43,7 @@ class Theme {
             this._realtimeCount = counts;
             this._realtimeResult = points.map(point => {
                 return (Math.round(point / sumOfPoints * 1000000) / 10000) || 0;
-            }) as model.IAnswerType<number>;
+            });
         } catch (e) {
             throw e;
         }

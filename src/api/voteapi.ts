@@ -3,10 +3,8 @@ import * as model from "../model";
 import * as utilAPI from "../api/utilapi";
 import XSSFilters from "xss-filters";
 
-declare const answerType: model.IAnswerType<never>;
 function isCompatibleAnswer(id: number, answer: number) {
-    return Number.isInteger(answer) && answer >= 0 && answer < answerType.length &&
-        themeLoader.themes[id].choices[answer] != "";
+    return themeLoader.themes[id].choices[answer] != undefined;
 }
 
 function isInfluencer(numOfFollowers: number) {
