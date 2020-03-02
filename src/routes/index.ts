@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 
+import * as indexAPI from "../api/index";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
@@ -47,7 +48,7 @@ router.post("/feedback", async (req, res, next) => {
     }
 
     try {
-        res.status(201).json(await utilAPI.saveFeedback(message, "Feedback"));
+        res.status(201).json(await indexAPI.saveFeedback(message, "Feedback"));
     } catch (e) {
         console.log(e);
         next(createError(500));
@@ -61,7 +62,7 @@ router.post("/application", async (req, res, next) => {
     }
 
     try {
-        res.status(201).json(await utilAPI.saveFeedback(message, "Application"));
+        res.status(201).json(await indexAPI.saveFeedback(message, "Application"));
     } catch (e) {
         console.log(e);
         next(createError(500));

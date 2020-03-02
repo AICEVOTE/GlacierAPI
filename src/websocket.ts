@@ -1,6 +1,7 @@
 import SocketIO from "socket.io";
 
 import themeLoader from "./api/theme";
+import * as indexAPI from "./api/index";
 import * as voteAPI from "./api/vote";
 import * as newsAPI from "./api/news";
 import * as utilAPI from "./api/util";
@@ -109,7 +110,7 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
     socket.on("feedback send", async (message: unknown) => {
         try {
             if (utilAPI.isString(message)) {
-                await utilAPI.saveFeedback(message, "Feedback");
+                await indexAPI.saveFeedback(message, "Feedback");
             }
         } catch (e) {
             console.log(e);
@@ -119,7 +120,7 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
     socket.on("apply send", async (message: unknown) => {
         try {
             if (utilAPI.isString(message)) {
-                await utilAPI.saveFeedback(message, "Application");
+                await indexAPI.saveFeedback(message, "Application");
             }
         } catch (e) {
             console.log(e);
