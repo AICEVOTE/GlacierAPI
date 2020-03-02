@@ -12,7 +12,7 @@ router.get("/", (_req, res, _next) => {
                 uri: "sessiontoken",
                 description: "Get your session token (Logged in session required)",
                 req: ["callback: Callback destination URI after authentication"],
-                res: ["sessiontoken: session token"],
+                res: ["sessionToken: session token"],
                 method: "GET",
                 query: "?callback=https://google.co.jp"
             },
