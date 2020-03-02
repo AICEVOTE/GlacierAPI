@@ -3,10 +3,6 @@ import * as model from "../model";
 import * as utilAPI from "./util";
 import XSSFilters from "xss-filters";
 
-function isInfluencer(numOfFollowers: number) {
-    return numOfFollowers > 50000;
-}
-
 export async function getInfluencerVotes(id: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
@@ -59,7 +55,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
             {
                 $set: {
                     answer: answer, name: doc.name,
-                    isInfluencer: isInfluencer(doc.numOfFollowers),
+                    isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers),
                     imageURI: doc.imageURI, createdAt: Date.now()
                 }
             }, { upsert: true }).exec();
@@ -100,7 +96,7 @@ export async function postComment(id: number, sessionID: string, message: string
             createdAt: Date.now() + 1000 * 60 * 60 * 9,
             name: doc.name,
             imageURI: doc.imageURI,
-            isInfluencer: isInfluencer(doc.numOfFollowers)
+            isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers)
         }).save();
     } catch (e) {
         throw e;

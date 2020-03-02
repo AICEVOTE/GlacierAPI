@@ -16,3 +16,7 @@ export function isNumber(obj: unknown | null | undefined): obj is number {
     if (obj == null || obj == undefined) { return false; }
     return typeof obj == "number";
 }
+
+export function isInfluencer(numOfFollowers: number) {
+    return numOfFollowers > 50000;
+}
