@@ -45,7 +45,7 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
 
     socket.on("get transition", ({ id }: { id: unknown }) => {
         if (utilAPI.isNumber(id) && themeLoader.themes[id] != undefined) {
-            io.to(socketID).emit("result", {
+            io.to(socketID).emit("transition", {
                 id: id,
                 shortTransition: themeLoader.themes[id].shortTransition,
                 longTransition: themeLoader.themes[id].longTransition
