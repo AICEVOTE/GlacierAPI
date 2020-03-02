@@ -1,4 +1,3 @@
-import themeLoader from "./theme";
 import * as model from "../model";
 import XSSFilters from "xss-filters";
 
@@ -19,10 +18,6 @@ export function isString(obj: unknown | null | undefined): obj is string {
 export function isNumber(obj: unknown | null | undefined): obj is number {
     if (obj == null || obj == undefined) { return false; }
     return typeof obj == "number";
-}
-
-export function isCompatibleId(id: number) {
-    return themeLoader.themes[id] != undefined;
 }
 
 export async function saveFeedback(message: string, feedbackType: string) {

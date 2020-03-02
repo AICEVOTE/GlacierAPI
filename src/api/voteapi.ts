@@ -3,16 +3,12 @@ import * as model from "../model";
 import * as utilAPI from "../api/utilapi";
 import XSSFilters from "xss-filters";
 
-function isCompatibleAnswer(id: number, answer: number) {
-    return themeLoader.themes[id].choices[answer] != undefined;
-}
-
 function isInfluencer(numOfFollowers: number) {
-    return Number.isInteger(numOfFollowers) && numOfFollowers > 50000;
+    return numOfFollowers > 50000;
 }
 
 export function getResult(id: number) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
     return {
         id: id,
         results: themeLoader.themes[id].realtimeResult,
@@ -21,7 +17,7 @@ export function getResult(id: number) {
 }
 
 export async function getVotes(id: number, sessionID: string) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
@@ -57,8 +53,10 @@ export async function getVotes(id: number, sessionID: string) {
 }
 
 export async function putVote(id: number, sessionID: string, answer: number) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
-    if (!isCompatibleAnswer(id, answer)) { throw new utilAPI.GlacierAPIError("The answer is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id].choices[answer] == undefined) {
+        throw new utilAPI.GlacierAPIError("The answer is invalid");
+    }
 
     const doc = await model.User.findOne({ sessionID: sessionID }).exec();
     if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
@@ -78,7 +76,7 @@ export async function putVote(id: number, sessionID: string, answer: number) {
 }
 
 export function getTransition(id: number) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
     return {
         id: id,
         shortTransition: themeLoader.themes[id].shortTransition,
@@ -87,7 +85,7 @@ export function getTransition(id: number) {
 }
 
 export async function getComments(id: number) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
         const comments = (await model.Comment.find({ id: themeLoader.themes[id].id }).exec()).
@@ -110,7 +108,7 @@ export async function getComments(id: number) {
 }
 
 export async function postComment(id: number, sessionID: string, message: string) {
-    if (!utilAPI.isCompatibleId(id)) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
+    if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();

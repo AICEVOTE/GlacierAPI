@@ -92,7 +92,7 @@ export function getAllArticles() {
 }
 
 export function getRelatedArticles(id: number) {
-    if (!utilAPI.isCompatibleId(id)) {
+    if (themeLoader.themes[id] == undefined) {
         throw new utilAPI.GlacierAPIError("The id is invalid");
     }
 
