@@ -22,7 +22,7 @@ export function isNumber(obj: unknown | null | undefined): obj is number {
 }
 
 export function isCompatibleId(id: number) {
-    return Number.isInteger(id) && id >= 0 && id < themeLoader.themes.length;
+    return themeLoader.themes[id] != undefined;
 }
 
 export async function saveFeedback(message: string, feedbackType: string) {
