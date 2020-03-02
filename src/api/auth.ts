@@ -1,4 +1,5 @@
 import * as model from "../model";
+import * as utilAPI from "./util";
 import passport from "passport";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import Twitter from "twitter";
@@ -31,7 +32,9 @@ passport.use(new TwitterStrategy({
                 friends: res.ids,
                 imageURI: profile.photos ? profile.photos[0]?.value || "" : "",
                 numOfFollowers: profile._json.followers_count,
-                sessionID: sessionID
+                sessionID: sessionID,
+                sessionToken: uuidv4(),
+                sessionTokenExpire: Date.now() + 15 * 60 * 1000
             }
         }, { upsert: true });
     } catch (e) {
@@ -45,8 +48,31 @@ passport.use(new TwitterStrategy({
 passport.serializeUser((user, done) => { done(null, user); });
 passport.deserializeUser((user, done) => { done(null, user); });
 
+setInterval(async () => {
+    try {
+        await model.User.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
+            $set: {
+                sessionToken: uuidv4(),
+                sessionTokenExpire: Date.now() + 15 * 60 * 1000
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
+}, 5 * 60 * 1000);
+
+export async function getSessionToken(sessionID: string) {
+    try {
+        const doc = await model.User.findOne({ sessionID: sessionID }).exec();
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+        return doc.sessionToken;
+    } catch (e) {
+        throw e;
+    }
+}
+
 export function authenticate(callback?: (err: any, user: any, info: any) => void) {
-    return passport.authenticate("twitter", { session: false }, (err, user, info) => {
+    return passport.authenticate("twitter", (err, user, info) => {
         if (callback) { return callback(err, user, info); }
         return;
     });

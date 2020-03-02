@@ -2,10 +2,10 @@ import * as model from "../model";
 import * as utilAPI from "./util";
 import XSSFilters from "xss-filters";
 
-export async function getProfile(sessionID: string) {
+export async function getProfile(sessionToken: string) {
     try {
-        const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
 
         return {
             name: doc.name,

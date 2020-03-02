@@ -20,12 +20,12 @@ export async function getInfluencerVotes(id: number) {
     }
 }
 
-export async function getFriendVotes(id: number, sessionID: string) {
+export async function getFriendVotes(id: number, sessionToken: string) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
-        const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
 
         return (await Promise.all(doc.friends.map(async (userID) => {
             const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID, userProvider: "twitter" }).exec();
@@ -41,14 +41,14 @@ export async function getFriendVotes(id: number, sessionID: string) {
     }
 }
 
-export async function putVote(id: number, sessionID: string, answer: number) {
+export async function putVote(id: number, sessionToken: string, answer: number) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
     if (themeLoader.themes[id].choices[answer] == undefined) {
         throw new utilAPI.GlacierAPIError("The answer is invalid");
     }
 
-    const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-    if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+    const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+    if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
 
     try {
         await model.Result.updateOne({ id: themeLoader.themes[id].id, userID: doc.userID, userProvider: doc.userProvider },
@@ -83,12 +83,12 @@ export async function getComments(id: number) {
     }
 }
 
-export async function postComment(id: number, sessionID: string, message: string) {
+export async function postComment(id: number, sessionToken: string, message: string) {
     if (themeLoader.themes[id] == undefined) { throw new utilAPI.GlacierAPIError("The id is invalid"); }
 
     try {
-        const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
 
         await new model.Comment({
             id: themeLoader.themes[id].id,

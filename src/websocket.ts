@@ -69,12 +69,12 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
         }
     });
 
-    socket.on("get votes", async ({ id, sessionID }: { id: unknown, sessionID: unknown }) => {
+    socket.on("get votes", async ({ id, sessionToken }: { id: unknown, sessionToken: unknown }) => {
         try {
             if (utilAPI.isNumber(id)) {
                 io.to(socketID).emit("votes", {
                     id: id,
-                    votes: utilAPI.isString(sessionID) ? await voteAPI.getFriendVotes(id, sessionID) : [],
+                    votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(id, sessionToken) : [],
                     votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
                 });
             }
@@ -83,24 +83,24 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
         }
     });
 
-    socket.on("put vote", async ({ id, sessionID, answer }: { id: unknown, sessionID: unknown, answer: unknown }) => {
+    socket.on("put vote", async ({ id, sessionToken, answer }: { id: unknown, sessionToken: unknown, answer: unknown }) => {
         try {
             if (utilAPI.isNumber(id) &&
-                utilAPI.isString(sessionID) &&
+                utilAPI.isString(sessionToken) &&
                 utilAPI.isNumber(answer)) {
-                await voteAPI.putVote(id, sessionID, answer);
+                await voteAPI.putVote(id, sessionToken, answer);
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("post comment", async ({ id, sessionID, message }: { id: unknown, sessionID: unknown, message: unknown }) => {
+    socket.on("post comment", async ({ id, sessionToken, message }: { id: unknown, sessionToken: unknown, message: unknown }) => {
         try {
             if (utilAPI.isNumber(id) &&
-                utilAPI.isString(sessionID) &&
+                utilAPI.isString(sessionToken) &&
                 utilAPI.isString(message)) {
-                await voteAPI.postComment(id, sessionID, message);
+                await voteAPI.postComment(id, sessionToken, message);
             }
         } catch (e) {
             console.log(e);

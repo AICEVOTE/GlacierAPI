@@ -20,18 +20,18 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "votes",
                 description: "Get votes",
-                req: ["id: Theme id", "sessionid: Given session ID"],
+                req: ["id: Theme id", "sessiontoken: Given session token"],
                 res: ["id: Theme id", "votes: Votes from friends", "votesFromInfluencer: Votes from influencers"],
                 method: "GET",
-                query: "/0?sessionid=test"
+                query: "/0?sessiontoken=test"
             },
             {
                 uri: "votes",
                 description: "Put vote",
-                req: ["id: Theme id", "sessionid: Given session ID", "answer: answer"],
+                req: ["id: Theme id", "sessiontoken: Given session token", "answer: answer"],
                 res: ["id: Theme id", "votes: Votes from friends", "votesFromInfluencer: Votes from influencers"],
                 method: "PUT",
-                query: "/0?sessionid=test&answer=0"
+                query: "/0?sessiontoken=test&answer=0"
             },
             {
                 uri: "transitions",
@@ -52,10 +52,10 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "comments",
                 description: "Get all comments",
-                req: ["id: Theme id", "sessionid: Given session ID", "message: Comment string"],
+                req: ["id: Theme id", "sessiontoken: Given session token", "message: Comment string"],
                 res: ["id: Theme id", "comments: All comments"],
                 method: "POST",
-                query: "/0?sessionid=test&message=test"
+                query: "/0?sessiontoken=test&message=test"
             }
         ]
     });
@@ -78,12 +78,12 @@ router.get("/results/:id", (req, res, next) => {
 
 router.get("/votes/:id", async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
-    const sessionID: unknown = req.session?.passport?.user || req.query.sessionid;
+    const sessionToken: unknown = req.query.sessiontoken;
 
     try {
         res.json({
             id: id,
-            votes: utilAPI.isString(sessionID) ? await voteAPI.getFriendVotes(id, sessionID) : [],
+            votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(id, sessionToken) : [],
             votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
         });
     } catch (e) {
@@ -94,18 +94,18 @@ router.get("/votes/:id", async (req, res, next) => {
 
 router.put("/votes/:id", async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
-    const sessionID: unknown = req.session?.passport?.user || req.query.sessionid;
+    const sessionToken: unknown = req.query.sessiontoken;
     const answer: unknown = req.query.answer;
 
-    if (!utilAPI.isString(sessionID) || !utilAPI.isString(answer)) {
+    if (!utilAPI.isString(sessionToken) || !utilAPI.isString(answer)) {
         return next(createError(400));
     }
 
     try {
-        await voteAPI.putVote(id, sessionID, parseInt(answer, 10));
+        await voteAPI.putVote(id, sessionToken, parseInt(answer, 10));
         res.json({
             id: id,
-            votes: await voteAPI.getFriendVotes(id, sessionID),
+            votes: await voteAPI.getFriendVotes(id, sessionToken),
             votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
         });
     } catch (e) {
@@ -145,15 +145,15 @@ router.get("/comments/:id", async (req, res, next) => {
 
 router.post("/comments/:id", async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
-    const sessionID: unknown = req.session?.passport?.user || req.query.sessionid;
+    const sessionToken: unknown = req.query.sessiontoken;
     const message: unknown = req.query.message;
 
-    if (!utilAPI.isString(sessionID) || !utilAPI.isString(message)) {
+    if (!utilAPI.isString(sessionToken) || !utilAPI.isString(message)) {
         return next(createError(400));
     }
 
     try {
-        await voteAPI.postComment(id, sessionID, message);
+        await voteAPI.postComment(id, sessionToken, message);
         res.status(201).json({
             id: id,
             comments: await voteAPI.getComments(id)

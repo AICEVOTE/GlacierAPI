@@ -9,10 +9,10 @@ router.get("/", (_req, res, _next) => {
     res.render("index", {
         title: "/auth/", docs: [
             {
-                uri: "sessionid",
-                description: "Get your sessionID (Logged in session required)",
+                uri: "sessiontoken",
+                description: "Get your session token (Logged in session required)",
                 req: ["callback: Callback destination URI after authentication"],
-                res: ["sessionid: session ID"],
+                res: ["sessiontoken: session token"],
                 method: "GET",
                 query: "?callback=https://google.co.jp"
             },
@@ -32,17 +32,22 @@ router.get("/", (_req, res, _next) => {
     });
 });
 
-router.get("/sessionid", (req, res, next) => {
+router.get("/sessiontoken", async (req, res, next) => {
     const sessionID: unknown = req.session?.passport?.user;
     const callbackURI: unknown = req.query?.callback;
 
     if (!utilAPI.isString(sessionID)) {
         return next(createError(400));
     }
-    if (utilAPI.isString(callbackURI)) {
-        return res.redirect(callbackURI + "?sessionid=" + sessionID);
+    try {
+        const sessionToken = await authAPI.getSessionToken(sessionID);
+        if (utilAPI.isString(callbackURI)) {
+            return res.redirect(callbackURI + "?sessionToken=" + sessionToken);
+        }
+        res.json({ sessionToken: sessionToken });
+    } catch (e) {
+        throw e;
     }
-    res.json({ sessionID: sessionID });
 });
 
 router.get("/twitter", authAPI.authenticate());

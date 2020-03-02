@@ -33,10 +33,10 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "profiles",
                 description: "Get user profile",
-                req: ["sessionid: Given session ID"],
+                req: ["sessiontoken: Given session token"],
                 res: ["name: String", "imageURI: String", "isInfluencer: Boolean"],
                 method: "GET",
-                query: "?sessionid=test"
+                query: "?sessiontoken=test"
             },
             {
                 uri: "feedback",
@@ -75,14 +75,14 @@ router.get("/themes/:id", (req, res, next) => {
 });
 
 router.get("/profiles", async (req, res, next) => {
-    const sessionID: unknown = req.session?.passport?.user || req.query.sessionid;
+    const sessionToken: unknown = req.query.sessiontoken;
 
-    if (!utilAPI.isString(sessionID)) {
+    if (!utilAPI.isString(sessionToken)) {
         return next(createError(400));
     }
 
     try {
-        res.json(await indexAPI.getProfile(sessionID));
+        res.json(await indexAPI.getProfile(sessionToken));
     } catch (e) {
         console.log(e);
         next(createError(400));
