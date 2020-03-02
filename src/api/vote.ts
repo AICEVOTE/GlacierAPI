@@ -28,7 +28,7 @@ export async function getFriendVotes(id: number, sessionID: string) {
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
         return (await Promise.all(doc.friends.map(async (userID) => {
-            const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID }).exec();
+            const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID, userProvider: "twitter" }).exec();
             if (!doc) { return null; }
             return {
                 answer: doc.answer,
