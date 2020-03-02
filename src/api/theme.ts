@@ -92,7 +92,7 @@ class ThemeLoader {
     }
     get themes() {
         if (!this._isLoaded) {
-            console.log("GlacierAPIError: Themes are not loaded");
+            console.log("Themes are not loaded");
             return null as any as Theme[];
         }
         return this._themes;
