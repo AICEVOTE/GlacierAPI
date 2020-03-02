@@ -29,6 +29,7 @@
     "passport-twitter": "^1.0.4",
     "socket.io": "^2.3.0",
     "twitter": "^1.7.1",
+    "uuid": "^7.0.1",
     "xss-filters": "^1.2.7"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@types/passport-twitter": "^1.0.34",
     "@types/socket.io": "^2.1.4",
     "@types/twitter": "^1.7.0",
+    "@types/uuid": "^7.0.0",
     "@types/xss-filters": "^0.0.27",
     "express-generator": "^4.16.1",
     "pm2": "^4.2.3",

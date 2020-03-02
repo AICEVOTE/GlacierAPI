@@ -1,15 +1,15 @@
 import * as model from "../model";
-import * as utilAPI from "../api/utilapi";
 import passport from "passport";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import Twitter from "twitter";
+import { v4 as uuidv4 } from "uuid";
 
 passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY || "",
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET || "",
     callbackURL: process.env.TWITTER_CALLBACK || ""
 }, async (accessToken, refreshToken, profile, done) => {
-    const sessionID = utilAPI.generateSessionID();
+    const sessionID = uuidv4();
 
     try {
         const twitterClient = new Twitter({

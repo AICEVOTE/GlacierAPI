@@ -25,16 +25,6 @@ export function isCompatibleId(id: number) {
     return Number.isInteger(id) && id >= 0 && id < themeLoader.themes.length;
 }
 
-export function generateSessionID() {
-    const l = 256;
-    const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let r = "";
-    for (let i = 0; i < l; i++) {
-        r += c[Math.floor(Math.random() * c.length)];
-    }
-    return r;
-}
-
 export async function saveFeedback(message: string, feedbackType: string) {
     const sanitizedMessage = XSSFilters.inHTMLData(message);
 
