@@ -1,6 +1,7 @@
 import themeLoader from "./theme";
 import * as model from "../model";
 import * as utilAPI from "../api/utilapi";
+import XSSFilters from "xss-filters";
 
 declare const answerType: model.IAnswerType<never>;
 function isCompatibleAnswer(id: number, answer: number) {
@@ -119,7 +120,7 @@ export async function postComment(id: number, sessionID: string, message: string
 
         await new model.Comment({
             id: themeLoader.themes[id].id,
-            message: utilAPI.sanitize(message),
+            message: XSSFilters.inHTMLData(message),
             createdAt: Date.now() + 1000 * 60 * 60 * 9,
             name: doc.name,
             imageURI: doc.imageURI,

@@ -35,12 +35,8 @@ export function generateSessionID() {
     return r;
 }
 
-export function sanitize(str: string) {
-    return XSSFilters.inHTMLData(str);
-}
-
 export async function saveFeedback(message: string, feedbackType: string) {
-    const sanitizedMessage = sanitize(message);
+    const sanitizedMessage = XSSFilters.inHTMLData(message);
 
     try {
         await new model.Feedback({
