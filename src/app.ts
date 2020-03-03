@@ -4,6 +4,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
+import helmet from "helmet";
 import cors from "cors";
 import session from "express-session";
 import passport from "passport";
@@ -19,7 +20,7 @@ const app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "../views"));
-app.set("view engine", "jade");
+app.set("view engine", "pug");
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
+app.use(helmet());
 app.use(cors({
     origin: process.env.CORS_ORIGIN || "",
     credentials: true
@@ -37,6 +39,7 @@ app.options("*", cors({
 }));
 
 app.use(session({
+    name: "sessionid",
     secret: process.env.SESSION_SECRET || "",
     resave: false,
     saveUninitialized: true,
