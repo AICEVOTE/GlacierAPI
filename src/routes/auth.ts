@@ -11,10 +11,9 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "sessiontoken",
                 description: "Get your session token (Logged in session required)",
-                req: ["callback: Callback destination URI after authentication"],
                 res: ["sessionToken: session token"],
                 method: "GET",
-                query: "?callback=https://google.co.jp"
+                query: ""
             },
             {
                 uri: "twitter",
@@ -24,9 +23,7 @@ router.get("/", (_req, res, _next) => {
             },
             {
                 uri: "twitter/callback",
-                description: "Twitter callback URI",
-                method: "GET",
-                query: ""
+                description: "Twitter callback URI"
             }
         ]
     });
@@ -34,16 +31,12 @@ router.get("/", (_req, res, _next) => {
 
 router.get("/sessiontoken", async (req, res, next) => {
     const sessionID: unknown = req.session?.passport?.user;
-    const callbackURI: unknown = req.query?.callback;
 
     if (!utilAPI.isString(sessionID)) {
         return next(createError(400));
     }
     try {
         const sessionToken = await authAPI.getSessionToken(sessionID);
-        if (utilAPI.isString(callbackURI)) {
-            return res.redirect(callbackURI + "?sessionToken=" + sessionToken);
-        }
         res.json({ sessionToken: sessionToken });
     } catch (e) {
         throw e;
