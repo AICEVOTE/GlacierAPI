@@ -65,7 +65,15 @@ export async function getSessionToken(sessionID: string) {
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
-        return doc.sessionToken;
+
+        const sessionToken = uuidv4();
+        await model.User.updateOne({ sessionID: sessionID }, {
+            $set: {
+                sessionToken: sessionToken,
+                sessionTokenExpire: Date.now() + 15 * 60 * 1000
+            }
+        });
+        return sessionToken;
     } catch (e) {
         throw e;
     }
