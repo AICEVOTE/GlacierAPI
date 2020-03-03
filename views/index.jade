@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 http://api.aicevote.com#{title}
+  h1 https://api.aicevote.com#{title}
   for doc in docs
     h2: a(href="#{title}#{doc.uri}") #{title}#{doc.uri}
     p= doc.description
@@ -15,4 +15,4 @@ block content
         p= res
     if doc.method
       h4 Example
-      pre: a(href="#{title}#{doc.uri}#{doc.query}") #{doc.method} http://api.aicevote.com#{title}#{doc.uri}#{doc.query}
+      pre: a(href="#{title}#{doc.uri}#{doc.query}") #{doc.method} https://api.aicevote.com#{title}#{doc.uri}#{doc.query}
