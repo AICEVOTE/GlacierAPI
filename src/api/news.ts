@@ -21,7 +21,7 @@ interface IArticle {
     description: string,
     uri: string,
     uriToImage: string,
-    publishedAt: string
+    publishedAt: number
 }
 
 function convertArticle(article: INewsAPIArticle): IArticle {
@@ -32,7 +32,23 @@ function convertArticle(article: INewsAPIArticle): IArticle {
         description: article.description || "",
         uri: article.url || "",
         uriToImage: article.urlToImage || "",
-        publishedAt: article.publishedAt || ""
+        publishedAt: article.publishedAt ? Date.parse(article.publishedAt) : NaN
+    }
+}
+
+async function getHeadline(pageSize: number = 15) {
+    try {
+        const articles: INewsAPIArticle[] = (await newsapi.v2.topHeadlines({
+            country: "jp",
+            category: "general",
+            pageSize: pageSize
+        })).articles || [];
+
+        return Array.from(new Set(articles.map(
+            (article) => convertArticle(article)
+        ))).sort((a, b) => a.publishedAt - b.publishedAt);
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -45,38 +61,26 @@ async function getEverything(query: string, pageSize: number = 6) {
             pageSize: pageSize
         })).articles || [];
 
-        return articles.map((article) => {
-            return convertArticle(article);
-        });
+        return articles.map((article) => convertArticle(article));
     } catch (e) {
         throw e;
     }
 }
 
-async function getHeadline(pageSize: number = 15) {
-    try {
-        const articles: INewsAPIArticle[] = (await newsapi.v2.topHeadlines({
-            country: "jp",
-            category: "general",
-            pageSize: pageSize
-        })).articles || [];
-
-        return Array.from(new Set(articles.map((article) => {
-            return convertArticle(article);
-        })));
-    } catch (e) {
-        throw e;
-    }
+async function getRelated(keywords: string[]) {
+    return (await Promise.all(keywords.map(
+        async (keyword) => await getEverything(keyword, 6 / keywords.length)
+    ))).reduce((prev, cur) => prev.concat(cur)).sort(
+        (a, b) => a.publishedAt - b.publishedAt
+    );
 }
 
 async function updateAll() {
     return {
         latest: await getHeadline(),
-        related: await Promise.all(themeLoader.themes.map(async (Theme) => {
-            return (await Promise.all(Theme.keywords.map(async (keyword) => {
-                return await getEverything(keyword, 6 / Theme.keywords.length);
-            }))).reduce((prev, cur) => prev.concat(cur));
-        }))
+        related: await Promise.all(themeLoader.themes.map(
+            async (theme) => await getRelated(theme.keywords)
+        ))
     };
 }
 
