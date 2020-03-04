@@ -14,6 +14,7 @@
     "restart": "yarn pm2 restart GlacierAPI --update-env"
   },
   "dependencies": {
+    "connect-mongo": "^3.2.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -34,6 +35,7 @@
     "xss-filters": "^1.2.7"
   },
   "devDependencies": {
+    "@types/connect-mongo": "^3.1.3",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
     "@types/debug": "^4.1.5",

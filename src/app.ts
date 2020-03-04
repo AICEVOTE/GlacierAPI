@@ -6,6 +6,8 @@ import logger from "morgan";
 
 import helmet from "helmet";
 import cors from "cors";
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
 import dotenv from "dotenv";
@@ -41,6 +43,7 @@ app.options("*", cors({
 app.use(session({
     name: "sessionid",
     secret: process.env.SESSION_SECRET || "",
+    store: new (MongoStore(session))({ mongooseConnection: mongoose.connection }),
     resave: false,
     saveUninitialized: true,
 }));
