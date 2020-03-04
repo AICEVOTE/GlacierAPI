@@ -48,18 +48,20 @@ passport.use(new TwitterStrategy({
 passport.serializeUser((user, done) => { done(null, user); });
 passport.deserializeUser((user, done) => { done(null, user); });
 
-setInterval(async () => {
-    try {
-        await model.User.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
-            $set: {
-                sessionToken: uuidv4(),
-                sessionTokenExpire: Date.now() + 15 * 60 * 1000
-            }
-        });
-    } catch (e) {
-        console.log(e);
-    }
-}, 5 * 60 * 1000);
+if (process.env.ROLE == "MASTER") {
+    setInterval(async () => {
+        try {
+            await model.User.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
+                $set: {
+                    sessionToken: uuidv4(),
+                    sessionTokenExpire: Date.now() + 15 * 60 * 1000
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }, 5 * 60 * 1000);
+}
 
 export async function getSessionToken(sessionID: string) {
     try {

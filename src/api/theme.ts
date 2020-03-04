@@ -51,11 +51,13 @@ class Theme {
 
     private async updateTransition() {
         try {
-            await new model.Transition({
-                id: this.id,
-                timestamp: Date.now(),
-                percentage: this._realtimeResult
-            }).save();
+            if (process.env.ROLE == "MASTER") {
+                await new model.Transition({
+                    id: this.id,
+                    timestamp: Date.now(),
+                    percentage: this._realtimeResult
+                }).save();
+            }
 
             const allTransition = (await model.Transition.find({ id: this.id }).
                 sort({ timestamp: -1 }).limit(1440).exec()).
