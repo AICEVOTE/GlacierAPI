@@ -32,11 +32,11 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 app.use(helmet());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || "",
+    origin: true,
     credentials: true
 }));
 app.options("*", cors({
-    origin: process.env.CORS_ORIGIN || "",
+    origin: true,
     credentials: true
 }));
 
