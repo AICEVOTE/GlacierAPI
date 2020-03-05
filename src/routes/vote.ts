@@ -61,6 +61,14 @@ router.get("/", (_req, res, _next) => {
     });
 });
 
+router.get("/results", (_req, res, _next) => {
+    res.json(themeLoader.themes.map((theme, id) => ({
+        id: id,
+        results: theme.realtimeResult,
+        counts: theme.realtimeCount
+    })));
+});
+
 router.get("/results/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
@@ -73,6 +81,21 @@ router.get("/results/:id", (req, res, next) => {
     } else {
         console.log("The id is invalid");
         next(createError(404));
+    }
+});
+
+router.get("/votes", async (req, res, next) => {
+    const sessionToken: unknown = req.query.sessiontoken;
+    
+    try {
+        res.json(await Promise.all(themeLoader.themes.map(async (_theme, id) => ({
+            id: id,
+            votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(id, sessionToken) : [],
+            votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
+        }))));
+    } catch (e) {
+        console.log(e);
+        next(createError(400));
     }
 });
 
@@ -114,6 +137,14 @@ router.put("/votes/:id", async (req, res, next) => {
     }
 });
 
+router.get("/transitions", (_req, res, _next) => {
+    res.json(themeLoader.themes.map((theme, id) => ({
+        id: id,
+        shortTransition: theme.shortTransition,
+        longTransition: theme.longTransition
+    })));
+});
+
 router.get("/transitions/:id", (req, res, next) => {
     const id = parseInt(req.params.id, 10);
 
@@ -125,6 +156,18 @@ router.get("/transitions/:id", (req, res, next) => {
         });
     } else {
         console.log("The id is invalid");
+        next(createError(404));
+    }
+});
+
+router.get("/comments", async (_req, res, next) => {
+    try {
+        res.json(await Promise.all(themeLoader.themes.map(async (_theme, id) => ({
+            id: id,
+            comments: await voteAPI.getComments(id)
+        }))));
+    } catch (e) {
+        console.log(e);
         next(createError(404));
     }
 });
