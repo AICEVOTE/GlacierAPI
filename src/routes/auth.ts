@@ -3,6 +3,7 @@ const router = express.Router();
 
 import * as authAPI from "../api/auth";
 import * as utilAPI from "../api/util";
+import passport from "passport";
 import createError from "http-errors";
 
 router.get("/", (_req, res, _next) => {
@@ -36,26 +37,21 @@ router.get("/sessiontoken", async (req, res, next) => {
         return next(createError(400));
     }
     try {
-        const sessionToken = await authAPI.getSessionToken(sessionID);
-        res.json({ sessionToken: sessionToken });
+        res.json({ sessionToken: await authAPI.getSessionToken(sessionID) });
     } catch (e) {
-        throw e;
+        return next(createError(400));
     }
 });
 
-router.get("/twitter", authAPI.authenticate());
+router.get("/twitter", passport.authenticate("twitter"));
 
-router.get("/twitter/callback", (req, res, next) => {
-    authAPI.authenticate((err, user, _info) => {
-        if (err) { return next(err); }
-        if (!user) { return next(createError(400)); }
+router.get("/twitter/callback", passport.authenticate("twitter"), (req, res, next) => {
+    const sessionID: unknown = req.session?.passport?.user;
 
-        req.logIn(user, (err) => {
-            if (err) { return next(err); }
-            if (!utilAPI.isString(user)) { return next(createError(400)); }
-            res.send("<script>window.open('','_self').close();</script>");
-        });
-    })(req, res, next);
+    if (!utilAPI.isString(sessionID)) {
+        return next(createError(400));
+    }
+    res.send("<script>window.open('','_self').close();</script>");
 });
 
 export default router;

@@ -80,10 +80,3 @@ export async function getSessionToken(sessionID: string) {
         throw e;
     }
 }
-
-export function authenticate(callback?: (err: any, user: any, info: any) => void) {
-    return passport.authenticate("twitter", (err, user, info) => {
-        if (callback) { return callback(err, user, info); }
-        return;
-    });
-}
