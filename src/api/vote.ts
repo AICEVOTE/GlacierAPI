@@ -27,15 +27,9 @@ export async function getFriendVotes(id: number, sessionToken: string) {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
 
-        return (await Promise.all(doc.friends.map(async (userID) => {
-            const doc = await model.Result.findOne({ id: themeLoader.themes[id].id, userID: userID, userProvider: "twitter" }).exec();
-            if (!doc) { return null; }
-            return {
-                answer: doc.answer,
-                name: doc.name,
-                imageURI: doc.imageURI
-            };
-        }))).filter(<T>(x: T): x is Exclude<T, null> => { return x != null; });
+        return (await model.Result.find({
+            id: themeLoader.themes[id].id, userID: { $in: doc.friends }, userProvider: "twitter"
+        }).exec()).map(doc => ({ answer: doc.answer, name: doc.name, imageURI: doc.imageURI }));
     } catch (e) {
         throw e;
     }
