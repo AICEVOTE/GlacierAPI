@@ -8,7 +8,7 @@ class Theme {
     private _shortTransition: ITransition[] = [];
     private _longTransition: ITransition[] = [];
 
-    constructor(public readonly id: number,
+    constructor(public readonly themeID: number,
         public readonly title: string,
         public readonly description: string,
         public readonly choices: string[],
@@ -27,7 +27,7 @@ class Theme {
 
     private async updateResult() {
         try {
-            const docs = await model.Result.find({ id: this.id }).exec();
+            const docs = await model.Result.find({ themeID: this.themeID }).exec();
 
             const now = Date.now();
             let counts = Array<number>(this.choices.length).fill(0);
@@ -53,13 +53,13 @@ class Theme {
         try {
             if (process.env.ROLE == "MASTER") {
                 await new model.Transition({
-                    id: this.id,
+                    themeID: this.themeID,
                     timestamp: Date.now(),
                     percentage: this._realtimeResult
                 }).save();
             }
 
-            const allTransition = (await model.Transition.find({ id: this.id }).
+            const allTransition = (await model.Transition.find({ themeID: this.themeID }).
                 sort({ timestamp: -1 }).limit(1440).exec()).
                 map((doc) => {
                     return {
@@ -83,7 +83,7 @@ class ThemeLoader {
         try {
             model.Theme.find().exec().then((themes) => {
                 this._themes = themes.map(theme => {
-                    return new Theme(theme.id, theme.title, theme.description,
+                    return new Theme(theme.themeID, theme.title, theme.description,
                         theme.choices, theme.keywords, eval(theme.formula));
                 });
             })

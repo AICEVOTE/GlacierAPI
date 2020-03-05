@@ -95,10 +95,10 @@ export function getAllArticles() {
     return articles;
 }
 
-export function getRelatedArticles(id: number) {
-    if (themeLoader.themes[id] == undefined) {
-        throw new utilAPI.GlacierAPIError("The id is invalid");
+export function getRelatedArticles(themeID: number) {
+    if (themeLoader.themes[themeID] == undefined) {
+        throw new utilAPI.GlacierAPIError("The themeID is invalid");
     }
 
-    return articles.related[id];
+    return articles.related[themeID];
 }

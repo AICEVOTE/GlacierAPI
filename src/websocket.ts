@@ -12,7 +12,7 @@ export function initialize(io: SocketIO.Server) {
         for (let i = 0; i < themeLoader.themes.length; i++) {
             try {
                 io.emit("result", {
-                    id: i,
+                    themeID: i,
                     results: themeLoader.themes[i].realtimeResult,
                     counts: themeLoader.themes[i].realtimeCount,
                 });
@@ -32,36 +32,36 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
             socketID + " REASON: " + reason + ")");
     });
 
-    socket.on("get result", ({ id }: { id: unknown }) => {
-        if (utilAPI.isNumber(id) && themeLoader.themes[id] != undefined) {
+    socket.on("get result", ({ themeID }: { themeID: unknown }) => {
+        if (utilAPI.isNumber(themeID) && themeLoader.themes[themeID] != undefined) {
             io.to(socketID).emit("result", {
-                id: id,
-                results: themeLoader.themes[id].realtimeResult,
-                counts: themeLoader.themes[id].realtimeCount
+                themeID: themeID,
+                results: themeLoader.themes[themeID].realtimeResult,
+                counts: themeLoader.themes[themeID].realtimeCount
             });
         } else {
-            console.log("The id is invalid");
+            console.log("The themeID is invalid");
         }
     });
 
-    socket.on("get transition", ({ id }: { id: unknown }) => {
-        if (utilAPI.isNumber(id) && themeLoader.themes[id] != undefined) {
+    socket.on("get transition", ({ themeID }: { themeID: unknown }) => {
+        if (utilAPI.isNumber(themeID) && themeLoader.themes[themeID] != undefined) {
             io.to(socketID).emit("transition", {
-                id: id,
-                shortTransition: themeLoader.themes[id].shortTransition,
-                longTransition: themeLoader.themes[id].longTransition
+                themeID: themeID,
+                shortTransition: themeLoader.themes[themeID].shortTransition,
+                longTransition: themeLoader.themes[themeID].longTransition
             });
         } else {
-            console.log("The id is invalid");
+            console.log("The themeID is invalid");
         }
     });
 
-    socket.on("get comments", async ({ id }: { id: unknown }) => {
+    socket.on("get comments", async ({ themeID }: { themeID: unknown }) => {
         try {
-            if (utilAPI.isNumber(id)) {
+            if (utilAPI.isNumber(themeID)) {
                 io.to(socketID).emit("comments", {
-                    id: id,
-                    comments: await voteAPI.getComments(id)
+                    themeID: themeID,
+                    comments: await voteAPI.getComments(themeID)
                 });
             }
         } catch (e) {
@@ -69,13 +69,13 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
         }
     });
 
-    socket.on("get votes", async ({ id, sessionToken }: { id: unknown, sessionToken: unknown }) => {
+    socket.on("get votes", async ({ themeID, sessionToken }: { themeID: unknown, sessionToken: unknown }) => {
         try {
-            if (utilAPI.isNumber(id)) {
+            if (utilAPI.isNumber(themeID)) {
                 io.to(socketID).emit("votes", {
-                    id: id,
-                    votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(id, sessionToken) : [],
-                    votesFromInfluencer: await voteAPI.getInfluencerVotes(id)
+                    themeID: themeID,
+                    votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(themeID, sessionToken) : [],
+                    votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
                 });
             }
         } catch (e) {
@@ -83,24 +83,24 @@ export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
         }
     });
 
-    socket.on("put vote", async ({ id, sessionToken, answer }: { id: unknown, sessionToken: unknown, answer: unknown }) => {
+    socket.on("put vote", async ({ themeID, sessionToken, answer }: { themeID: unknown, sessionToken: unknown, answer: unknown }) => {
         try {
-            if (utilAPI.isNumber(id) &&
+            if (utilAPI.isNumber(themeID) &&
                 utilAPI.isString(sessionToken) &&
                 utilAPI.isNumber(answer)) {
-                await voteAPI.putVote(id, sessionToken, answer);
+                await voteAPI.putVote(themeID, sessionToken, answer);
             }
         } catch (e) {
             console.log(e);
         }
     });
 
-    socket.on("post comment", async ({ id, sessionToken, message }: { id: unknown, sessionToken: unknown, message: unknown }) => {
+    socket.on("post comment", async ({ themeID, sessionToken, message }: { themeID: unknown, sessionToken: unknown, message: unknown }) => {
         try {
-            if (utilAPI.isNumber(id) &&
+            if (utilAPI.isNumber(themeID) &&
                 utilAPI.isString(sessionToken) &&
                 utilAPI.isString(message)) {
-                await voteAPI.postComment(id, sessionToken, message);
+                await voteAPI.postComment(themeID, sessionToken, message);
             }
         } catch (e) {
             console.log(e);

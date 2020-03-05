@@ -25,8 +25,8 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "themes",
                 description: "Get theme data",
-                req: ["id: Theme id"],
-                res: ["id: Theme id", "title: String", "description: String", "choices: String array"],
+                req: ["themeid: Theme id"],
+                res: ["themeid: Theme id", "title: String", "description: String", "choices: String array"],
                 method: "GET",
                 query: "/0"
             },
@@ -58,18 +58,18 @@ router.get("/", (_req, res, _next) => {
     });
 });
 
-router.get("/themes/:id", (req, res, next) => {
-    const id = parseInt(req.params.id, 10);
+router.get("/themes/:themeid", (req, res, next) => {
+    const themeID = parseInt(req.params.themeid, 10);
 
-    if (themeLoader.themes[id] != undefined) {
+    if (themeLoader.themes[themeID] != undefined) {
         res.json({
-            id: id,
-            title: themeLoader.themes[id].title,
-            description: themeLoader.themes[id].description,
-            choices: themeLoader.themes[id].choices
+            themeID: themeID,
+            title: themeLoader.themes[themeID].title,
+            description: themeLoader.themes[themeID].description,
+            choices: themeLoader.themes[themeID].choices
         });
     } else {
-        console.log("The id is invalid");
+        console.log("The themeID is invalid");
         next(createError(400));
     }
 });

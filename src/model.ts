@@ -8,7 +8,7 @@ mongoose.connect(process.env.DB_URI || "", {
 });
 
 interface IThemeModel extends mongoose.Document {
-    id: number,
+    themeID: number,
     title: string,
     description: string,
     choices: string[],
@@ -33,7 +33,7 @@ interface IUserModel extends mongoose.Document {
 }
 
 interface IResultModel extends mongoose.Document {
-    id: number,
+    themeID: number,
     answer: number,
     userID: string,
     userProvider: string,
@@ -44,7 +44,7 @@ interface IResultModel extends mongoose.Document {
 }
 
 interface ICommentModel extends mongoose.Document {
-    id: number,
+    themeID: number,
     message: string,
     name: string,
     createdAt: number,
@@ -53,7 +53,7 @@ interface ICommentModel extends mongoose.Document {
 }
 
 interface ITransitionModel extends mongoose.Document {
-    id: number,
+    themeID: number,
     timestamp: number,
     percentage: number[]
 }
@@ -64,7 +64,7 @@ interface IFeedbackModel extends mongoose.Document {
 }
 
 const ThemeSchema = new mongoose.Schema<IThemeModel>({
-    id: Number,
+    themeID: Number,
     title: String,
     description: String,
     choices: [String],
@@ -89,7 +89,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
 });
 
 const ResultSchema = new mongoose.Schema<IResultModel>({
-    id: Number,
+    themeID: Number,
     answer: Number,
     userID: String,
     userProvider: String,
@@ -100,7 +100,7 @@ const ResultSchema = new mongoose.Schema<IResultModel>({
 });
 
 const CommentSchema = new mongoose.Schema<ICommentModel>({
-    id: Number,
+    themeID: Number,
     message: String,
     name: String,
     createdAt: Number,
@@ -109,7 +109,7 @@ const CommentSchema = new mongoose.Schema<ICommentModel>({
 });
 
 const TransitionSchema = new mongoose.Schema<ITransitionModel>({
-    id: Number,
+    themeID: Number,
     timestamp: Number,
     percentage: [Number]
 });

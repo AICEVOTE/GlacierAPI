@@ -17,8 +17,8 @@ router.get("/", (_req, res, _next) => {
             {
                 uri: "articles",
                 description: "Get articles on a specific theme",
-                req: ["id: Theme id"],
-                res: ["id: Theme id", "articles: Articles"],
+                req: ["themeid: Theme id"],
+                res: ["themeid: Theme id", "articles: Articles"],
                 method: "GET",
                 query: "/0"
             }
@@ -30,13 +30,13 @@ router.get("/articles", async (_req, res, _next) => {
     res.json(newsAPI.getAllArticles());
 });
 
-router.get("/articles/:id", (req, res, next) => {
-    const id = parseInt(req.params.id, 10);
+router.get("/articles/:themeid", (req, res, next) => {
+    const themeID = parseInt(req.params.themeid, 10);
 
     try {
         res.json({
-            id: id,
-            articles: newsAPI.getRelatedArticles(id)
+            themeID: themeID,
+            articles: newsAPI.getRelatedArticles(themeID)
         });
     } catch (e) {
         console.log(e);
