@@ -8,7 +8,7 @@ class Theme {
     private _shortTransition: ITransition[] = [];
     private _longTransition: ITransition[] = [];
 
-    constructor(public readonly id: number,
+    constructor(private readonly id: number,
         public readonly title: string,
         public readonly description: string,
         public readonly choices: string[],
