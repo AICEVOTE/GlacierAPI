@@ -57,6 +57,14 @@ router.get("/", (_req, res, _next) => {
         ]
     });
 });
+router.get("/themes", (_req, res, _next) => {
+    res.json(themeLoader.themes.map((theme, themeID) => ({
+        themeID: themeID,
+        title: theme.title,
+        description: theme.description,
+        choices: theme.choices
+    })));
+});
 
 router.get("/themes/:themeid", (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
