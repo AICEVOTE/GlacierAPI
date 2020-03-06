@@ -50,10 +50,11 @@ router.get("/twitter/callback", passport.authenticate("twitter"), async (req, re
 
     if (!utilAPI.isString(sessionID)) {
         next(createError(400));
-    } else if (!req.session || !utilAPI.isString(req.session.callbackURI)) {
+    } else if (!req.session || !utilAPI.isString(req.session.callbackURI) ||
+        !utilAPI.isBoolean(req.session.isAuthorizedApp)) {
         res.send("<script>window.open('','_self').close();</script>");
     } else {
-        const sessionToken = await authAPI.getSessionToken(sessionID, 30 * 24 * 60 * 60 * 1000);
+        const sessionToken = await authAPI.getSessionToken(sessionID, req.session.isAuthorizedApp);
         res.redirect(req.session.callbackURI + "?sessiontoken=" + sessionToken);
     }
 });
@@ -62,13 +63,15 @@ router.get("/app", async (req, res, next) => {
     const callbackURI: unknown = req.query.callback;
     const APIKey: unknown = req.query.apikey;
 
-    if (!req.session) { next(createError(503)); }
-    else if (!utilAPI.isString(callbackURI) || !utilAPI.isString(APIKey) ||
-        APIKey != process.env.GLACIERAPI_KEY) {
+    if (!req.session) {
+        next(createError(503));
+    } else if (!utilAPI.isString(callbackURI)) {
         next(createError(400));
-    }
-    else {
+    } else if (utilAPI.isString(APIKey) && APIKey != process.env.GLACIERAPI_KEY) {
+        next(createError(403));
+    } else {
         req.session.callbackURI = callbackURI;
+        req.session.isAuthorizedApp = utilAPI.isString(APIKey);
         res.redirect("./twitter");
     }
 });

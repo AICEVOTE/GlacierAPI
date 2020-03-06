@@ -17,6 +17,11 @@ export function isNumber(obj: unknown | null | undefined): obj is number {
     return typeof obj == "number";
 }
 
+export function isBoolean(obj: unknown | null | undefined): obj is boolean {
+    if (obj == null || obj == undefined) { return false; }
+    return typeof obj == "boolean";
+}
+
 export function isInfluencer(numOfFollowers: number) {
     return numOfFollowers > 50000;
 }

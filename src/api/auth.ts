@@ -63,7 +63,7 @@ if (process.env.ROLE == "MASTER") {
     }, 5 * 60 * 1000);
 }
 
-export async function getSessionToken(sessionID: string, duration = 15 * 60 * 1000) {
+export async function getSessionToken(sessionID: string, isAuthorizedApp = false) {
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
@@ -72,7 +72,7 @@ export async function getSessionToken(sessionID: string, duration = 15 * 60 * 10
         await model.User.updateOne({ sessionID: sessionID }, {
             $set: {
                 sessionToken: sessionToken,
-                sessionTokenExpire: Date.now() + duration
+                sessionTokenExpire: Date.now() + (isAuthorizedApp ? 30 * 24 * 60 * 60 * 1000 : 15 * 60 * 1000)
             }
         });
         return sessionToken;
