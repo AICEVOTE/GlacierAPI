@@ -45,13 +45,32 @@ router.get("/sessiontoken", async (req, res, next) => {
 
 router.get("/twitter", passport.authenticate("twitter"));
 
-router.get("/twitter/callback", passport.authenticate("twitter"), (req, res, next) => {
+router.get("/twitter/callback", passport.authenticate("twitter"), async (req, res, next) => {
     const sessionID: unknown = req.session?.passport?.user;
 
     if (!utilAPI.isString(sessionID)) {
-        return next(createError(400));
+        next(createError(400));
+    } else if (!req.session || !utilAPI.isString(req.session.callbackURI)) {
+        res.send("<script>window.open('','_self').close();</script>");
+    } else {
+        const sessionToken = await authAPI.getSessionToken(sessionID, 30 * 24 * 60 * 60 * 1000);
+        res.redirect(req.session.callbackURI + "?sessiontoken=" + sessionToken);
     }
-    res.send("<script>window.open('','_self').close();</script>");
+});
+
+router.get("/app", async (req, res, next) => {
+    const callbackURI: unknown = req.query.callback;
+    const APIKey: unknown = req.query.apikey;
+
+    if (!req.session) { next(createError(503)); }
+    else if (!utilAPI.isString(callbackURI) || !utilAPI.isString(APIKey) ||
+        APIKey != process.env.GLACIERAPI_KEY) {
+        next(createError(400));
+    }
+    else {
+        req.session.callbackURI = callbackURI;
+        res.redirect("./twitter");
+    }
 });
 
 export default router;
