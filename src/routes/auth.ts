@@ -55,7 +55,10 @@ router.get("/twitter/callback", passport.authenticate("twitter"), async (req, re
         res.send("<script>window.open('','_self').close();</script>");
     } else {
         const sessionToken = await authAPI.getSessionToken(sessionID, req.session.isAuthorizedApp);
-        res.redirect(req.session.callbackURI + "?sessiontoken=" + sessionToken);
+        const redirectTo = req.session.callbackURI + "?sessiontoken=" + sessionToken;
+        req.session.callbackURI = undefined;
+        req.session.isAuthorizedApp = undefined;
+        res.redirect(redirectTo);
     }
 });
 
