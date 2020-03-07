@@ -11,6 +11,8 @@ interface IThemeModel extends mongoose.Document {
     themeID: number,
     title: string,
     description: string,
+    imageURI: string,
+    genre: number,
     choices: string[],
     keywords: string[],
     formula: string
@@ -28,7 +30,7 @@ interface IUserModel extends mongoose.Document {
     imageURI: string,
     numOfFollowers: number,
     sessionID: string,
-    sessionToken: string,    
+    sessionToken: string,
     sessionTokenExpire: number
 }
 
@@ -67,6 +69,8 @@ const ThemeSchema = new mongoose.Schema<IThemeModel>({
     themeID: Number,
     title: String,
     description: String,
+    imageURI: String,
+    genre: Number,
     choices: [String],
     keywords: [String],
     formula: String
@@ -84,7 +88,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
     imageURI: String,
     numOfFollowers: Number,
     sessionID: String,
-    sessionToken: String,    
+    sessionToken: String,
     sessionTokenExpire: Number
 });
 

@@ -11,6 +11,8 @@ class Theme {
     constructor(public readonly themeID: number,
         public readonly title: string,
         public readonly description: string,
+        public readonly imageURI: string,
+        public readonly genre: number,
         public readonly choices: string[],
         public readonly keywords: string[],
         private readonly _formula: (val: number) => number) {
@@ -83,7 +85,8 @@ class ThemeLoader {
         try {
             model.Theme.find().exec().then((themes) => {
                 this._themes = themes.map(theme => {
-                    return new Theme(theme.themeID, theme.title, theme.description,
+                    return new Theme(theme.themeID, theme.title,
+                        theme.description, theme.imageURI, theme.genre,
                         theme.choices, theme.keywords, eval(theme.formula));
                 });
             })

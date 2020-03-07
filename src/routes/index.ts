@@ -62,6 +62,8 @@ router.get("/themes", (_req, res, _next) => {
         themeID: themeID,
         title: theme.title,
         description: theme.description,
+        imageURI: theme.imageURI,
+        genre: theme.genre,
         choices: theme.choices
     })));
 });
