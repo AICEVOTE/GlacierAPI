@@ -57,18 +57,19 @@ router.get("/", (_req, res, _next) => {
         ]
     });
 });
-router.get("/themes", (_req, res, _next) => {
-    res.json(themeLoader.themes.map((theme, themeID) => ({
+router.get("/themes", async (_req, res, _next) => {
+    res.json(await Promise.all(themeLoader.themes.map(async (theme, themeID) => ({
         themeID: themeID,
         title: theme.title,
         description: theme.description,
         imageURI: theme.imageURI,
         genre: theme.genre,
-        choices: theme.choices
-    })));
+        choices: theme.choices,
+        topicality: await indexAPI.getTopicality(themeID)
+    }))));
 });
 
-router.get("/themes/:themeid", (req, res, next) => {
+router.get("/themes/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     if (themeLoader.themes[themeID] != undefined) {
@@ -78,7 +79,8 @@ router.get("/themes/:themeid", (req, res, next) => {
             description: themeLoader.themes[themeID].description,
             imageURI: themeLoader.themes[themeID].imageURI,
             genre: themeLoader.themes[themeID].genre,
-            choices: themeLoader.themes[themeID].choices
+            choices: themeLoader.themes[themeID].choices,
+            topicality: await indexAPI.getTopicality(themeID)
         });
     } else {
         console.log("The themeID is invalid");
