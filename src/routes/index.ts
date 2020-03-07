@@ -76,6 +76,8 @@ router.get("/themes/:themeid", (req, res, next) => {
             themeID: themeID,
             title: themeLoader.themes[themeID].title,
             description: themeLoader.themes[themeID].description,
+            imageURI: themeLoader.themes[themeID].imageURI,
+            genre: themeLoader.themes[themeID].genre,
             choices: themeLoader.themes[themeID].choices
         });
     } else {
