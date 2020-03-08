@@ -4,17 +4,17 @@ import * as utilAPI from "./util";
 import XSSFilters from "xss-filters";
 
 export async function getTopicality(themeID: number) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("The themeID is invalid"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
     return await model.Result.find({
         themeID: themeID,
         createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
     }).countDocuments().exec();
 }
 
-export async function getProfile(sessionToken: string) {
+export async function getMyProfile(sessionToken: string) {
     try {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionToken is invalid"); }
+        if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
         return {
             name: doc.name,

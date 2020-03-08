@@ -57,6 +57,7 @@ router.get("/", (_req, res, _next) => {
         ]
     });
 });
+
 router.get("/themes", async (_req, res, _next) => {
     res.json(await Promise.all(themeLoader.themes.map(async (theme, themeID) => ({
         themeID: themeID,
@@ -96,7 +97,7 @@ router.get("/profiles", async (req, res, next) => {
     }
 
     try {
-        res.json(await indexAPI.getProfile(sessionToken));
+        res.json(await indexAPI.getMyProfile(sessionToken));
     } catch (e) {
         console.log(e);
         next(createError(400));

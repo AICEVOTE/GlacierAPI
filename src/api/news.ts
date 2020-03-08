@@ -97,7 +97,7 @@ export function getAllArticles() {
 
 export function getRelatedArticles(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) {
-        throw new utilAPI.GlacierAPIError("The themeID is invalid");
+        throw new utilAPI.GlacierAPIError("Invalid themeID");
     }
 
     return articles.related[themeID];
