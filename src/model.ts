@@ -20,8 +20,8 @@ interface IThemeModel extends mongoose.Document {
 
 interface IUserModel extends mongoose.Document {
     name: string,
-    userID: string,
     userProvider: string,
+    userID: string,
     authInfo: {
         AT: string,
         RT: string
@@ -37,8 +37,8 @@ interface IUserModel extends mongoose.Document {
 interface IResultModel extends mongoose.Document {
     themeID: number,
     answer: number,
-    userID: string,
     userProvider: string,
+    userID: string,
     name: string,
     imageURI: string,
     isInfluencer: boolean,
@@ -48,10 +48,12 @@ interface IResultModel extends mongoose.Document {
 interface ICommentModel extends mongoose.Document {
     themeID: number,
     message: string,
+    userProvider: string,
+    userID: string,
     name: string,
-    createdAt: number,
     imageURI: string,
     isInfluencer: boolean
+    createdAt: number,
 }
 
 interface ITransitionModel extends mongoose.Document {
@@ -78,8 +80,8 @@ const ThemeSchema = new mongoose.Schema<IThemeModel>({
 
 const UserSchema = new mongoose.Schema<IUserModel>({
     name: String,
-    userID: String,
     userProvider: String,
+    userID: String,
     authInfo: {
         AT: String,
         RT: String
@@ -95,8 +97,8 @@ const UserSchema = new mongoose.Schema<IUserModel>({
 const ResultSchema = new mongoose.Schema<IResultModel>({
     themeID: Number,
     answer: Number,
-    userID: String,
     userProvider: String,
+    userID: String,
     name: String,
     imageURI: String,
     isInfluencer: Boolean,
@@ -106,6 +108,8 @@ const ResultSchema = new mongoose.Schema<IResultModel>({
 const CommentSchema = new mongoose.Schema<ICommentModel>({
     themeID: Number,
     message: String,
+    userProvider: String,
+    userID: String,
     name: String,
     createdAt: Number,
     imageURI: String,

@@ -66,10 +66,12 @@ export async function getComments(themeID: number) {
             map((doc) => {
                 return {
                     message: doc.message,
-                    createdAt: doc.createdAt,
+                    userProvider: doc.userProvider,
+                    userID: doc.userID,
                     name: doc.name,
                     imageURI: doc.imageURI,
-                    isInfluencer: doc.isInfluencer
+                    isInfluencer: doc.isInfluencer,
+                    createdAt: doc.createdAt
                 };
             });
     } catch (e) {
@@ -87,10 +89,12 @@ export async function postComment(themeID: number, sessionToken: string, message
         await new model.Comment({
             themeID: themeLoader.themes[themeID].themeID,
             message: XSSFilters.inHTMLData(message),
-            createdAt: Date.now() + 1000 * 60 * 60 * 9,
+            userProvider: doc.userProvider,
+            userID: doc.userID,
             name: doc.name,
             imageURI: doc.imageURI,
-            isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers)
+            isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers),
+            createdAt: Date.now() + 1000 * 60 * 60 * 9
         }).save();
     } catch (e) {
         throw e;
