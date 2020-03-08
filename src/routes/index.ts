@@ -104,6 +104,27 @@ router.get("/profiles", async (req, res, next) => {
     }
 });
 
+router.post("/profiles", async (req, res, next) => {
+    const query = req.body;
+    if (!utilAPI.isArray(query)) {
+        next(createError(400));
+        return;
+    }
+
+    try {
+        res.json(await indexAPI.getProfiles(query.map(
+            ({ userProvider, userID }: { userProvider: unknown, userID: unknown }) => {
+                if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
+                    throw new utilAPI.GlacierAPIError("Invalid request");
+                }
+                return { userProvider: userProvider, userID: userID }
+            })));
+    } catch (e) {
+        console.log(e);
+        next(createError(400));
+    }
+});
+
 router.get("/profiles/:userprovider/:userid", async (req, res, next) => {
     const userProvider = req.params.userprovider;
     const userID = req.params.userid;

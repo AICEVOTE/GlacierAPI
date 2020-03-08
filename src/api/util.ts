@@ -22,6 +22,11 @@ export function isBoolean(obj: unknown | null | undefined): obj is boolean {
     return typeof obj == "boolean";
 }
 
+export function isArray(obj: unknown | null | undefined): obj is any[] {
+    if (obj == null || obj == undefined) { return false; }
+    return Object.prototype.toString.call(obj) == "[object Array]";
+}
+
 export function isInfluencer(numOfFollowers: number) {
     return numOfFollowers > 50000;
 }
