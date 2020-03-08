@@ -17,10 +17,28 @@ export async function getMyProfile(sessionToken: string) {
         if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
         return {
+            userProvider: doc.userProvider,
+            userID: doc.userID,
             name: doc.name,
             imageURI: doc.imageURI,
             isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers)
         }
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function getProfiles(users: { userProvider: string, userID: string }[]) {
+    try {
+        const docs = await model.User.find({ $or: users }).exec();
+
+        return docs.map(doc => ({
+            userProvider: doc.userProvider,
+            userID: doc.userID,
+            name: doc.name,
+            imageURI: doc.imageURI,
+            isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers)
+        }));
     } catch (e) {
         throw e;
     }

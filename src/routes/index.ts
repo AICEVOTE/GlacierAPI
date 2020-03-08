@@ -104,6 +104,22 @@ router.get("/profiles", async (req, res, next) => {
     }
 });
 
+router.get("/profiles/:userprovider/:userid", async (req, res, next) => {
+    const userProvider = req.params.userprovider;
+    const userID = req.params.userid;
+
+    try {
+        const profiles = await indexAPI.getProfiles([{ userProvider: userProvider, userID: userID }]);
+        if (profiles.length == 0) {
+            next(createError(404));
+        }
+        res.json(profiles[0]);
+    } catch (e) {
+        console.log(e);
+        next(createError(503));
+    }
+});
+
 router.post("/feedback", async (req, res, next) => {
     const message: unknown = req.query.message;
     if (!utilAPI.isString(message)) {
