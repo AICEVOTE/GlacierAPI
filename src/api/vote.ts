@@ -8,13 +8,13 @@ export async function getInfluencerVotes(themeID: number) {
 
     try {
         return (await model.Result.find({ themeID: themeLoader.themes[themeID].themeID, isInfluencer: true }).exec()).
-            map((doc) => {
-                return {
-                    answer: doc.answer,
-                    name: doc.name,
-                    imageURI: doc.imageURI
-                };
-            });
+            map((doc) => ({
+                answer: doc.answer,
+                userProvider: doc.userProvider,
+                userID: doc.userID,
+                name: doc.name,
+                imageURI: doc.imageURI
+            }));
     } catch (e) {
         throw e;
     }
@@ -29,7 +29,13 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
 
         return (await model.Result.find({
             themeID: themeLoader.themes[themeID].themeID, userID: { $in: doc.friends }, userProvider: "twitter"
-        }).exec()).map(doc => ({ answer: doc.answer, name: doc.name, imageURI: doc.imageURI }));
+        }).exec()).map(doc => ({
+            answer: doc.answer,
+            userProvider: doc.userProvider,
+            userID: doc.userID,
+            name: doc.name,
+            imageURI: doc.imageURI
+        }));
     } catch (e) {
         throw e;
     }
@@ -63,17 +69,15 @@ export async function getComments(themeID: number) {
 
     try {
         return (await model.Comment.find({ themeID: themeLoader.themes[themeID].themeID }).exec()).
-            map((doc) => {
-                return {
-                    message: doc.message,
-                    userProvider: doc.userProvider,
-                    userID: doc.userID,
-                    name: doc.name,
-                    imageURI: doc.imageURI,
-                    isInfluencer: doc.isInfluencer,
-                    createdAt: doc.createdAt
-                };
-            });
+            map((doc) => ({
+                message: doc.message,
+                userProvider: doc.userProvider,
+                userID: doc.userID,
+                name: doc.name,
+                imageURI: doc.imageURI,
+                isInfluencer: doc.isInfluencer,
+                createdAt: doc.createdAt
+            }));
     } catch (e) {
         throw e;
     }
