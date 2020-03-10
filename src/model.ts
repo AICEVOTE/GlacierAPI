@@ -8,6 +8,7 @@ mongoose.connect(process.env.DB_URI || "", {
 });
 
 interface IThemeModel extends mongoose.Document {
+    isEnabled: boolean,
     themeID: number,
     title: string,
     description: string,
@@ -69,6 +70,7 @@ interface IFeedbackModel extends mongoose.Document {
 }
 
 const ThemeSchema = new mongoose.Schema<IThemeModel>({
+    isEnabled: Boolean,
     themeID: Number,
     title: String,
     description: String,

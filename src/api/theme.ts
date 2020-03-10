@@ -124,12 +124,12 @@ class ThemeLoader {
     constructor() {
         try {
             model.Theme.find().exec().then((themes) => {
-                this._themes = themes.map(theme =>
-                    new Theme(theme.themeID, theme.title,
+                this._themes = themes.filter((theme) => theme.isEnabled)
+                    .map(theme => new Theme(theme.themeID, theme.title,
                         theme.description, theme.imageURI, theme.genre,
                         theme.choices, theme.keywords,
                         eval(theme.formula), theme.saveInterval)
-                );
+                    );
             })
         } catch (e) {
             console.log(e);
