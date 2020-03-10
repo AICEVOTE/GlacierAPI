@@ -7,7 +7,7 @@ export async function getInfluencerVotes(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
 
     try {
-        return (await model.Result.find({ themeID: themeLoader.themes[themeID].themeID, isInfluencer: true }).exec()).
+        return (await model.Vote.find({ themeID: themeLoader.themes[themeID].themeID, isInfluencer: true }).exec()).
             map((doc) => ({
                 answer: doc.answer,
                 userProvider: doc.userProvider,
@@ -27,7 +27,7 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
-        return (await model.Result.find({
+        return (await model.Vote.find({
             themeID: themeLoader.themes[themeID].themeID, userID: { $in: doc.friends }, userProvider: "twitter"
         }).exec()).map(doc => ({
             answer: doc.answer,
@@ -51,7 +51,7 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
     if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
     try {
-        await model.Result.updateOne({ themeID: themeLoader.themes[themeID].themeID, userID: doc.userID, userProvider: doc.userProvider },
+        await model.Vote.updateOne({ themeID: themeLoader.themes[themeID].themeID, userID: doc.userID, userProvider: doc.userProvider },
             {
                 $set: {
                     answer: answer, name: doc.name,

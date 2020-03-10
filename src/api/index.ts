@@ -5,7 +5,7 @@ import XSSFilters from "xss-filters";
 
 export async function getTopicality(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
-    return await model.Result.find({
+    return await model.Vote.find({
         themeID: themeID,
         createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
     }).countDocuments().exec();

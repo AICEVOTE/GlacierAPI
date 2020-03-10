@@ -15,7 +15,8 @@ interface IThemeModel extends mongoose.Document {
     genre: number,
     choices: string[],
     keywords: string[],
-    formula: string
+    formula: string,
+    saveInterval: number
 }
 
 interface IUserModel extends mongoose.Document {
@@ -34,7 +35,7 @@ interface IUserModel extends mongoose.Document {
     sessionTokenExpire: number
 }
 
-interface IResultModel extends mongoose.Document {
+interface IVoteModel extends mongoose.Document {
     themeID: number,
     answer: number,
     userProvider: string,
@@ -56,7 +57,7 @@ interface ICommentModel extends mongoose.Document {
     createdAt: number,
 }
 
-interface ITransitionModel extends mongoose.Document {
+interface IResultModel extends mongoose.Document {
     themeID: number,
     timestamp: number,
     percentage: number[]
@@ -75,7 +76,8 @@ const ThemeSchema = new mongoose.Schema<IThemeModel>({
     genre: Number,
     choices: [String],
     keywords: [String],
-    formula: String
+    formula: String,
+    saveInterval: Number
 })
 
 const UserSchema = new mongoose.Schema<IUserModel>({
@@ -94,7 +96,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
     sessionTokenExpire: Number
 });
 
-const ResultSchema = new mongoose.Schema<IResultModel>({
+const VoteSchema = new mongoose.Schema<IVoteModel>({
     themeID: Number,
     answer: Number,
     userProvider: String,
@@ -116,7 +118,7 @@ const CommentSchema = new mongoose.Schema<ICommentModel>({
     isInfluencer: Boolean
 });
 
-const TransitionSchema = new mongoose.Schema<ITransitionModel>({
+const ResultSchema = new mongoose.Schema<IResultModel>({
     themeID: Number,
     timestamp: Number,
     percentage: [Number]
@@ -129,7 +131,7 @@ const FeedbackSchema = new mongoose.Schema<IFeedbackModel>({
 
 export const Theme = mongoose.model<IThemeModel>("Theme", ThemeSchema, "themes");
 export const User = mongoose.model<IUserModel>("User", UserSchema, "users");
-export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");
+export const Vote = mongoose.model<IVoteModel>("Vote", VoteSchema, "votes");
 export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comments");
-export const Transition = mongoose.model<ITransitionModel>("Transition", TransitionSchema, "transitions");
+export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");
 export const Feedback = mongoose.model<IFeedbackModel>("Feedback", FeedbackSchema, "feedbacks");

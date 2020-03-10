@@ -7,6 +7,7 @@ class Theme {
     private _realtimeResult: number[] = [];
     private _shortTransition: ITransition[] = [];
     private _longTransition: ITransition[] = [];
+    private _lastSave = Date.now();
 
     constructor(public readonly themeID: number,
         public readonly title: string,
@@ -15,11 +16,11 @@ class Theme {
         public readonly genre: number,
         public readonly choices: string[],
         public readonly keywords: string[],
-        private readonly _formula: (val: number) => number) {
-
-        setInterval(() => this.updateResult(), 2 * 1000);
-        setInterval(() => this.updateTransition(), 60 * 60 * 1000);
-        this.updateResult().then(() => { this.updateTransition(); });
+        private readonly _formula: (val: number) => number,
+        private readonly _saveInterval: number) {
+        this.load(process.env.ROLE == "MASTER").then(() => {
+            setInterval(() => { this.update(process.env.ROLE == "MASTER"); }, 2000);
+        })
     }
 
     get realtimeCount() { return this._realtimeCount; }
@@ -27,11 +28,50 @@ class Theme {
     get shortTransition() { return this._shortTransition; }
     get longTransition() { return this._longTransition; }
 
-    private async updateResult() {
-        try {
-            const docs = await model.Result.find({ themeID: this.themeID }).exec();
+    private async load(saveResult: boolean) {
+        if (saveResult) {
+            const lastResult = await model.Result
+                .findOne({ themeID: this.themeID })
+                .sort({ timestamp: -1 }).exec();
 
-            const now = Date.now();
+            if (!lastResult) {
+                const now = Date.now();
+                await this.updateResult(now);
+                await this.updateTransition(now, true);
+                this._lastSave = now;
+                return;
+            }
+
+            let now = lastResult.timestamp + this._saveInterval;
+            while (now < Date.now()) {
+                await this.updateResult(now);
+                await this.updateTransition(now, true);
+                this._lastSave = now;
+                now += this._saveInterval;
+            }
+        }
+        const now = Date.now();
+        await this.updateResult(now);
+        await this.updateTransition(now, false);
+    }
+
+    private async update(saveResult: boolean) {
+        if (this._lastSave + this._saveInterval < Date.now()) {
+            const now = this._lastSave + this._saveInterval;
+            if (saveResult) { await this.updateResult(now); }
+            await this.updateTransition(now, saveResult);
+            this._lastSave = now;
+        }
+        await this.updateResult(Date.now());
+    }
+
+    private async updateResult(now: number) {
+        try {
+            const docs = await model.Vote.find({
+                themeID: this.themeID,
+                createdAt: { $lt: now }
+            }).exec();
+
             let counts = Array<number>(this.choices.length).fill(0);
             let points = Array<number>(this.choices.length).fill(0);
 
@@ -43,32 +83,32 @@ class Theme {
             const sumOfPoints = points.reduce((prev, cur) => prev + cur);
 
             this._realtimeCount = counts;
-            this._realtimeResult = points.map(point => {
-                return (Math.round(point / sumOfPoints * 1000000) / 10000) || 0;
-            });
+            this._realtimeResult = points.map(point =>
+                (Math.round(point / sumOfPoints * 1000000) / 10000) || 0
+            );
         } catch (e) {
             throw e;
         }
     }
 
-    private async updateTransition() {
+    private async updateTransition(now: number, saveResult: boolean) {
         try {
-            if (process.env.ROLE == "MASTER") {
-                await new model.Transition({
+            if (saveResult) {
+                await new model.Result({
                     themeID: this.themeID,
-                    timestamp: Date.now(),
+                    timestamp: now,
                     percentage: this._realtimeResult
                 }).save();
             }
 
-            const allTransition = (await model.Transition.find({ themeID: this.themeID }).
-                sort({ timestamp: -1 }).limit(1440).exec()).
-                map((doc) => {
-                    return {
-                        timestamp: doc.timestamp,
-                        percentage: doc.percentage
-                    }
-                });
+            const allTransition = (await model.Result.find({
+                themeID: this.themeID,
+                timestamp: { $lt: now }
+            }).sort({ timestamp: -1 }).limit(1440).exec())
+                .map((doc) => ({
+                    timestamp: doc.timestamp,
+                    percentage: doc.percentage
+                }));
 
             this._shortTransition = allTransition.slice(0, Math.min(60, allTransition.length));
             this._longTransition = allTransition.filter((_val, index) => index % 24 == 0);
@@ -84,11 +124,12 @@ class ThemeLoader {
     constructor() {
         try {
             model.Theme.find().exec().then((themes) => {
-                this._themes = themes.map(theme => {
-                    return new Theme(theme.themeID, theme.title,
+                this._themes = themes.map(theme =>
+                    new Theme(theme.themeID, theme.title,
                         theme.description, theme.imageURI, theme.genre,
-                        theme.choices, theme.keywords, eval(theme.formula));
-                });
+                        theme.choices, theme.keywords,
+                        eval(theme.formula), theme.saveInterval)
+                );
             })
         } catch (e) {
             console.log(e);
