@@ -3,11 +3,11 @@ import * as model from "../model";
 interface ITransition { timestamp: number, percentage: number[] };
 
 class Theme {
-    private _realtimeCount: number[] = [];
-    private _realtimeResult: number[] = [];
+    private _counts: number[] = [];
+    private _results: number[] = [];
     private _shortTransition: ITransition[] = [];
     private _longTransition: ITransition[] = [];
-    private _lastSave = Date.now();
+    private _lastTransitionUpdate = Date.now();
 
     constructor(public readonly themeID: number,
         public readonly title: string,
@@ -23,98 +23,104 @@ class Theme {
         })
     }
 
-    get realtimeCount() { return this._realtimeCount; }
-    get realtimeResult() { return this._realtimeResult; }
+    get realtimeCount() { return this._counts; }
+    get realtimeResult() { return this._results; }
     get shortTransition() { return this._shortTransition; }
     get longTransition() { return this._longTransition; }
 
-    private async load(saveResult: boolean) {
-        if (saveResult) {
-            const lastResult = await model.Result
-                .findOne({ themeID: this.themeID })
-                .sort({ timestamp: -1 }).exec();
+    private async interpolate() {
+        const lastResult = await model.Result
+            .findOne({ themeID: this.themeID })
+            .sort({ timestamp: -1 }).exec();
 
-            if (!lastResult) {
-                const now = Date.now();
-                await this.updateResult(now);
-                await this.updateTransition(now, true);
-                this._lastSave = now;
-                return;
-            }
-
-            let now = lastResult.timestamp + this._saveInterval;
-            while (now < Date.now()) {
-                await this.updateResult(now);
-                await this.updateTransition(now, true);
-                this._lastSave = now;
-                now += this._saveInterval;
-            }
+        if (!lastResult) {
+            const now = Date.now();
+            await this.saveResult(now);
+            this._lastTransitionUpdate = now;
+            return;
         }
-        const now = Date.now();
-        await this.updateResult(now);
-        await this.updateTransition(now, false);
+
+        for (let now = lastResult.timestamp + this._saveInterval;
+            now < Date.now(); now += this._saveInterval) {
+            await this.saveResult(now);
+            this._lastTransitionUpdate = now;
+        }
     }
 
-    private async update(saveResult: boolean) {
-        if (this._lastSave + this._saveInterval < Date.now()) {
-            const now = this._lastSave + this._saveInterval;
-            if (saveResult) { await this.updateResult(now); }
-            await this.updateTransition(now, saveResult);
-            this._lastSave = now;
+    private async load(isMaster: boolean) {
+        const now = Date.now();
+        if (isMaster) { await this.interpolate(); }
+
+        const newResult = await this.updateResult(now);
+        this._results = newResult.results;
+        this._counts = newResult.counts;
+
+        const newTransition = await this.updateTransition(now);
+        this._shortTransition = newTransition.shortTransition;
+        this._longTransition = newTransition.longTransition;
+    }
+
+    private async update(isMaster: boolean) {
+        const newResult = await this.updateResult(Date.now());
+        this._results = newResult.results;
+        this._counts = newResult.counts;
+
+        const now = this._lastTransitionUpdate + this._saveInterval;
+        if (now < Date.now()) {
+            if (isMaster) { await this.saveResult(now); }
+
+            const newTransition = await this.updateTransition(now);
+            this._shortTransition = newTransition.shortTransition;
+            this._longTransition = newTransition.longTransition;
+            this._lastTransitionUpdate = now;
         }
-        await this.updateResult(Date.now());
     }
 
     private async updateResult(now: number) {
-        try {
-            const docs = await model.Vote.find({
-                themeID: this.themeID,
-                createdAt: { $lt: now }
-            }).exec();
+        const docs = await model.Vote.find({
+            themeID: this.themeID,
+            createdAt: { $lte: now }
+        }).exec();
 
-            let counts = Array<number>(this.choices.length).fill(0);
-            let points = Array<number>(this.choices.length).fill(0);
+        let counts = Array<number>(this.choices.length).fill(0);
+        let points = Array<number>(this.choices.length).fill(0);
 
-            for (const doc of docs) {
-                counts[doc.answer]++;
-                points[doc.answer] += this._formula(now - doc.createdAt);
-            }
-
-            const sumOfPoints = points.reduce((prev, cur) => prev + cur);
-
-            this._realtimeCount = counts;
-            this._realtimeResult = points.map(point =>
-                (Math.round(point / sumOfPoints * 1000000) / 10000) || 0
-            );
-        } catch (e) {
-            throw e;
+        for (const doc of docs) {
+            counts[doc.answer]++;
+            points[doc.answer] += this._formula(now - doc.createdAt);
         }
+
+        const sumOfPoints = points.reduce((prev, cur) => prev + cur);
+
+        return {
+            counts: counts,
+            results: points.map(point =>
+                (Math.round(point / sumOfPoints * 1000000) / 10000) || 0)
+        };
     }
 
-    private async updateTransition(now: number, saveResult: boolean) {
-        try {
-            if (saveResult) {
-                await new model.Result({
-                    themeID: this.themeID,
-                    timestamp: now,
-                    percentage: this._realtimeResult
-                }).save();
-            }
+    private async saveResult(now: number) {
+        await new model.Result({
+            themeID: this.themeID,
+            timestamp: now,
+            percentage: (await this.updateResult(now)).results
+        }).save();
+    }
 
-            const allTransition = (await model.Result.find({
-                themeID: this.themeID,
-                timestamp: { $lt: now }
-            }).sort({ timestamp: -1 }).limit(1440).exec())
-                .map((doc) => ({
-                    timestamp: doc.timestamp,
-                    percentage: doc.percentage
-                }));
+    private async updateTransition(now: number) {
+        const docs = (await model.Result.find({
+            themeID: this.themeID,
+            timestamp: { $lte: now }
+        }).sort({ timestamp: -1 }).limit(1440).exec())
+            .map((doc) => ({
+                timestamp: doc.timestamp,
+                percentage: doc.percentage
+            }));
 
-            this._shortTransition = allTransition.slice(0, Math.min(60, allTransition.length));
-            this._longTransition = allTransition.filter((_val, index) => index % 24 == 0);
-        } catch (e) {
-            throw e;
-        }
+        return {
+            shortTransition: docs.slice(0, Math.min(60, docs.length)),
+            longTransition: docs.filter((_val, index) => index % 24 == 0)
+        };
     }
 }
 
