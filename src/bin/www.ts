@@ -6,7 +6,6 @@
 
 import app from "../app";
 import debug from "debug";
-debug("workspace:server");
 import http from "http";
 
 import SocketIO from "socket.io";
@@ -98,5 +97,5 @@ function onListening() {
     const bind = typeof addr === "string"
         ? "pipe " + addr
         : "port " + addr?.port;
-    debug("Listening on " + bind);
+    debug("workspace:server")("Listening on " + bind);
 }
