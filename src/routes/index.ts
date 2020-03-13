@@ -7,55 +7,8 @@ import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
 /* GET home page. */
-router.get("/", (_req, res, _next) => {
-    res.render("index", {
-        title: "/", docs: [
-            {
-                uri: "auth",
-                description: "Authentication API"
-            },
-            {
-                uri: "vote",
-                description: "Voting API"
-            },
-            {
-                uri: "news",
-                description: "News API"
-            },
-            {
-                uri: "themes",
-                description: "Get theme data",
-                req: ["themeid: Theme id"],
-                res: ["themeid: Theme id", "title: String", "description: String", "choices: String array"],
-                method: "GET",
-                query: "/0"
-            },
-            {
-                uri: "profiles",
-                description: "Get user profile",
-                req: ["sessiontoken: Given session token"],
-                res: ["name: String", "imageURI: String", "isInfluencer: Boolean"],
-                method: "GET",
-                query: "?sessiontoken=test"
-            },
-            {
-                uri: "feedback",
-                description: "Send a feedback",
-                req: ["message: Feedback string"],
-                res: ["message: Feedback string"],
-                method: "POST",
-                query: "?message=\"test\""
-            },
-            {
-                uri: "application",
-                description: "Send a application",
-                req: ["message: Application string"],
-                res: ["message: Application string"],
-                method: "POST",
-                query: "?message=\"test\""
-            }
-        ]
-    });
+router.get("/", function (_req, res, _next) {
+    res.render("index", { title: "Glacier API" });
 });
 
 router.get("/themes", async (_req, res, _next) => {

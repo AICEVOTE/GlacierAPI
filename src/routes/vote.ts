@@ -6,61 +6,6 @@ import * as voteAPI from "../api/vote";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
-router.get("/", (_req, res, _next) => {
-    res.render("index", {
-        title: "/vote/", docs: [
-            {
-                uri: "results",
-                description: "Get latest result",
-                req: ["themeid: Theme id"],
-                res: ["themeid: Theme id", "results: Results", "counts: Counts"],
-                method: "GET",
-                query: "/0"
-            },
-            {
-                uri: "votes",
-                description: "Get votes",
-                req: ["themeid: Theme id", "sessiontoken: Given session token"],
-                res: ["themeid: Theme id", "votes: Votes from friends", "votesFromInfluencer: Votes from influencers"],
-                method: "GET",
-                query: "/0?sessiontoken=test"
-            },
-            {
-                uri: "votes",
-                description: "Put vote",
-                req: ["themeid: Theme id", "sessiontoken: Given session token", "answer: answer"],
-                res: ["themeid: Theme id", "votes: Votes from friends", "votesFromInfluencer: Votes from influencers"],
-                method: "PUT",
-                query: "/0?sessiontoken=test&answer=0"
-            },
-            {
-                uri: "transitions",
-                description: "Get transitions",
-                req: ["themeid: Theme id"],
-                res: ["themeid: Theme id", "shortTransition: Short-term transition", "longTransition: Long-term transition"],
-                method: "GET",
-                query: "/0"
-            },
-            {
-                uri: "comments",
-                description: "Get all comments",
-                req: ["themeid: Theme id"],
-                res: ["themeid: Theme id", "comments: All comments"],
-                method: "GET",
-                query: "/0"
-            },
-            {
-                uri: "comments",
-                description: "Get all comments",
-                req: ["themeid: Theme id", "sessiontoken: Given session token", "message: Comment string"],
-                res: ["themeid: Theme id", "comments: All comments"],
-                method: "POST",
-                query: "/0?sessiontoken=test&message=test"
-            }
-        ]
-    });
-});
-
 router.get("/results", (_req, res, _next) => {
     res.json(themeLoader.themes.map((theme, themeID) => ({
         themeID: themeID,
