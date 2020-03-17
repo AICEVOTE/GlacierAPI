@@ -1,5 +1,4 @@
 import themeLoader from "./theme";
-import * as utilAPI from "./util";
 
 const NewsAPI = require("newsapi");
 const newsapi = new NewsAPI(process.env.NEWSAPI_KEY || "");
@@ -97,7 +96,7 @@ export function getAllArticles() {
 
 export function getRelatedArticles(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) {
-        throw new utilAPI.GlacierAPIError("Invalid themeID");
+        throw new Error("Invalid themeID");
     }
 
     return articles.related[themeID];

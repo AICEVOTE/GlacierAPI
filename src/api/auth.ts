@@ -1,5 +1,4 @@
 import * as model from "../model";
-import * as utilAPI from "./util";
 import passport from "passport";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import Twitter from "twitter";
@@ -84,7 +83,7 @@ if (process.env.ROLE == "MASTER") {
 export async function getSessionToken(sessionID: string) {
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
+        if (!doc) { throw new Error("The sessionID is invalid"); }
 
         return doc.sessionToken;
     } catch (e) {

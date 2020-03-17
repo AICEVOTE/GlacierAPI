@@ -1,12 +1,3 @@
-export class GlacierAPIError extends Error {
-    name: string = "GlacierAPIError";
-    message: string;
-    constructor(message: string = "API call failed") {
-        super()
-        this.message = message;
-    }
-}
-
 export function isString(obj: unknown | null | undefined): obj is string {
     if (obj == null || obj == undefined) { return false; }
     return typeof obj == "string";

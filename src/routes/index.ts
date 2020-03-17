@@ -68,7 +68,7 @@ router.post("/profiles", async (req, res, next) => {
         res.json(await indexAPI.getProfiles(query.map(
             ({ userProvider, userID }: { userProvider: unknown, userID: unknown }) => {
                 if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
-                    throw new utilAPI.GlacierAPIError("Invalid request");
+                    throw new Error("Invalid request");
                 }
                 return { userProvider: userProvider, userID: userID }
             })));

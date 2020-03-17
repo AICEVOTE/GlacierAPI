@@ -1,10 +1,9 @@
 import themeLoader from "./theme";
 import * as model from "../model";
-import * as utilAPI from "./util";
 import XSSFilters from "xss-filters";
 
 export async function getInfluencerVotes(themeID: number) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
     if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) { return []; }
 
     try {
@@ -26,11 +25,11 @@ export async function getInfluencerVotes(themeID: number) {
 }
 
 export async function getFriendVotes(themeID: number, sessionToken: string) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
 
     try {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
+        if (!doc) { throw new Error("Invalid sessionToken"); }
 
         return (await model.Vote.find({
             themeID: themeLoader.themes[themeID].themeID,
@@ -47,13 +46,13 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
 }
 
 export async function putVote(themeID: number, sessionToken: string, answer: number) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
     if (themeLoader.themes[themeID].choices[answer] == undefined) {
-        throw new utilAPI.GlacierAPIError("Invalid answer");
+        throw new Error("Invalid answer");
     }
 
     const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
-    if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
+    if (!doc) { throw new Error("Invalid sessionToken"); }
 
     try {
         await model.Vote.updateOne({
@@ -68,7 +67,7 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
 }
 
 export async function getComments(themeID: number) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
 
     try {
         return (await model.Comment.find({ themeID: themeLoader.themes[themeID].themeID }).exec()).
@@ -84,11 +83,11 @@ export async function getComments(themeID: number) {
 }
 
 export async function postComment(themeID: number, sessionToken: string, message: string) {
-    if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
 
     try {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
-        if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
+        if (!doc) { throw new Error("Invalid sessionToken"); }
 
         await new model.Comment({
             themeID: themeLoader.themes[themeID].themeID,
