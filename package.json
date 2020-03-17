@@ -14,7 +14,7 @@
     "restart": "yarn pm2 restart GlacierAPI --update-env"
   },
   "dependencies": {
-    "connect-mongo": "*",
+    "connect-redis": "*",
     "cookie-parser": "*",
     "cors": "*",
     "debug": "*",
@@ -29,12 +29,14 @@
     "passport": "*",
     "passport-twitter": "*",
     "pug": "*",
+    "redis": "*",
     "socket.io": "*",
     "twitter": "*",
     "uuid": "*",
     "xss-filters": "*"
   },
   "devDependencies": {
+    "@types/connect-redis": "^0.0.13",
     "@types/cookie-parser": "*",
     "@types/cors": "*",
     "@types/debug": "*",

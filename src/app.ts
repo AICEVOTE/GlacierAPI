@@ -6,8 +6,8 @@ import logger from "morgan";
 
 import helmet from "helmet";
 import cors from "cors";
-import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
+import redis from "redis";
+import RedisStore from "connect-redis";
 import session from "express-session";
 import passport from "passport";
 import dotenv from "dotenv";
@@ -38,7 +38,11 @@ app.options("*", cors({ origin: true }));
 app.use(session({
     name: "sessionid",
     secret: process.env.SESSION_SECRET || "",
-    store: new (MongoStore(session))({ mongooseConnection: mongoose.connection }),
+    store: new (RedisStore(session))({
+        client: redis.createClient({
+            url: process.env.REDIS_URI || ""
+        })
+    }),
     resave: false,
     saveUninitialized: true,
 }));

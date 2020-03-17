@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-mongoose.connect(process.env.DB_URI || "", {
-    user: process.env.DB_USER || "",
-    pass: process.env.DB_PASSWORD || "",
+mongoose.connect(process.env.MONGO_URI || "", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });

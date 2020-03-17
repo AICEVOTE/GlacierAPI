@@ -134,6 +134,16 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.2.tgz#f65d3d6389e01eeb458bd54dc8f52b95a9463bc8"
   integrity sha512-6ckxMjBBD8URvjB6J3NcnuAn5Pkl7t3TizAg+xdlzzQGSPSmBcXf8KoIH0ua/i+tio+ZRUHEXp0HEmvaR4kt0w==
 
+"@types/connect-redis@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@types/connect-redis/-/connect-redis-0.0.13.tgz#9237f7f57b79d9f6418993fd6f3b6ea923859079"
+  integrity sha512-bHo/UWrUPbWkn05D1YAMs31wG+0dMt6GYXjv8Vfu8kAxO6CfD4N6lmHv/sAkjzYVdXFhc5jck/kEYLBDPJ90iQ==
+  dependencies:
+    "@types/express" "*"
+    "@types/express-session" "*"
+    "@types/ioredis" "*"
+    "@types/redis" "*"
+
 "@types/connect@*":
   version "3.4.33"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.33.tgz#31610c901eca573b8713c3330abc6e6b9f588546"
@@ -197,6 +207,13 @@
   resolved "https://registry.yarnpkg.com/@types/http-errors/-/http-errors-1.6.3.tgz#619a55768eab98299e8f76747339f3373f134e69"
   integrity sha512-4KCE/agIcoQ9bIfa4sBxbZdnORzRjIw8JNQPLfqoNv7wQl/8f8mRbW68Q8wBsQFoJkPUHGlQYZ9sqi5WpfGSEQ==
 
+"@types/ioredis@*":
+  version "4.14.9"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.14.9.tgz#774387d44d3ad60e1b849044b2b28b96e5813866"
+  integrity sha512-yNdzppM6vY4DYqXCnt4A3PXArxsMWeJCYxFlyl4AJKrNSGMEAP9TPcXR+8Q6zh9glcCtxmwMQhi4pwdqqHH3OA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/mime@*":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
@@ -210,17 +227,10 @@
     "@types/bson" "*"
     "@types/node" "*"
 
-<<<<<<< Updated upstream
-"@types/mongoose@^5.7.1":
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.3.tgz#2fc7f26cb0fda43d8ff46b5ab6ad13068370f268"
-  integrity sha512-kZR/hBOft/Nm6aFP/1k0aBrfaYZQBM8I7eynpiOdgON2GqzSTd0S1kSGLUkeDLrm5NLcJ6wbXyrbYRm/nWZvlA==
-=======
 "@types/mongoose@*":
   version "5.7.6"
   resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.6.tgz#c08d41b33a4a5e1984fc4d3c7bc2a76cc6e17ffc"
   integrity sha512-+GMPd3MRem1A7fw97PkE2aQwWoyYMMZ55lyr7slaCnAvz24+c2WQ2zGHafT9toW/gOciN2yDTY1e0xGLeKHgRA==
->>>>>>> Stashed changes
   dependencies:
     "@types/mongodb" "*"
     "@types/node" "*"
@@ -232,17 +242,10 @@
   dependencies:
     "@types/express" "*"
 
-<<<<<<< Updated upstream
-"@types/node@*", "@types/node@^13.7.4":
-  version "13.7.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.7.tgz#1628e6461ba8cc9b53196dfeaeec7b07fa6eea99"
-  integrity sha512-Uo4chgKbnPNlxQwoFmYIwctkQVkMMmsAoGGU4JKwLuvBefF0pCq4FybNSnfkfRCpC7ZW7kttcC/TrRtAJsvGtg==
-=======
 "@types/node@*":
   version "13.9.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.1.tgz#96f606f8cd67fb018847d9b61e93997dabdefc72"
   integrity sha512-E6M6N0blf/jiZx8Q3nb0vNaswQeEyn0XlupO+xN6DtJ6r6IT4nXrTry7zhIfYvFCl3/8Cu6WIysmUBKiqV0bqQ==
->>>>>>> Stashed changes
 
 "@types/passport-twitter@*":
   version "1.0.34"
@@ -263,6 +266,13 @@
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
+
+"@types/redis@*":
+  version "2.8.16"
+  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.16.tgz#62dd5176d53c5f133f99661000f548a75b9761e2"
+  integrity sha512-7iJzu9OvKPuKiZxlIVG7P3UM7C3XX4FxXk9f24MkAvucze93Zp4XzoERmDaKQnaZP0Qv1pMAq25lAvUPCKXCHQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/request@*":
   version "2.48.4"
@@ -805,12 +815,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-connect-mongo@*:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/connect-mongo/-/connect-mongo-3.2.0.tgz#20f776c7f2a9d8144fc76cfdcbf33edb05eb4d52"
-  integrity sha512-0Mx88079Z20CG909wCFlR3UxhMYGg6Ibn1hkIje1hwsqOLWtL9HJV+XD0DAjUvQScK6WqY/FA8tSVQM9rR64Rw==
-  dependencies:
-    mongodb "^3.1.0"
+connect-redis@*:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/connect-redis/-/connect-redis-4.0.4.tgz#b194abe2f3754551f38086e1a28cb9e68d6c3b28"
+  integrity sha512-aXk7btMlG0J5LqtPNRpFKa5fglzlTzukYNx+Fq8cghbUIQHN/gyK9c3+b0XEROMwiSxMoZDADqjp9tdpUoZLAg==
 
 constantinople@^3.0.1, constantinople@^3.1.2:
   version "3.1.2"
@@ -847,19 +855,12 @@ continuation-local-storage@^3.2.1:
     async-listener "^0.6.0"
     emitter-listener "^1.1.1"
 
-<<<<<<< Updated upstream
-cookie-parser@~1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.4.tgz#e6363de4ea98c3def9697b93421c09f30cf5d188"
-  integrity sha512-lo13tqF3JEtFO7FyA49CqbhaFkskRJ0u/UAiINgrIXeRCY41c88/zxtrECl8AKH3B0hj9q10+h3Kt8I7KlW4tw==
-=======
 cookie-parser@*:
   version "1.4.5"
   resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.5.tgz#3e572d4b7c0c80f9c61daf604e4336831b5d1d49"
   integrity sha512-f13bPUj/gG/5mDr+xLmSxxDsB9DQiTIfhJS/sqjrmfAWiAN+x2O4i/XguTL9yDZ+/IFDanJ+5x7hC4CXT9Tdzw==
->>>>>>> Stashed changes
   dependencies:
-    cookie "0.3.1"
+    cookie "0.4.0"
     cookie-signature "1.0.6"
 
 cookie-signature@1.0.6:
@@ -1889,10 +1890,10 @@ moment@2.24.0, "moment@>= 2.9.0", moment@^2.21.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
-mongodb@3.5.4, mongodb@^3.1.0:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.5.4.tgz#f7609cfa9f8c56c35e844b4216ddc3a1b1ec5bef"
-  integrity sha512-xGH41Ig4dkSH5ROGezkgDbsgt/v5zbNUwE3TcFsSbDc6Qn3Qil17dhLsESSDDPTiyFDCPJRpfd4887dtsPgKtA==
+mongodb@3.5.5:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.5.5.tgz#1334c3e5a384469ac7ef0dea69d59acc829a496a"
+  integrity sha512-GCjDxR3UOltDq00Zcpzql6dQo1sVry60OXJY3TDmFc2SWFY6c8Gn1Ardidc5jDirvJrx2GC3knGOImKphbSL3A==
   dependencies:
     bl "^2.2.0"
     bson "^1.1.1"
@@ -1907,21 +1908,14 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
-<<<<<<< Updated upstream
-mongoose@^5.9.2:
-  version "5.9.3"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.9.3.tgz#d40842301fa244ddf11efa79b78e710362d2fedb"
-  integrity sha512-wgr7lpneH8VZ2limSWhqzOenlZVobPvIUvrjUhw8/afo2GzxjtJ/icAhbXV+itZcL7sFtfLSeSm8iLdMxzWqfw==
-=======
 mongoose@*:
   version "5.9.5"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.9.5.tgz#ac3b532197b961da4b9e08f8be1ed8bbd5d53b5f"
   integrity sha512-2kMNZCZRWCMtww4f//CwdGH6BjO3+9/c3YdsC6nbzdJVyl8+GRtNfgrKUge3226VZXXLJa6LwxXN2K8/Dh4irg==
->>>>>>> Stashed changes
   dependencies:
     bson "~1.1.1"
     kareem "2.3.1"
-    mongodb "3.5.4"
+    mongodb "3.5.5"
     mongoose-legacy-pluralize "1.0.2"
     mpath "0.6.0"
     mquery "3.2.2"
@@ -2523,6 +2517,33 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
+redis-commands@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/redis-commands/-/redis-commands-1.5.0.tgz#80d2e20698fe688f227127ff9e5164a7dd17e785"
+  integrity sha512-6KxamqpZ468MeQC3bkWmCB1fp56XL64D4Kf0zJSwDZbVLLm7KFkoIcHrgRvQ+sk8dnhySs7+yBg94yIkAK7aJg==
+
+redis-errors@^1.0.0, redis-errors@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/redis-errors/-/redis-errors-1.2.0.tgz#eb62d2adb15e4eaf4610c04afe1529384250abad"
+  integrity sha1-62LSrbFeTq9GEMBK/hUpOEJQq60=
+
+redis-parser@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-3.0.0.tgz#b66d828cdcafe6b4b8a428a7def4c6bcac31c8b4"
+  integrity sha1-tm2CjNyv5rS4pCin3vTGvKwxyLQ=
+  dependencies:
+    redis-errors "^1.0.0"
+
+redis@*:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-3.0.2.tgz#bd47067b8a4a3e6a2e556e57f71cc82c7360150a"
+  integrity sha512-PNhLCrjU6vKVuMOyFu7oSP296mwBkcE6lrAjruBYG5LgdSqtRBoVQIylrMyVZD/lkF24RSNNatzvYag6HRBHjQ==
+  dependencies:
+    denque "^1.4.1"
+    redis-commands "^1.5.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+
 referrer-policy@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/referrer-policy/-/referrer-policy-1.2.0.tgz#b99cfb8b57090dc454895ef897a4cc35ef67a98e"
@@ -3026,14 +3047,6 @@ uuid@^3.2.1, uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-<<<<<<< Updated upstream
-uuid@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.1.tgz#95ed6ff3d8c881cbf85f0f05cc3915ef994818ef"
-  integrity sha512-yqjRXZzSJm9Dbl84H2VDHpM3zMjzSJQ+hn6C4zqd5ilW+7P4ZmLEEqwho9LjP+tGuZlF4xrHQXT0h9QZUS/pWA==
-
-=======
->>>>>>> Stashed changes
 vary@^1, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
