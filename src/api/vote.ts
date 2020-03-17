@@ -13,7 +13,11 @@ export async function getInfluencerVotes(themeID: number) {
 
         if (influencers.length == 0) { return []; }
 
-        return (await model.Vote.find({ themeID: themeLoader.themes[themeID].themeID, $or: influencers }).exec()).
+        return (await model.Vote.find({
+            themeID: themeLoader.themes[themeID].themeID,
+            $or: influencers,
+            expiredAt: { $exists: false }
+        }).exec()).
             map((doc) => ({
                 answer: doc.answer,
                 userProvider: doc.userProvider,
@@ -34,7 +38,8 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
         return (await model.Vote.find({
             themeID: themeLoader.themes[themeID].themeID,
             userProvider: "twitter",
-            userID: { $in: doc.friends }
+            userID: { $in: doc.friends },
+            expiredAt: { $exists: false }
         }).exec()).map(doc => ({
             answer: doc.answer,
             userProvider: doc.userProvider,
@@ -58,9 +63,17 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
         await model.Vote.updateOne({
             themeID: themeLoader.themes[themeID].themeID,
             userID: doc.userID,
-            userProvider: doc.userProvider
-        }, { $set: { answer: answer, createdAt: Date.now() } },
-            { upsert: true }).exec();
+            userProvider: doc.userProvider,
+            expiredAt: { $exists: false }
+        }, { $set: { expiredAt: Date.now() } }).exec();
+
+        await new model.Vote({
+            themeID: themeLoader.themes[themeID].themeID,
+            userID: doc.userID,
+            userProvider: doc.userProvider,
+            answer: answer,
+            createdAt: Date.now()
+        }).save();
     } catch (e) {
         throw e;
     }

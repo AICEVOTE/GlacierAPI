@@ -79,7 +79,8 @@ class Theme {
     private async updateResult(now: number) {
         const docs = await model.Vote.find({
             themeID: this.themeID,
-            createdAt: { $lte: now }
+            createdAt: { $lte: now },
+            expiredAt: { $exists: false }
         }).exec();
 
         let counts = Array<number>(this.choices.length).fill(0);
