@@ -5,15 +5,20 @@ import XSSFilters from "xss-filters";
 
 export async function getInfluencerVotes(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) { throw new utilAPI.GlacierAPIError("Invalid themeID"); }
+    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) { return []; }
 
     try {
-        return (await model.Vote.find({ themeID: themeLoader.themes[themeID].themeID, isInfluencer: true }).exec()).
+        const influencers = (await model.User.find({
+            numOfFollowers: { $gt: parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER) }
+        }).exec()).map(user => ({ userProvider: user.userProvider, userID: user.userID }));
+
+        if (influencers.length == 0) { return []; }
+
+        return (await model.Vote.find({ themeID: themeLoader.themes[themeID].themeID, $or: influencers }).exec()).
             map((doc) => ({
                 answer: doc.answer,
                 userProvider: doc.userProvider,
-                userID: doc.userID,
-                name: doc.name,
-                imageURI: doc.imageURI
+                userID: doc.userID
             }));
     } catch (e) {
         throw e;
@@ -28,13 +33,13 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
         if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
         return (await model.Vote.find({
-            themeID: themeLoader.themes[themeID].themeID, userID: { $in: doc.friends }, userProvider: "twitter"
+            themeID: themeLoader.themes[themeID].themeID,
+            userProvider: "twitter",
+            userID: { $in: doc.friends }
         }).exec()).map(doc => ({
             answer: doc.answer,
             userProvider: doc.userProvider,
-            userID: doc.userID,
-            name: doc.name,
-            imageURI: doc.imageURI
+            userID: doc.userID
         }));
     } catch (e) {
         throw e;
@@ -51,14 +56,12 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
     if (!doc) { throw new utilAPI.GlacierAPIError("Invalid sessionToken"); }
 
     try {
-        await model.Vote.updateOne({ themeID: themeLoader.themes[themeID].themeID, userID: doc.userID, userProvider: doc.userProvider },
-            {
-                $set: {
-                    answer: answer, name: doc.name,
-                    isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers),
-                    imageURI: doc.imageURI, createdAt: Date.now()
-                }
-            }, { upsert: true }).exec();
+        await model.Vote.updateOne({
+            themeID: themeLoader.themes[themeID].themeID,
+            userID: doc.userID,
+            userProvider: doc.userProvider
+        }, { $set: { answer: answer, createdAt: Date.now() } },
+            { upsert: true }).exec();
     } catch (e) {
         throw e;
     }
@@ -73,9 +76,6 @@ export async function getComments(themeID: number) {
                 message: doc.message,
                 userProvider: doc.userProvider,
                 userID: doc.userID,
-                name: doc.name,
-                imageURI: doc.imageURI,
-                isInfluencer: doc.isInfluencer,
                 createdAt: doc.createdAt
             }));
     } catch (e) {
@@ -95,9 +95,6 @@ export async function postComment(themeID: number, sessionToken: string, message
             message: XSSFilters.inHTMLData(message),
             userProvider: doc.userProvider,
             userID: doc.userID,
-            name: doc.name,
-            imageURI: doc.imageURI,
-            isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers),
             createdAt: Date.now() + 1000 * 60 * 60 * 9
         }).save();
     } catch (e) {

@@ -23,5 +23,8 @@ export function isArray(obj: unknown | null | undefined): obj is any[] {
 }
 
 export function isInfluencer(numOfFollowers: number) {
-    return numOfFollowers > 50000;
+    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
+        return false;
+    }
+    return numOfFollowers > parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
 }

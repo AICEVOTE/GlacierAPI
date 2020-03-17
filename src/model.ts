@@ -42,10 +42,8 @@ interface IVoteModel extends mongoose.Document {
     answer: number,
     userProvider: string,
     userID: string,
-    name: string,
-    imageURI: string,
-    isInfluencer: boolean,
-    createdAt: number
+    createdAt: number,
+    expiredAt: number
 }
 
 interface ICommentModel extends mongoose.Document {
@@ -53,9 +51,6 @@ interface ICommentModel extends mongoose.Document {
     message: string,
     userProvider: string,
     userID: string,
-    name: string,
-    imageURI: string,
-    isInfluencer: boolean
     createdAt: number,
 }
 
@@ -105,10 +100,8 @@ const VoteSchema = new mongoose.Schema<IVoteModel>({
     answer: Number,
     userProvider: String,
     userID: String,
-    name: String,
-    imageURI: String,
-    isInfluencer: Boolean,
-    createdAt: Number
+    createdAt: Number,
+    expiredAt: Number
 });
 
 const CommentSchema = new mongoose.Schema<ICommentModel>({
@@ -116,10 +109,7 @@ const CommentSchema = new mongoose.Schema<ICommentModel>({
     message: String,
     userProvider: String,
     userID: String,
-    name: String,
     createdAt: Number,
-    imageURI: String,
-    isInfluencer: Boolean
 });
 
 const ResultSchema = new mongoose.Schema<IResultModel>({
