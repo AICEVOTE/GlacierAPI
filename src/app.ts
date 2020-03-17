@@ -32,14 +32,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.use(helmet());
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
-app.options("*", cors({
-    origin: true,
-    credentials: true
-}));
+app.use(cors({ origin: true }));
+app.options("*", cors({ origin: true }));
 
 app.use(session({
     name: "sessionid",

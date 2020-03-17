@@ -17,11 +17,6 @@ export function isNumber(obj: unknown | null | undefined): obj is number {
     return typeof obj == "number";
 }
 
-export function isBoolean(obj: unknown | null | undefined): obj is boolean {
-    if (obj == null || obj == undefined) { return false; }
-    return typeof obj == "boolean";
-}
-
 export function isArray(obj: unknown | null | undefined): obj is any[] {
     if (obj == null || obj == undefined) { return false; }
     return Object.prototype.toString.call(obj) == "[object Array]";

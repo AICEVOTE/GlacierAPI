@@ -32,6 +32,7 @@ interface IUserModel extends mongoose.Document {
     imageURI: string,
     numOfFollowers: number,
     sessionID: string,
+    sessionIDExpire: number,
     sessionToken: string,
     sessionTokenExpire: number
 }
@@ -94,6 +95,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
     imageURI: String,
     numOfFollowers: Number,
     sessionID: String,
+    sessionIDExpire: Number,
     sessionToken: String,
     sessionTokenExpire: Number
 });

@@ -5,6 +5,10 @@ import { Strategy as TwitterStrategy } from "passport-twitter";
 import Twitter from "twitter";
 import { v4 as uuidv4 } from "uuid";
 
+const oneHour = 60 * 60 * 1000
+const oneDay = oneHour * 24;
+const oneMonth = oneDay * 31;
+
 passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY || "",
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET || "",
@@ -33,8 +37,9 @@ passport.use(new TwitterStrategy({
                 imageURI: profile.photos ? profile.photos[0]?.value || "" : "",
                 numOfFollowers: profile._json.followers_count,
                 sessionID: sessionID,
+                sessionIDExpire: Date.now() + oneMonth,
                 sessionToken: uuidv4(),
-                sessionTokenExpire: Date.now() + 15 * 60 * 1000
+                sessionTokenExpire: Date.now() + oneDay
             }
         }, { upsert: true });
     } catch (e) {
@@ -54,29 +59,37 @@ if (process.env.ROLE == "MASTER") {
             await model.User.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
                 $set: {
                     sessionToken: uuidv4(),
-                    sessionTokenExpire: Date.now() + 15 * 60 * 1000
+                    sessionTokenExpire: Date.now() + oneDay
                 }
             });
         } catch (e) {
             console.log(e);
         }
-    }, 5 * 60 * 1000);
+    }, oneHour);
+
+    setInterval(async () => {
+        try {
+            await model.User.updateMany({ sessionIDExpire: { $lt: Date.now() } }, {
+                $set: {
+                    sessionID: uuidv4(),
+                    sessionIDExpire: Date.now() + oneMonth
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }, oneDay);
 }
 
-export async function getSessionToken(sessionID: string, isAuthorizedApp = false) {
+export async function getSessionToken(sessionID: string) {
     try {
         const doc = await model.User.findOne({ sessionID: sessionID }).exec();
         if (!doc) { throw new utilAPI.GlacierAPIError("The sessionID is invalid"); }
 
-        const sessionToken = uuidv4();
-        await model.User.updateOne({ sessionID: sessionID }, {
-            $set: {
-                sessionToken: sessionToken,
-                sessionTokenExpire: Date.now() + (isAuthorizedApp ? 30 * 24 * 60 * 60 * 1000 : 15 * 60 * 1000)
-            }
-        });
-        return sessionToken;
+        return doc.sessionToken;
     } catch (e) {
         throw e;
     }
 }
+
+export const authWithTwitter = passport.authenticate("twitter");
