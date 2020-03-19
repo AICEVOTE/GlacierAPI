@@ -6,10 +6,10 @@ export async function getMyProfile(sessionToken: string) {
         const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
         if (!doc) { throw new Error("Invalid sessionToken"); }
 
-        return await getProfiles([{
+        return (await getProfiles([{
             userProvider: doc.userProvider,
             userID: doc.userID
-        }]);
+        }]))[0];
     } catch (e) {
         throw e;
     }
