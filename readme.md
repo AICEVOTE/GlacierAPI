@@ -49,7 +49,7 @@ GET /profiles?sessiontoken=:sessiontoken
 > `:sessiontoken`には、有効なsessionTokenを入れてください。
 
 ``` bash
-curl https://api.aicevote.com/profiles?sessiontoken=test
+curl https://api.aicevote.com/user/profiles?sessiontoken=test
 ```
 
 ---
@@ -64,7 +64,7 @@ GET /profiles/:userprovider/:userid
 > 現在、認証プロバイダには、twitterとlegacyを指定することができます。
 
 ``` bash
-curl https://api.aicevote.com/profiles/twitter/1143896482774261761 | jq
+curl https://api.aicevote.com/user/twitter/1143896482774261761 | jq
 ```
 
 ---
@@ -76,7 +76,7 @@ POST /profiles
 > `:userprovider`と`:userid`の配列をJSONとしてPOSTしてください。
 
 ``` bash
-curl -H "Content-type: application/json" -X POST -d '[{"userProvider":"twitter","userID":"1143896482774261761"}]' https://api.aicevote.com/profiles | jq
+curl -H "Content-type: application/json" -X POST -d '[{"userProvider":"twitter","userID":"1143896482774261761"}]' https://api.aicevote.com/user/profiles | jq
 ```
 
 ---

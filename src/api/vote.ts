@@ -19,9 +19,11 @@ export async function getInfluencerVotes(themeID: number) {
             expiredAt: { $exists: false }
         }).exec()).
             map((doc) => ({
+                themeID: doc.themeID,
                 answer: doc.answer,
                 userProvider: doc.userProvider,
-                userID: doc.userID
+                userID: doc.userID,
+                createdAt: doc.createdAt
             }));
     } catch (e) {
         throw e;
@@ -41,9 +43,11 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
             userID: { $in: doc.friends },
             expiredAt: { $exists: false }
         }).exec()).map(doc => ({
+            themeID: doc.themeID,
             answer: doc.answer,
             userProvider: doc.userProvider,
-            userID: doc.userID
+            userID: doc.userID,
+            createdAt: doc.createdAt
         }));
     } catch (e) {
         throw e;
@@ -85,6 +89,7 @@ export async function getComments(themeID: number) {
     try {
         return (await model.Comment.find({ themeID: themeLoader.themes[themeID].themeID }).exec()).
             map((doc) => ({
+                themeID: doc.themeID,
                 message: doc.message,
                 userProvider: doc.userProvider,
                 userID: doc.userID,

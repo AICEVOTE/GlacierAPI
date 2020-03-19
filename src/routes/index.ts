@@ -42,58 +42,6 @@ router.get("/themes/:themeid", async (req, res, next) => {
     }
 });
 
-router.get("/profiles", async (req, res, next) => {
-    const sessionToken: unknown = req.query.sessiontoken;
-
-    if (!utilAPI.isString(sessionToken)) {
-        return next(createError(400));
-    }
-
-    try {
-        res.json(await indexAPI.getMyProfile(sessionToken));
-    } catch (e) {
-        console.log(e);
-        next(createError(400));
-    }
-});
-
-router.post("/profiles", async (req, res, next) => {
-    const query = req.body;
-    if (!utilAPI.isArray(query)) {
-        next(createError(400));
-        return;
-    }
-
-    try {
-        res.json(await indexAPI.getProfiles(query.map(
-            ({ userProvider, userID }: { userProvider: unknown, userID: unknown }) => {
-                if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
-                    throw new Error("Invalid request");
-                }
-                return { userProvider: userProvider, userID: userID }
-            })));
-    } catch (e) {
-        console.log(e);
-        next(createError(400));
-    }
-});
-
-router.get("/profiles/:userprovider/:userid", async (req, res, next) => {
-    const userProvider = req.params.userprovider;
-    const userID = req.params.userid;
-
-    try {
-        const profiles = await indexAPI.getProfiles([{ userProvider: userProvider, userID: userID }]);
-        if (profiles.length == 0) {
-            next(createError(404));
-        }
-        res.json(profiles[0]);
-    } catch (e) {
-        console.log(e);
-        next(createError(503));
-    }
-});
-
 router.post("/feedback", async (req, res, next) => {
     const message: unknown = req.query.message;
     if (!utilAPI.isString(message)) {
