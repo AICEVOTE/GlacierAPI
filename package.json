@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "connect-redis": "*",
-    "cookie-parser": "*",
     "cors": "*",
     "debug": "*",
     "dotenv": "*",
