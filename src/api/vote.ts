@@ -34,13 +34,16 @@ export async function getFriendVotes(themeID: number, sessionToken: string) {
     if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
 
     try {
-        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
-        if (!doc) { throw new Error("Invalid sessionToken"); }
+        const session = await model.Session.findOne({ sessionToken: sessionToken }).exec();
+        if (!session) { throw new Error("Invalid sessionToken"); }
+
+        const user = await model.User.findOne({ userProvider: session.userProvider, userID: session.userID }).exec();
+        if (!user) { throw new Error("User not found"); }
 
         return (await model.Vote.find({
             themeID: themeLoader.themes[themeID].themeID,
             userProvider: "twitter",
-            userID: { $in: doc.friends },
+            userID: { $in: user.friends },
             expiredAt: { $exists: false }
         }).exec()).map(doc => ({
             themeID: doc.themeID,
@@ -60,7 +63,7 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
         throw new Error("Invalid answer");
     }
 
-    const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+    const doc = await model.Session.findOne({ sessionToken: sessionToken }).exec();
     if (!doc) { throw new Error("Invalid sessionToken"); }
 
     try {
@@ -104,7 +107,7 @@ export async function postComment(themeID: number, sessionToken: string, message
     if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
 
     try {
-        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+        const doc = await model.Session.findOne({ sessionToken: sessionToken }).exec();
         if (!doc) { throw new Error("Invalid sessionToken"); }
 
         await new model.Comment({

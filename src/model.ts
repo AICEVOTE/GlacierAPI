@@ -16,24 +16,27 @@ interface IThemeModel extends mongoose.Document {
     keywords: string[],
     formula: string,
     saveInterval: number
-}
+};
 
 interface IUserModel extends mongoose.Document {
     name: string,
     userProvider: string,
     userID: string,
-    authInfo: {
-        AT: string,
-        RT: string
-    },
     friends: string[],
     imageURI: string,
-    numOfFollowers: number,
+    numOfFollowers: number
+};
+
+interface ISessionModel extends mongoose.Document {
+    userProvider: string,
+    userID: string,
+    accessToken: string,
+    refreshToken: string,
     sessionID: string,
     sessionIDExpire: number,
     sessionToken: string,
     sessionTokenExpire: number
-}
+};
 
 interface IVoteModel extends mongoose.Document {
     themeID: number,
@@ -42,7 +45,7 @@ interface IVoteModel extends mongoose.Document {
     userID: string,
     createdAt: number,
     expiredAt: number
-}
+};
 
 interface ICommentModel extends mongoose.Document {
     themeID: number,
@@ -50,18 +53,18 @@ interface ICommentModel extends mongoose.Document {
     userProvider: string,
     userID: string,
     createdAt: number,
-}
+};
 
 interface IResultModel extends mongoose.Document {
     themeID: number,
     timestamp: number,
     percentage: number[]
-}
+};
 
 interface IFeedbackModel extends mongoose.Document {
     message: string,
     feedbackType: string
-}
+};
 
 const ThemeSchema = new mongoose.Schema<IThemeModel>({
     isEnabled: Boolean,
@@ -74,19 +77,22 @@ const ThemeSchema = new mongoose.Schema<IThemeModel>({
     keywords: [String],
     formula: String,
     saveInterval: Number
-})
+});
 
 const UserSchema = new mongoose.Schema<IUserModel>({
     name: String,
     userProvider: String,
     userID: String,
-    authInfo: {
-        AT: String,
-        RT: String
-    },
     friends: [String],
     imageURI: String,
-    numOfFollowers: Number,
+    numOfFollowers: Number
+});
+
+const SessionSchema = new mongoose.Schema<ISessionModel>({
+    userProvider: String,
+    userID: String,
+    accessToken: String,
+    refreshToken: String,
     sessionID: String,
     sessionIDExpire: Number,
     sessionToken: String,
@@ -123,6 +129,7 @@ const FeedbackSchema = new mongoose.Schema<IFeedbackModel>({
 
 export const Theme = mongoose.model<IThemeModel>("Theme", ThemeSchema, "themes");
 export const User = mongoose.model<IUserModel>("User", UserSchema, "users");
+export const Session = mongoose.model<ISessionModel>("Session", SessionSchema, "sessions");
 export const Vote = mongoose.model<IVoteModel>("Vote", VoteSchema, "votes");
 export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comments");
 export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");

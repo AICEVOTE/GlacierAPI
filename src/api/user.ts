@@ -3,7 +3,7 @@ import * as utilAPI from "./util";
 
 export async function getMyProfile(sessionToken: string) {
     try {
-        const doc = await model.User.findOne({ sessionToken: sessionToken }).exec();
+        const doc = await model.Session.findOne({ sessionToken: sessionToken }).exec();
         if (!doc) { throw new Error("Invalid sessionToken"); }
 
         return (await getProfiles([{
