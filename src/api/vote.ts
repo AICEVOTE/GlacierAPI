@@ -4,7 +4,7 @@ import XSSFilters from "xss-filters";
 
 export async function getInfluencerVotes(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
-    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) { return []; }
+    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) { throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured"); }
 
     try {
         const influencers = (await model.User.find({

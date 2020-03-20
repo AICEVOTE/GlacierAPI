@@ -42,7 +42,7 @@ passport.use(new TwitterStrategy({
             sessionID: sessionID,
             sessionIDExpire: Date.now() + oneMonth,
             sessionToken: uuidv4(),
-            sessionTokenExpire: Date.now() + oneDay
+            sessionTokenExpire: Date.now() + oneHour
         }).save();
     } catch (e) {
         done(null, false);
@@ -61,7 +61,7 @@ if (process.env.ROLE == "MASTER") {
             await model.Session.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
                 $set: {
                     sessionToken: uuidv4(),
-                    sessionTokenExpire: Date.now() + oneDay
+                    sessionTokenExpire: Date.now() + oneHour
                 }
             });
         } catch (e) {
@@ -81,7 +81,7 @@ if (process.env.ROLE == "MASTER") {
 export async function getSessionToken(sessionID: string) {
     try {
         const doc = await model.Session.findOne({ sessionID: sessionID }).exec();
-        if (!doc) { throw new Error("The sessionID is invalid"); }
+        if (!doc) { throw new Error("Invalid sessionID"); }
 
         return doc.sessionToken;
     } catch (e) {

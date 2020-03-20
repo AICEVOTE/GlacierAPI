@@ -4,6 +4,7 @@ import XSSFilters from "xss-filters";
 
 export async function getTopicality(themeID: number) {
     if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
+
     const votes = await model.Vote.find({
         themeID: themeID,
         createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
@@ -12,6 +13,7 @@ export async function getTopicality(themeID: number) {
         themeID: themeID,
         createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
     }).countDocuments().exec();
+    
     return votes + comments;
 }
 

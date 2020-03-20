@@ -5,7 +5,7 @@ mongoose.connect(process.env.MONGO_URI || "", {
     useUnifiedTopology: true
 });
 
-interface IThemeModel extends mongoose.Document {
+interface ThemeModel extends mongoose.Document {
     isEnabled: boolean,
     themeID: number,
     title: string,
@@ -18,7 +18,7 @@ interface IThemeModel extends mongoose.Document {
     saveInterval: number
 };
 
-interface IUserModel extends mongoose.Document {
+interface UserModel extends mongoose.Document {
     name: string,
     userProvider: string,
     userID: string,
@@ -27,7 +27,7 @@ interface IUserModel extends mongoose.Document {
     numOfFollowers: number
 };
 
-interface ISessionModel extends mongoose.Document {
+interface SessionModel extends mongoose.Document {
     userProvider: string,
     userID: string,
     accessToken: string,
@@ -38,7 +38,7 @@ interface ISessionModel extends mongoose.Document {
     sessionTokenExpire: number
 };
 
-interface IVoteModel extends mongoose.Document {
+interface VoteModel extends mongoose.Document {
     themeID: number,
     answer: number,
     userProvider: string,
@@ -47,7 +47,7 @@ interface IVoteModel extends mongoose.Document {
     expiredAt: number
 };
 
-interface ICommentModel extends mongoose.Document {
+interface CommentModel extends mongoose.Document {
     themeID: number,
     message: string,
     userProvider: string,
@@ -55,18 +55,18 @@ interface ICommentModel extends mongoose.Document {
     createdAt: number,
 };
 
-interface IResultModel extends mongoose.Document {
+interface ResultModel extends mongoose.Document {
     themeID: number,
     timestamp: number,
     percentage: number[]
 };
 
-interface IFeedbackModel extends mongoose.Document {
+interface FeedbackModel extends mongoose.Document {
     message: string,
     feedbackType: string
 };
 
-const ThemeSchema = new mongoose.Schema<IThemeModel>({
+const ThemeSchema = new mongoose.Schema<ThemeModel>({
     isEnabled: Boolean,
     themeID: Number,
     title: String,
@@ -79,7 +79,7 @@ const ThemeSchema = new mongoose.Schema<IThemeModel>({
     saveInterval: Number
 });
 
-const UserSchema = new mongoose.Schema<IUserModel>({
+const UserSchema = new mongoose.Schema<UserModel>({
     name: String,
     userProvider: String,
     userID: String,
@@ -88,7 +88,7 @@ const UserSchema = new mongoose.Schema<IUserModel>({
     numOfFollowers: Number
 });
 
-const SessionSchema = new mongoose.Schema<ISessionModel>({
+const SessionSchema = new mongoose.Schema<SessionModel>({
     userProvider: String,
     userID: String,
     accessToken: String,
@@ -99,7 +99,7 @@ const SessionSchema = new mongoose.Schema<ISessionModel>({
     sessionTokenExpire: Number
 });
 
-const VoteSchema = new mongoose.Schema<IVoteModel>({
+const VoteSchema = new mongoose.Schema<VoteModel>({
     themeID: Number,
     answer: Number,
     userProvider: String,
@@ -108,7 +108,7 @@ const VoteSchema = new mongoose.Schema<IVoteModel>({
     expiredAt: Number
 });
 
-const CommentSchema = new mongoose.Schema<ICommentModel>({
+const CommentSchema = new mongoose.Schema<CommentModel>({
     themeID: Number,
     message: String,
     userProvider: String,
@@ -116,21 +116,21 @@ const CommentSchema = new mongoose.Schema<ICommentModel>({
     createdAt: Number,
 });
 
-const ResultSchema = new mongoose.Schema<IResultModel>({
+const ResultSchema = new mongoose.Schema<ResultModel>({
     themeID: Number,
     timestamp: Number,
     percentage: [Number]
 });
 
-const FeedbackSchema = new mongoose.Schema<IFeedbackModel>({
+const FeedbackSchema = new mongoose.Schema<FeedbackModel>({
     message: String,
     feedbackType: String
 });
 
-export const Theme = mongoose.model<IThemeModel>("Theme", ThemeSchema, "themes");
-export const User = mongoose.model<IUserModel>("User", UserSchema, "users");
-export const Session = mongoose.model<ISessionModel>("Session", SessionSchema, "sessions");
-export const Vote = mongoose.model<IVoteModel>("Vote", VoteSchema, "votes");
-export const Comment = mongoose.model<ICommentModel>("Comment", CommentSchema, "comments");
-export const Result = mongoose.model<IResultModel>("Result", ResultSchema, "results");
-export const Feedback = mongoose.model<IFeedbackModel>("Feedback", FeedbackSchema, "feedbacks");
+export const Theme = mongoose.model<ThemeModel>("Theme", ThemeSchema, "themes");
+export const User = mongoose.model<UserModel>("User", UserSchema, "users");
+export const Session = mongoose.model<SessionModel>("Session", SessionSchema, "sessions");
+export const Vote = mongoose.model<VoteModel>("Vote", VoteSchema, "votes");
+export const Comment = mongoose.model<CommentModel>("Comment", CommentSchema, "comments");
+export const Result = mongoose.model<ResultModel>("Result", ResultSchema, "results");
+export const Feedback = mongoose.model<FeedbackModel>("Feedback", FeedbackSchema, "feedbacks");

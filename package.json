@@ -8,10 +8,10 @@
   "license": "MIT",
   "scripts": {
     "prestart": "yarn tsc",
-    "start": "yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
+    "start": "NODE_ENV=\"production\" yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
     "stop": "yarn pm2 stop GlacierAPI",
     "prerestart": "yarn tsc",
-    "restart": "yarn pm2 restart GlacierAPI --update-env"
+    "restart": "NODE_ENV=\"production\" yarn pm2 restart GlacierAPI --update-env"
   },
   "dependencies": {
     "connect-redis": "*",
@@ -35,8 +35,7 @@
     "xss-filters": "*"
   },
   "devDependencies": {
-    "@types/connect-redis": "^0.0.13",
-    "@types/cookie-parser": "*",
+    "@types/connect-redis": "*",
     "@types/cors": "*",
     "@types/debug": "*",
     "@types/express": "*",
