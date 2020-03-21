@@ -1,5 +1,11 @@
 import * as model from "../model";
-import * as utilAPI from "./util";
+
+function isInfluencer(numOfFollowers: number) {
+    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
+        return false;
+    }
+    return numOfFollowers > parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
+}
 
 export async function getMyProfile(sessionToken: string) {
     try {
@@ -52,7 +58,7 @@ export async function getProfiles(users: { userProvider: string, userID: string 
                 userID: doc.userID,
                 name: doc.name,
                 imageURI: doc.imageURI,
-                isInfluencer: utilAPI.isInfluencer(doc.numOfFollowers),
+                isInfluencer: isInfluencer(doc.numOfFollowers),
                 votes: votes,
                 comments: comments
             };

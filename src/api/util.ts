@@ -12,10 +12,3 @@ export function isArray(obj: unknown | null | undefined): obj is any[] {
     if (obj == null || obj == undefined) { return false; }
     return Object.prototype.toString.call(obj) == "[object Array]";
 }
-
-export function isInfluencer(numOfFollowers: number) {
-    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
-        return false;
-    }
-    return numOfFollowers > parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
-}
