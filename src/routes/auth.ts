@@ -4,6 +4,7 @@ const router = express.Router();
 import * as authAPI from "../api/auth";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
+import passport from "passport";
 
 router.get("/sessiontoken", async (req, res, next) => {
     const sessionID: unknown = req.query.sessionid;
@@ -23,7 +24,7 @@ router.get("/sessiontoken", async (req, res, next) => {
     }
 })
 
-router.get("/twitter", async (req, _res, next) => {
+router.get("/twitter", (req, _res, next) => {
     const callbackURI: unknown = req.query.callback;
 
     if (!req.session) {
@@ -37,13 +38,13 @@ router.get("/twitter", async (req, _res, next) => {
     }
 
     next();
-}, authAPI.authWithTwitter);
+}, passport.authenticate("twitter"));
 
-router.get("/twitter/callback", authAPI.authWithTwitter, async (req, res, next) => {
+router.get("/twitter/callback", passport.authenticate("twitter"), (req, res, next) => {
     const sessionID: unknown = req.session?.passport?.user;
 
     if (!utilAPI.isString(sessionID) || !req.session) {
-        return next(createError(400));
+        return next(createError(401));
     }
 
     if (!utilAPI.isString(req.session.callbackURI)) {
@@ -54,5 +55,15 @@ router.get("/twitter/callback", authAPI.authWithTwitter, async (req, res, next) 
     req.session.callbackURI = undefined;
     res.redirect(redirectTo);
 });
+
+router.post("/app", passport.authenticate("local"), (req, res, next) => {
+    const sessionID: unknown = req.session?.passport?.user;
+
+    if (!utilAPI.isString(sessionID)) {
+        return next(createError(401));
+    }
+
+    res.json({ sessionID: sessionID });
+})
 
 export default router;
