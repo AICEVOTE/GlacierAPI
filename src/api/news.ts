@@ -24,6 +24,11 @@ interface IArticle {
 }
 
 function convertArticle(article: INewsAPIArticle): IArticle {
+    let publishedAt = NaN;
+    if (article.publishedAt) {
+        publishedAt = Date.parse(article.publishedAt);
+    }
+
     return {
         source: article.source?.name || "",
         author: article.author || "",
@@ -31,70 +36,68 @@ function convertArticle(article: INewsAPIArticle): IArticle {
         description: article.description || "",
         uri: article.url || "",
         uriToImage: article.urlToImage || "",
-        publishedAt: article.publishedAt ? Date.parse(article.publishedAt) : NaN
+        publishedAt: publishedAt
     }
 }
 
-async function getHeadline(pageSize: number = 15) {
-    try {
-        const articles: INewsAPIArticle[] = (await newsapi.v2.topHeadlines({
-            country: "jp",
-            category: "general",
-            pageSize: pageSize
-        })).articles || [];
+// Get japan headline news
+async function getHeadline(pageSize: number = 15): Promise<IArticle[]> {
+    const articles: INewsAPIArticle[] = (await newsapi.v2.topHeadlines({
+        country: "jp",
+        category: "general",
+        pageSize: pageSize
+    })).articles || [];
 
-        return Array.from(new Set(articles.map(
-            (article) => convertArticle(article)
-        ))).sort((a, b) => a.publishedAt - b.publishedAt);
-    } catch (e) {
-        throw e;
-    }
+    return Array.from(new Set(articles.map(article => convertArticle(article))))
+        .sort((a, b) => a.publishedAt - b.publishedAt);
 }
 
-async function getEverything(query: string, pageSize: number = 6) {
-    try {
-        const articles: INewsAPIArticle[] = (await newsapi.v2.everything({
-            q: query,
-            language: "jp",
-            sortBy: "relevancy",
-            pageSize: pageSize
-        })).articles || [];
-
-        return articles.map((article) => convertArticle(article));
-    } catch (e) {
-        throw e;
-    }
-}
-
-async function getRelated(keywords: string[]) {
+// Get all articles about the topic
+async function getRelated(keywords: string[]): Promise<IArticle[]> {
     return (await Promise.all(keywords.map(
-        async (keyword) => await getEverything(keyword, 6 / keywords.length)
-    ))).reduce((prev, cur) => prev.concat(cur)).sort(
-        (a, b) => a.publishedAt - b.publishedAt
-    );
+        async keyword => {
+            const articles: INewsAPIArticle[] = (await newsapi.v2.everything({
+                q: keyword,
+                language: "jp",
+                sortBy: "relevancy",
+                pageSize: 6 / keywords.length
+            })).articles || [];
+
+            return articles.map(article => convertArticle(article));
+        }
+    )))
+        .reduce((prev, cur) => prev.concat(cur))
+        .sort((a, b) => a.publishedAt - b.publishedAt);
 }
 
-async function updateAll() {
+async function getAllNews(): Promise<{ latest: IArticle[]; related: IArticle[][]; }> {
     return {
         latest: await getHeadline(),
         related: await Promise.all(themeLoader.themes.map(
-            async (theme) => await getRelated(theme.keywords)
+            async theme => await getRelated(theme.keywords)
         ))
     };
 }
 
 let articles: { latest: IArticle[], related: IArticle[][] };
 
-updateAll().then((_articles) => { articles = _articles; });
+getAllNews()
+    .then(_articles => articles = _articles)
+    .catch(e => console.log(e));
+
 setInterval(async () => {
-    articles = await updateAll();
+    try {
+        articles = await getAllNews();
+    } catch (e) {
+        console.log(e);
+    }
 }, 8 * 60 * 60 * 1000);
 
-export function getAllArticles() {
+export function getAllArticles(): { latest: IArticle[]; related: IArticle[][]; } {
     return articles;
 }
 
-export function getRelatedArticles(themeID: number) {
+export function getRelatedArticles(themeID: number): IArticle[] {
     if (themeLoader.themes[themeID] == undefined) {
         throw new Error("Invalid themeID");
     }

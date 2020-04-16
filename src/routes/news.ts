@@ -4,7 +4,7 @@ const router = express.Router();
 import * as newsAPI from "../api/news";
 import createError from "http-errors";
 
-router.get("/articles", async (_req, res, _next) => {
+router.get("/articles", (_req, res, _next) => {
     res.json(newsAPI.getAllArticles());
 });
 

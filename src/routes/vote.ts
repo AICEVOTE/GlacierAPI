@@ -31,13 +31,26 @@ router.get("/results/:themeid", (req, res, next) => {
 
 router.get("/votes", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
-    
+
     try {
-        res.json(await Promise.all(themeLoader.themes.map(async (_theme, themeID) => ({
-            themeID: themeID,
-            votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(themeID, sessionToken) : [],
-            votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
-        }))));
+        res.json(await Promise.all(themeLoader.themes.map(async (_theme, themeID) => {
+            let votes: {
+                themeID: number;
+                answer: number;
+                userProvider: string;
+                userID: string;
+                createdAt: number;
+            }[] = [];
+            if (utilAPI.isString(sessionToken)) {
+                votes = await voteAPI.getFriendVotes(themeID, sessionToken);
+            }
+
+            return {
+                themeID: themeID,
+                votes: votes,
+                votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
+            };
+        })));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -49,9 +62,20 @@ router.get("/votes/:themeid", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
 
     try {
+        let votes: {
+            themeID: number;
+            answer: number;
+            userProvider: string;
+            userID: string;
+            createdAt: number;
+        }[] = [];
+        if (utilAPI.isString(sessionToken)) {
+            votes = await voteAPI.getFriendVotes(themeID, sessionToken);
+        }
+
         res.json({
             themeID: themeID,
-            votes: utilAPI.isString(sessionToken) ? await voteAPI.getFriendVotes(themeID, sessionToken) : [],
+            votes: votes,
             votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
         });
     } catch (e) {
@@ -93,16 +117,16 @@ router.get("/transitions", (_req, res, _next) => {
 router.get("/transitions/:themeid", (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    if (themeLoader.themes[themeID] != undefined) {
-        res.json({
-            themeID: themeID,
-            shortTransition: themeLoader.themes[themeID].shortTransition,
-            longTransition: themeLoader.themes[themeID].longTransition
-        });
-    } else {
+    if (themeLoader.themes[themeID] == undefined) {
         console.log("The themeID is invalid");
-        next(createError(404));
+        return next(createError(404));
     }
+
+    res.json({
+        themeID: themeID,
+        shortTransition: themeLoader.themes[themeID].shortTransition,
+        longTransition: themeLoader.themes[themeID].longTransition
+    });
 });
 
 router.get("/comments", async (_req, res, next) => {

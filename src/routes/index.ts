@@ -11,22 +11,32 @@ router.get("/", function (_req, res, _next) {
     res.render("index", { title: "Glacier API" });
 });
 
-router.get("/themes", async (_req, res, _next) => {
-    res.json(await Promise.all(themeLoader.themes.map(async (theme, themeID) => ({
-        themeID: themeID,
-        title: theme.title,
-        description: theme.description,
-        imageURI: theme.imageURI,
-        genre: theme.genre,
-        choices: theme.choices,
-        topicality: await indexAPI.getTopicality(themeID)
-    }))));
+router.get("/themes", async (_req, res, next) => {
+    try {
+        res.json(await Promise.all(themeLoader.themes.map(async (theme, themeID) => ({
+            themeID: themeID,
+            title: theme.title,
+            description: theme.description,
+            imageURI: theme.imageURI,
+            genre: theme.genre,
+            choices: theme.choices,
+            topicality: await indexAPI.calcTopicality(themeID)
+        }))));
+    } catch (e) {
+        console.log(e);
+        next(createError(500));
+    }
 });
 
 router.get("/themes/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    if (themeLoader.themes[themeID] != undefined) {
+    if (themeLoader.themes[themeID] == undefined) {
+        console.log("The themeID is invalid");
+        return next(createError(400));
+    }
+
+    try {
         res.json({
             themeID: themeID,
             title: themeLoader.themes[themeID].title,
@@ -34,11 +44,11 @@ router.get("/themes/:themeid", async (req, res, next) => {
             imageURI: themeLoader.themes[themeID].imageURI,
             genre: themeLoader.themes[themeID].genre,
             choices: themeLoader.themes[themeID].choices,
-            topicality: await indexAPI.getTopicality(themeID)
+            topicality: await indexAPI.calcTopicality(themeID)
         });
-    } else {
-        console.log("The themeID is invalid");
-        next(createError(400));
+    } catch (e) {
+        console.log(e);
+        next(createError(500));
     }
 });
 

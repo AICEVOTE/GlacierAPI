@@ -45,10 +45,10 @@ async function getTwitterFriends(twitterClient: Twitter, twitterID: string): Pro
 }
 
 export async function getSessionToken(sessionID: string): Promise<string> {
-    const doc = await model.Session.findOne({ sessionID: sessionID }).exec();
-    if (!doc) { throw new Error("Invalid sessionID"); }
+    const session = await model.Session.findOne({ sessionID: sessionID }).exec();
+    if (!session) { throw new Error("Invalid sessionID"); }
 
-    return doc.sessionToken;
+    return session.sessionToken;
 }
 
 // Authorize with web twitter authentication
