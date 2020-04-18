@@ -64,6 +64,6 @@ router.post("/app", passport.authenticate("local"), (req, res, next) => {
     }
 
     res.json({ sessionID: sessionID });
-})
+});
 
 export default router;

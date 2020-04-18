@@ -102,7 +102,7 @@ passport.use(new LocalStrategy({
             access_token_key: accessToken,
             access_token_secret: refreshToken
         });
-        const res = await twitterClient.get("account/verify_credentials");
+        const res = await twitterClient.get("account/verify_credentials", {});
         const friends = await getTwitterFriends(twitterClient, res.id_str);
 
         await saveSession({
