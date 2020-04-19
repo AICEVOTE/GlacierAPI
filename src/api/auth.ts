@@ -18,7 +18,7 @@ interface Profile {
     numOfFollowers: number
 }
 
-async function saveSession(profile: Profile, sessionID: string) {
+async function saveSession(profile: Profile, accessToken: string, refreshToken: string, sessionID: string) {
     await model.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
         $set: {
             name: profile.name,
@@ -31,6 +31,8 @@ async function saveSession(profile: Profile, sessionID: string) {
     await new model.Session({
         userProvider: profile.userProvider,
         userID: profile.userID,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
         sessionID: sessionID,
         sessionIDExpire: Date.now() + oneMonth,
         sessionToken: uuidv4(),
@@ -79,7 +81,7 @@ passport.use(new TwitterStrategy({
             friends: friends,
             imageURI: imageURI,
             numOfFollowers: profile._json.followers_count
-        }, sessionID);
+        }, accessToken, refreshToken, sessionID);
     } catch (e) {
         return done(null, false);
     }
@@ -112,7 +114,7 @@ passport.use(new LocalStrategy({
             friends: friends,
             imageURI: res.profile_image_url_https,
             numOfFollowers: res.followers_count
-        }, sessionID);
+        }, accessToken, refreshToken, sessionID);
     } catch (e) {
         return done(null, false);
     }
