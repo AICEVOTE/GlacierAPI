@@ -5,7 +5,7 @@
   "main": "./dist/bin/www.js",
   "repository": "https://github.com/yujixr/GlacierAPI",
   "author": "YUJI",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "scripts": {
     "prestart": "yarn tsc",
     "start": "NODE_ENV=\"production\" yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
