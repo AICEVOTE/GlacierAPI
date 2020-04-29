@@ -1,12 +1,11 @@
-// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.106.0/containers/javascript-node-12
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json
 {
-	"name": "Node.js 12",
-	"dockerFile": "Dockerfile",
+	"name": "Node.js",
+	"image": "docker.pkg.github.com/aicevote/glacierapi/glacierapi:latest",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash"
+		"terminal.integrated.shell.linux": "/bin/sh"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
