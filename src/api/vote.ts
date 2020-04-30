@@ -16,11 +16,11 @@ async function getUser(sessionToken: string) {
 }
 
 export async function getVotes(themeID?: number, users?: { userProvider: string, userID: string }[]) {
-    if (themeID && !themeLoader.exists(themeID)) {
+    if (themeID != undefined && !themeLoader.exists(themeID)) {
         throw new Error("Invalid themeID");
     }
 
-    const query = themeID
+    const query = themeID != undefined
         ? users
             ? { themeID: themeID, $or: users, expiredAt: { $exists: false } }
             : { themeID: themeID, expiredAt: { $exists: false } }
@@ -32,11 +32,11 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
 }
 
 export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {
-    if (themeID && !themeLoader.exists(themeID)) {
+    if (themeID != undefined && !themeLoader.exists(themeID)) {
         throw new Error("Invalid themeID");
     }
 
-    const query = themeID
+    const query = themeID != undefined
         ? users
             ? { themeID: themeID, $or: users }
             : { themeID: themeID }
