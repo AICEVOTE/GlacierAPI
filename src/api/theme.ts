@@ -28,7 +28,7 @@ class Theme {
     get shortTransition() { return this._shortTransition; }
     get longTransition() { return this._longTransition; }
 
-    private async interpolate() {
+    private async interpolate(): Promise<void> {
         const lastResult = await model.Result
             .findOne({ themeID: this.themeID })
             .sort({ timestamp: -1 }).exec();
@@ -47,7 +47,7 @@ class Theme {
         }
     }
 
-    private async load(isMaster: boolean) {
+    private async load(isMaster: boolean): Promise<void> {
         const now = Date.now();
         if (isMaster) { await this.interpolate(); }
 
@@ -60,7 +60,7 @@ class Theme {
         this._longTransition = newTransition.longTransition;
     }
 
-    private async update(isMaster: boolean) {
+    private async update(isMaster: boolean): Promise<void> {
         const newResult = await this.updateResult(Date.now());
         this._results = newResult.results;
         this._counts = newResult.counts;
@@ -76,7 +76,10 @@ class Theme {
         }
     }
 
-    private async updateResult(now: number) {
+    private async updateResult(now: number): Promise<{
+        counts: number[];
+        results: number[];
+    }> {
         const docs = await model.Vote.find({
             themeID: this.themeID,
             createdAt: { $lte: now },
@@ -100,7 +103,7 @@ class Theme {
         };
     }
 
-    private async saveResult(now: number) {
+    private async saveResult(now: number): Promise<void> {
         await new model.Result({
             themeID: this.themeID,
             timestamp: now,
@@ -108,15 +111,14 @@ class Theme {
         }).save();
     }
 
-    private async updateTransition(now: number) {
-        const docs = (await model.Result.find({
+    private async updateTransition(now: number): Promise<{
+        shortTransition: ITransition[],
+        longTransition: ITransition[]
+    }> {
+        const docs = await model.Result.find({
             themeID: this.themeID,
             timestamp: { $lte: now }
-        }).sort({ timestamp: -1 }).limit(1440).exec())
-            .map((doc) => ({
-                timestamp: doc.timestamp,
-                percentage: doc.percentage
-            }));
+        }).sort({ timestamp: -1 }).limit(1440).exec();
 
         return {
             shortTransition: docs.slice(0, Math.min(60, docs.length)),

@@ -83,7 +83,7 @@ async function getAllNews(): Promise<{
     return { latest: headlines, related: related };
 }
 
-let articles: {
+export let articles: {
     latest: IArticle[];
     related: { themeID: number; articles: IArticle[]; }[];
 };
@@ -99,17 +99,3 @@ setInterval(async () => {
         console.log(e);
     }
 }, 8 * 60 * 60 * 1000);
-
-export function getAllArticles(): {
-    latest: IArticle[];
-    related: { themeID: number; articles: IArticle[]; }[];
-} {
-    return articles;
-}
-
-export function getRelatedArticles(themeID: number): IArticle[] {
-    if (!themeLoader.exists(themeID)) {
-        throw new Error("Invalid themeID");
-    }
-    return articles.related.find(articles => articles.themeID == themeID)?.articles || [];
-}

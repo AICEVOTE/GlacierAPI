@@ -35,22 +35,20 @@ router.get("/votes", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
 
     try {
+        const friends = utilAPI.isString(sessionToken)
+            ? (await voteAPI.getMe(sessionToken))
+                .friends
+                .map(userID => ({
+                    userProvider: "twitter",
+                    userID: userID
+                }))
+            : [];
+        const influencers = await voteAPI.getInfluencers();
         res.json(await Promise.all(themeLoader.themes.map(async theme => {
-            let votes: {
-                themeID: number;
-                answer: number;
-                userProvider: string;
-                userID: string;
-                createdAt: number;
-            }[] = [];
-            if (utilAPI.isString(sessionToken)) {
-                votes = await voteAPI.getFriendVotes(theme.themeID, sessionToken);
-            }
-
             return {
                 themeID: theme.themeID,
-                votes: votes,
-                votesFromInfluencer: await voteAPI.getInfluencerVotes(theme.themeID)
+                votes: await voteAPI.getVotes(theme.themeID, friends),
+                votesFromInfluencer: await voteAPI.getVotes(theme.themeID, influencers)
             };
         })));
     } catch (e) {
@@ -64,21 +62,20 @@ router.get("/votes/:themeid", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
 
     try {
-        let votes: {
-            themeID: number;
-            answer: number;
-            userProvider: string;
-            userID: string;
-            createdAt: number;
-        }[] = [];
-        if (utilAPI.isString(sessionToken)) {
-            votes = await voteAPI.getFriendVotes(themeID, sessionToken);
-        }
+        const friends = utilAPI.isString(sessionToken)
+            ? (await voteAPI.getMe(sessionToken))
+                .friends
+                .map(userID => ({
+                    userProvider: "twitter",
+                    userID: userID
+                }))
+            : [];
+        const influencers = await voteAPI.getInfluencers();
 
         res.json({
             themeID: themeID,
-            votes: votes,
-            votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
+            votes: await voteAPI.getVotes(themeID, friends),
+            votesFromInfluencer: await voteAPI.getVotes(themeID, influencers)
         });
     } catch (e) {
         console.log(e);
@@ -97,11 +94,7 @@ router.put("/votes/:themeid", async (req, res, next) => {
 
     try {
         await voteAPI.putVote(themeID, sessionToken, parseInt(answer, 10));
-        res.json({
-            themeID: themeID,
-            votes: await voteAPI.getFriendVotes(themeID, sessionToken),
-            votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
-        });
+        res.status(200).send("");
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -170,10 +163,7 @@ router.post("/comments/:themeid", async (req, res, next) => {
 
     try {
         await voteAPI.postComment(themeID, sessionToken, message);
-        res.status(201).json({
-            themeID: themeID,
-            comments: await voteAPI.getComments(themeID)
-        });
+        res.status(201).send("");
     } catch (e) {
         console.log(e);
         next(createError(400));

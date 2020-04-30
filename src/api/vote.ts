@@ -3,7 +3,7 @@ import * as model from "../model";
 import XSSFilters from "xss-filters";
 
 // Get user infomation from session token
-async function getUser(sessionToken: string) {
+export async function getMe(sessionToken: string) {
     const session = await model.Session.findOne({ sessionToken: sessionToken }).exec();
     if (!session) { throw new Error("Invalid sessionToken"); }
 
@@ -18,6 +18,10 @@ async function getUser(sessionToken: string) {
 export async function getVotes(themeID?: number, users?: { userProvider: string, userID: string }[]) {
     if (themeID != undefined && !themeLoader.exists(themeID)) {
         throw new Error("Invalid themeID");
+    }
+
+    if (users != undefined && users.length == 0) {
+        return [];
     }
 
     const query = themeID != undefined
@@ -36,6 +40,10 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
         throw new Error("Invalid themeID");
     }
 
+    if (users != undefined && users.length == 0) {
+        return [];
+    }
+
     const query = themeID != undefined
         ? users
             ? { themeID: themeID, $or: users }
@@ -47,7 +55,7 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
     return await model.Comment.find(query).exec();
 }
 
-async function getInfluencers() {
+export async function getInfluencers() {
     if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
         throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured");
     }
@@ -57,30 +65,16 @@ async function getInfluencers() {
     }).exec();
 }
 
-export async function getInfluencerVotes(themeID: number) {
-    const influencers = await getInfluencers();
-    if (influencers.length == 0) { return []; }
-    return await getVotes(themeID, influencers);
-}
-
-export async function getFriendVotes(themeID: number, sessionToken: string) {
-    const user = await getUser(sessionToken);
-    return await getVotes(themeID, user.friends.map(userID => ({
-        userProvider: "twitter",
-        userID: userID
-    })));
-}
-
 export async function putVote(themeID: number, sessionToken: string, answer: number) {
     const theme = themeLoader.theme(themeID);
     if (theme.choices[answer] == undefined) {
         throw new Error("Invalid answer");
     }
 
-    const user = await getUser(sessionToken);
+    const user = await getMe(sessionToken);
     const now = Date.now();
 
-    await model.Vote.updateOne({
+    await model.Vote.update({
         themeID: themeID,
         userID: user.userID,
         userProvider: user.userProvider,
@@ -101,7 +95,7 @@ export async function postComment(themeID: number, sessionToken: string, message
         throw new Error("Invalid themeID");
     }
 
-    const user = await getUser(sessionToken);
+    const user = await getMe(sessionToken);
     await new model.Comment({
         themeID: themeID,
         message: XSSFilters.inHTMLData(message),

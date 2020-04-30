@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import * as userAPI from "../api/user";
+import * as voteAPI from "../api/vote";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
@@ -13,7 +14,8 @@ router.get("/profiles", async (req, res, next) => {
     }
 
     try {
-        res.json(await userAPI.getMyProfile(sessionToken));
+        const me = await voteAPI.getMe(sessionToken);
+        res.json(await userAPI.getProfile(me.userProvider, me.userID));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -28,13 +30,18 @@ router.post("/profiles", async (req, res, next) => {
     }
 
     try {
-        res.json(await userAPI.getProfiles(query.map(
+        const users = query.map(
             ({ userProvider, userID }: { userProvider: unknown, userID: unknown }) => {
                 if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
                     throw new Error("Invalid request");
                 }
                 return { userProvider: userProvider, userID: userID }
-            })));
+            })
+        const profiles = (await Promise
+            .all(users.map(user => userAPI.getProfile(user.userProvider, user.userID))))
+            .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
+
+        res.json(profiles);
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -46,11 +53,7 @@ router.get("/:userprovider/:userid", async (req, res, next) => {
     const userID = req.params.userid;
 
     try {
-        const profiles = await userAPI.getProfiles([{ userProvider: userProvider, userID: userID }]);
-        if (profiles.length == 0) {
-            next(createError(404));
-        }
-        res.json(profiles[0]);
+        res.json(await userAPI.getProfile(userProvider, userID));
     } catch (e) {
         console.log(e);
         next(createError(503));

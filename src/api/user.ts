@@ -8,7 +8,7 @@ function isInfluencer(numOfFollowers: number) {
     return numOfFollowers > parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
 }
 
-async function getProfile(userProvider: string, userID: string) {
+export async function getProfile(userProvider: string, userID: string) {
     const user = await model.User.findOne({
         userProvider: userProvider,
         userID: userID
@@ -33,19 +33,4 @@ async function getProfile(userProvider: string, userID: string) {
         votes: votes.sort((a, b) => a.themeID - b.themeID),
         comments: comments.sort((a, b) => a.themeID - b.themeID)
     };
-}
-
-export async function getMyProfile(sessionToken: string) {
-    const session = await model.Session.findOne({ sessionToken: sessionToken }).exec();
-    if (!session) { throw new Error("Invalid sessionToken"); }
-
-    const profile = await getProfile(session.userProvider, session.userID);
-    if (!profile) { throw new Error("User not found"); }
-    return profile;
-}
-
-export async function getProfiles(users: { userProvider: string, userID: string }[]) {
-    return (await Promise
-        .all(users.map(user => getProfile(user.userProvider, user.userID))))
-        .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
 }
