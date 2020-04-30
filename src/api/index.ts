@@ -3,15 +3,18 @@ import * as model from "../model";
 import XSSFilters from "xss-filters";
 
 export async function calcTopicality(themeID: number) {
-    if (themeLoader.themes[themeID] == undefined) { throw new Error("Invalid themeID"); }
+    if (!themeLoader.exists(themeID)) {
+        throw new Error("Invalid themeID");
+    }
 
+    const startsAt = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const votes = await model.Vote.find({
         themeID: themeID,
-        createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
+        createdAt: { $gt: startsAt }
     }).countDocuments().exec();
     const comments = await model.Comment.find({
         themeID: themeID,
-        createdAt: { $gt: Date.now() - 7 * 24 * 60 * 60 * 1000 }
+        createdAt: { $gt: startsAt }
     }).countDocuments().exec();
 
     return votes + comments;

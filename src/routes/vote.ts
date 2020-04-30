@@ -7,8 +7,8 @@ import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
 router.get("/results", (_req, res, _next) => {
-    res.json(themeLoader.themes.map((theme, themeID) => ({
-        themeID: themeID,
+    res.json(themeLoader.themes.map(theme => ({
+        themeID: theme.themeID,
         results: theme.realtimeResult,
         counts: theme.realtimeCount
     })));
@@ -17,13 +17,15 @@ router.get("/results", (_req, res, _next) => {
 router.get("/results/:themeid", (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    if (themeLoader.themes[themeID] != undefined) {
+    try {
+        const theme = themeLoader.theme(themeID);
         res.json({
             themeID: themeID,
-            results: themeLoader.themes[themeID].realtimeResult,
-            counts: themeLoader.themes[themeID].realtimeCount
+            results: theme.realtimeResult,
+            counts: theme.realtimeCount
         });
-    } else {
+
+    } catch (e) {
         console.log("The themeID is invalid");
         next(createError(404));
     }
@@ -33,7 +35,7 @@ router.get("/votes", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
 
     try {
-        res.json(await Promise.all(themeLoader.themes.map(async (_theme, themeID) => {
+        res.json(await Promise.all(themeLoader.themes.map(async theme => {
             let votes: {
                 themeID: number;
                 answer: number;
@@ -42,13 +44,13 @@ router.get("/votes", async (req, res, next) => {
                 createdAt: number;
             }[] = [];
             if (utilAPI.isString(sessionToken)) {
-                votes = await voteAPI.getFriendVotes(themeID, sessionToken);
+                votes = await voteAPI.getFriendVotes(theme.themeID, sessionToken);
             }
 
             return {
-                themeID: themeID,
+                themeID: theme.themeID,
                 votes: votes,
-                votesFromInfluencer: await voteAPI.getInfluencerVotes(themeID)
+                votesFromInfluencer: await voteAPI.getInfluencerVotes(theme.themeID)
             };
         })));
     } catch (e) {
@@ -107,8 +109,8 @@ router.put("/votes/:themeid", async (req, res, next) => {
 });
 
 router.get("/transitions", (_req, res, _next) => {
-    res.json(themeLoader.themes.map((theme, themeID) => ({
-        themeID: themeID,
+    res.json(themeLoader.themes.map(theme => ({
+        themeID: theme.themeID,
         shortTransition: theme.shortTransition,
         longTransition: theme.longTransition
     })));
@@ -117,23 +119,25 @@ router.get("/transitions", (_req, res, _next) => {
 router.get("/transitions/:themeid", (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    if (themeLoader.themes[themeID] == undefined) {
+    try {
+        const theme = themeLoader.theme(themeID);
+
+        res.json({
+            themeID: themeID,
+            shortTransition: theme.shortTransition,
+            longTransition: theme.longTransition
+        });
+    } catch (e) {
         console.log("The themeID is invalid");
         return next(createError(404));
     }
-
-    res.json({
-        themeID: themeID,
-        shortTransition: themeLoader.themes[themeID].shortTransition,
-        longTransition: themeLoader.themes[themeID].longTransition
-    });
 });
 
 router.get("/comments", async (_req, res, next) => {
     try {
-        res.json(await Promise.all(themeLoader.themes.map(async (_theme, themeID) => ({
-            themeID: themeID,
-            comments: await voteAPI.getComments(themeID)
+        res.json(await Promise.all(themeLoader.themes.map(async theme => ({
+            themeID: theme.themeID,
+            comments: await voteAPI.getComments(theme.themeID)
         }))));
     } catch (e) {
         console.log(e);

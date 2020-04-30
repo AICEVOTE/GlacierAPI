@@ -9,13 +9,13 @@ class Theme {
     private _longTransition: ITransition[] = [];
     private _lastTransitionUpdate = Date.now();
 
-    constructor(public readonly themeID: number,
-        public readonly title: string,
-        public readonly description: string,
-        public readonly imageURI: string,
-        public readonly genre: number,
-        public readonly choices: string[],
-        public readonly keywords: string[],
+    constructor(readonly themeID: number,
+        readonly title: string,
+        readonly description: string,
+        readonly imageURI: string,
+        readonly genre: number,
+        readonly choices: string[],
+        readonly keywords: string[],
         private readonly _formula: (val: number) => number,
         private readonly _saveInterval: number) {
         this.load(process.env.ROLE == "MASTER").then(() => {
@@ -130,12 +130,14 @@ class ThemeLoader {
     private _themes: Theme[] = [];
     constructor() {
         try {
-            model.Theme.find().exec().then((themes) => {
-                this._themes = themes.filter((theme) => theme.isEnabled)
-                    .map(theme => new Theme(theme.themeID, theme.title,
-                        theme.description, theme.imageURI, theme.genre,
-                        theme.choices, theme.keywords,
-                        eval(theme.formula), theme.saveInterval)
+            model.Theme.find().exec().then(themes => {
+                this._themes = themes
+                    .filter(theme => theme.isEnabled)
+                    .map(theme =>
+                        new Theme(theme.themeID, theme.title,
+                            theme.description, theme.imageURI,
+                            theme.genre, theme.choices, theme.keywords,
+                            eval(theme.formula), theme.saveInterval)
                     );
             })
         } catch (e) {
@@ -143,12 +145,22 @@ class ThemeLoader {
         }
         this._isLoaded = true;
     }
-    get themes() {
-        if (!this._isLoaded) {
-            console.log("Themes are not loaded");
-            return null as any as Theme[];
-        }
+    get themes(): Theme[] {
+        if (!this._isLoaded) { throw new Error("themes aren't loaded"); }
         return this._themes;
+    }
+    theme(themeID: number): Theme {
+        if (!this._isLoaded) { throw new Error("themes aren't loaded"); }
+
+        const theme = this._themes.find(theme => theme.themeID == themeID);
+        if (theme == undefined) { throw new Error("Invalid themeID"); }
+        return theme;
+    }
+    exists(themeID: number): boolean {
+        if (!this._isLoaded) { throw new Error("themes aren't loaded"); }
+
+        const theme = this._themes.find(theme => theme.themeID == themeID);
+        return theme != undefined;
     }
 }
 

@@ -38,9 +38,6 @@ server.on("listening", onListening);
 
 const io = SocketIO(server);
 ws.initialize(io);
-io.on("connection", (socket) => {
-    ws.onConnection(io, socket);
-})
 
 /**
  * Normalize a port into a number, string, or false.

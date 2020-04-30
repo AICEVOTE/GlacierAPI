@@ -1,36 +1,30 @@
 import SocketIO from "socket.io";
-
 import themeLoader from "./api/theme";
-import * as utilAPI from "./api/util";
+import * as model from "./model";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");
-    setInterval(() => {
-        for (let i = 0; i < themeLoader.themes.length; i++) {
-            try {
-                io.emit("result", {
-                    themeID: i,
-                    results: themeLoader.themes[i].realtimeResult,
-                    counts: themeLoader.themes[i].realtimeCount,
-                });
-            } catch (e) {
-                console.log(e);
-            }
+    setInterval(async () => {
+        try {
+            const startsAt = Date.now() - 2 * 1000;
+            const comments = await model.Comment.find({
+                createdAt: { $gt: startsAt }
+            }).exec();
+
+            io.emit("comments", {
+                from: startsAt,
+                comments: comments
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
+        for (const theme of themeLoader.themes) {
+            io.emit("result", {
+                themeID: theme.themeID,
+                results: theme.realtimeResult,
+                counts: theme.realtimeCount,
+            });
         }
     }, 2 * 1000);
-}
-
-export function onConnection(io: SocketIO.Server, socket: SocketIO.Socket) {
-    const socketID = socket.id;
-    socket.on("get result", ({ themeID }: { themeID: unknown }) => {
-        if (utilAPI.isNumber(themeID) && themeLoader.themes[themeID] != undefined) {
-            io.to(socketID).emit("result", {
-                themeID: themeID,
-                results: themeLoader.themes[themeID].realtimeResult,
-                counts: themeLoader.themes[themeID].realtimeCount
-            });
-        } else {
-            console.log("The themeID is invalid");
-        }
-    });
 }
