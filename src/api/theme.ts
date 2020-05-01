@@ -1,4 +1,4 @@
-import * as model from "../model";
+import * as db from "../model";
 
 interface ITransition { timestamp: number, percentage: number[] };
 
@@ -29,7 +29,7 @@ class Theme {
     get longTransition() { return this._longTransition; }
 
     private async interpolate(): Promise<void> {
-        const lastResult = await model.Result
+        const lastResult = await db.Result
             .findOne({ themeID: this.themeID })
             .sort({ timestamp: -1 }).exec();
 
@@ -80,7 +80,7 @@ class Theme {
         counts: number[];
         results: number[];
     }> {
-        const docs = await model.Vote.find({
+        const docs = await db.Vote.find({
             themeID: this.themeID,
             createdAt: { $lte: now },
             expiredAt: { $exists: false }
@@ -104,7 +104,7 @@ class Theme {
     }
 
     private async saveResult(now: number): Promise<void> {
-        await new model.Result({
+        await new db.Result({
             themeID: this.themeID,
             timestamp: now,
             percentage: (await this.updateResult(now)).results
@@ -115,7 +115,7 @@ class Theme {
         shortTransition: ITransition[],
         longTransition: ITransition[]
     }> {
-        const docs = await model.Result.find({
+        const docs = await db.Result.find({
             themeID: this.themeID,
             timestamp: { $lte: now }
         }).sort({ timestamp: -1 }).limit(1440).exec();
@@ -132,7 +132,7 @@ class ThemeLoader {
     private _themes: Theme[] = [];
     constructor() {
         try {
-            model.Theme.find().exec().then(themes => {
+            db.Theme.find().exec().then(themes => {
                 this._themes = themes
                     .filter(theme => theme.isEnabled)
                     .map(theme =>

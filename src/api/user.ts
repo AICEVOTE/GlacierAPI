@@ -1,4 +1,4 @@
-import * as model from "../model";
+import * as db from "../model";
 import * as commentAPI from "./comment";
 import * as voteAPI from "./vote";
 
@@ -12,17 +12,17 @@ function isInfluencer(numOfFollowers: number) {
 }
 
 export async function getInfluencers() {
-    return await model.User.find({
+    return await db.User.find({
         numOfFollowers: { $gt: numOfInfuencersFollower }
     }).exec();
 }
 
 // Get user infomation from session token
 export async function getMe(sessionToken: string) {
-    const session = await model.Session.findOne({ sessionToken: sessionToken }).exec();
+    const session = await db.Session.findOne({ sessionToken: sessionToken }).exec();
     if (!session) { throw new Error("Invalid sessionToken"); }
 
-    const user = await model.User.findOne({
+    const user = await db.User.findOne({
         userProvider: session.userProvider,
         userID: session.userID
     }).exec();
@@ -31,7 +31,7 @@ export async function getMe(sessionToken: string) {
 }
 
 export async function getProfile(userProvider: string, userID: string) {
-    const user = await model.User.findOne({
+    const user = await db.User.findOne({
         userProvider: userProvider,
         userID: userID
     });

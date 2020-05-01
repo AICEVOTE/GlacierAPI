@@ -1,13 +1,13 @@
 import SocketIO from "socket.io";
 import themeLoader from "./api/theme";
-import * as model from "./model";
+import * as db from "./model";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");
     setInterval(async () => {
         try {
             const startsAt = Date.now() - 2 * 1000;
-            const comments = await model.Comment.find({
+            const comments = await db.Comment.find({
                 createdAt: { $gt: startsAt }
             }).exec();
 

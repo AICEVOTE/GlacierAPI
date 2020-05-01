@@ -1,10 +1,10 @@
 import XSSFilters from "xss-filters";
-import * as model from "../model";
+import * as db from "../model";
 
 export async function saveFeedback(message: string, feedbackType: string) {
     const sanitizedMessage = XSSFilters.inHTMLData(message);
 
-    await new model.Feedback({
+    await new db.Feedback({
         message: sanitizedMessage,
         feedbackType: feedbackType
     }).save();

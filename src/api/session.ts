@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import * as model from "../model";
+import * as db from "../model";
 
 const oneHour = 60 * 60 * 1000;
 const oneDay = oneHour * 24;
@@ -15,7 +15,7 @@ interface Profile {
 }
 
 export async function getSessionToken(sessionID: string): Promise<string> {
-    const session = await model.Session.findOne({ sessionID: sessionID }).exec();
+    const session = await db.Session.findOne({ sessionID: sessionID }).exec();
     if (!session) { throw new Error("Invalid sessionID"); }
 
     return session.sessionToken;
@@ -24,7 +24,7 @@ export async function getSessionToken(sessionID: string): Promise<string> {
 export async function saveSession(profile: Profile, accessToken: string, refreshToken: string, sessionID: string) {
     const now = Date.now();
 
-    await model.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
+    await db.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
         $set: {
             name: profile.name,
             friends: profile.friends,
@@ -33,7 +33,7 @@ export async function saveSession(profile: Profile, accessToken: string, refresh
         }
     }, { upsert: true });
 
-    await new model.Session({
+    await new db.Session({
         userProvider: profile.userProvider,
         userID: profile.userID,
         accessToken: accessToken,
@@ -49,12 +49,12 @@ if (process.env.ROLE == "MASTER") {
     setInterval(async () => {
         try {
             // Refresh session token
-            const expiredSessions = await model.Session.find({
+            const expiredSessions = await db.Session.find({
                 sessionTokenExpire: { $lt: Date.now() }
             }), now = Date.now();
 
             for (const session of expiredSessions) {
-                await model.Session.update({
+                await db.Session.update({
                     sessionID: session.sessionID
                 }, {
                     $set: {
@@ -65,7 +65,7 @@ if (process.env.ROLE == "MASTER") {
             }
 
             // Delete expired session
-            await model.Session.deleteMany({ sessionIDExpire: { $lt: Date.now() } });
+            await db.Session.deleteMany({ sessionIDExpire: { $lt: Date.now() } });
         } catch (e) {
             console.log(e);
         }

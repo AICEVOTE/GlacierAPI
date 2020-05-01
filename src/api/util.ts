@@ -1,4 +1,4 @@
-import * as model from "../model";
+import * as db from "../model";
 import themeLoader from "./theme";
 
 export async function calcTopicality(themeID: number) {
@@ -7,11 +7,11 @@ export async function calcTopicality(themeID: number) {
     }
 
     const startsAt = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const votes = await model.Vote.find({
+    const votes = await db.Vote.find({
         themeID: themeID,
         createdAt: { $gt: startsAt }
     }).countDocuments().exec();
-    const comments = await model.Comment.find({
+    const comments = await db.Comment.find({
         themeID: themeID,
         createdAt: { $gt: startsAt }
     }).countDocuments().exec();

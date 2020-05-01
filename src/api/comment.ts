@@ -1,5 +1,5 @@
 import XSSFilters from "xss-filters";
-import * as model from "../model";
+import * as db from "../model";
 import themeLoader from "./theme";
 import * as userAPI from "./user";
 
@@ -20,7 +20,7 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
             ? { $or: users }
             : {};
 
-    return await model.Comment.find(query).exec();
+    return await db.Comment.find(query).exec();
 }
 
 export async function postComment(themeID: number, sessionToken: string, message: string) {
@@ -29,7 +29,7 @@ export async function postComment(themeID: number, sessionToken: string, message
     }
 
     const user = await userAPI.getMe(sessionToken);
-    await new model.Comment({
+    await new db.Comment({
         themeID: themeID,
         message: XSSFilters.inHTMLData(message),
         userProvider: user.userProvider,

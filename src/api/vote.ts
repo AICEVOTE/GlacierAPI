@@ -1,4 +1,4 @@
-import * as model from "../model";
+import * as db from "../model";
 import themeLoader from "./theme";
 import * as userAPI from "./user";
 
@@ -19,7 +19,7 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
             ? { $or: users, expiredAt: { $exists: false } }
             : { expiredAt: { $exists: false } };
 
-    return await model.Vote.find(query).exec();
+    return await db.Vote.find(query).exec();
 }
 
 export async function putVote(themeID: number, sessionToken: string, answer: number) {
@@ -31,14 +31,14 @@ export async function putVote(themeID: number, sessionToken: string, answer: num
     const user = await userAPI.getMe(sessionToken);
     const now = Date.now();
 
-    await model.Vote.update({
+    await db.Vote.update({
         themeID: themeID,
         userID: user.userID,
         userProvider: user.userProvider,
         expiredAt: { $exists: false }
     }, { $set: { expiredAt: now } }).exec();
 
-    await new model.Vote({
+    await new db.Vote({
         themeID: themeID,
         userID: user.userID,
         userProvider: user.userProvider,
