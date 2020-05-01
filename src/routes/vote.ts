@@ -1,12 +1,12 @@
 import express from "express";
-const router = express.Router();
-
-import themeLoader from "../api/theme";
-import * as voteAPI from "../api/vote";
+import createError from "http-errors";
 import * as commentAPI from "../api/comment";
+import themeLoader from "../api/theme";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
-import createError from "http-errors";
+import * as voteAPI from "../api/vote";
+const router = express.Router();
+
 
 router.get("/results", (_req, res, _next) => {
     res.json(themeLoader.themes.map(theme => ({

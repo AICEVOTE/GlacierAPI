@@ -1,6 +1,6 @@
 import * as model from "../model";
-import * as voteAPI from "./vote";
 import * as commentAPI from "./comment";
+import * as voteAPI from "./vote";
 
 if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
     throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured");

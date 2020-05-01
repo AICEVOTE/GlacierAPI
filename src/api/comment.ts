@@ -1,7 +1,7 @@
-import themeLoader from "./theme";
-import * as model from "../model";
-import * as userAPI from "./user";
 import XSSFilters from "xss-filters";
+import * as model from "../model";
+import themeLoader from "./theme";
+import * as userAPI from "./user";
 
 export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {
     if (themeID != undefined && !themeLoader.exists(themeID)) {

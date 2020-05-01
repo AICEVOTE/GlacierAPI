@@ -1,10 +1,10 @@
 import express from "express";
+import createError from "http-errors";
+import * as feedbackAPI from "../api/feedback";
+import themeLoader from "../api/theme";
+import * as utilAPI from "../api/util";
 const router = express.Router();
 
-import themeLoader from "../api/theme";
-import * as feedbackAPI from "../api/feedback";
-import * as utilAPI from "../api/util";
-import createError from "http-errors";
 
 /* GET home page. */
 router.get("/", function (_req, res, _next) {

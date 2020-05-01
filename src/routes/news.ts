@@ -1,9 +1,9 @@
 import express from "express";
+import createError from "http-errors";
+import * as newsAPI from "../api/news";
+import themeLoader from "../api/theme";
 const router = express.Router();
 
-import themeLoader from "../api/theme";
-import * as newsAPI from "../api/news";
-import createError from "http-errors";
 
 router.get("/articles", (_req, res, _next) => {
     res.json(newsAPI.articles);

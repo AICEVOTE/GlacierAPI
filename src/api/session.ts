@@ -1,5 +1,5 @@
-import * as model from "../model";
 import { v4 as uuidv4 } from "uuid";
+import * as model from "../model";
 
 const oneHour = 60 * 60 * 1000;
 const oneDay = oneHour * 24;

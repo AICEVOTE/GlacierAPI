@@ -1,9 +1,9 @@
-import * as sessionAPI from "./session";
 import passport from "passport";
-import { Strategy as TwitterStrategy } from "passport-twitter";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as TwitterStrategy } from "passport-twitter";
 import Twitter from "twitter";
 import { v4 as uuidv4 } from "uuid";
+import * as sessionAPI from "./session";
 
 export const twitterAuth = passport.authenticate("twitter");
 export const appAuth = passport.authenticate("local");

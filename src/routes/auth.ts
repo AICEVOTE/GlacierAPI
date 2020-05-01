@@ -1,10 +1,10 @@
 import express from "express";
-const router = express.Router();
-
+import createError from "http-errors";
 import * as authAPI from "../api/auth";
 import * as sessionAPI from "../api/session";
 import * as utilAPI from "../api/util";
-import createError from "http-errors";
+const router = express.Router();
+
 
 router.get("/sessiontoken", async (req, res, next) => {
     const sessionID: unknown = req.query.sessionid;

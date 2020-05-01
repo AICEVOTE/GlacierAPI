@@ -1,9 +1,9 @@
 import express from "express";
-const router = express.Router();
-
+import createError from "http-errors";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
-import createError from "http-errors";
+const router = express.Router();
+
 
 router.get("/profiles", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
