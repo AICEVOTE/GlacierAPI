@@ -1,7 +1,8 @@
 import express from "express";
 import createError from "http-errors";
 import * as feedbackAPI from "../api/feedback";
-import themeLoader from "../api/theme";
+import { themeLoader } from "../api/theme";
+import type { Theme } from "../api/theme";
 import * as utilAPI from "../api/util";
 const router = express.Router();
 
@@ -11,17 +12,22 @@ router.get("/", function (_req, res, _next) {
     res.render("index", { title: "Glacier API" });
 });
 
+async function getTheme(theme: Theme) {
+    return {
+        themeID: theme.themeID,
+        title: theme.title,
+        description: theme.description,
+        imageURI: theme.imageURI,
+        genre: theme.genre,
+        choices: theme.choices,
+        topicality: await utilAPI.calcTopicality(theme.themeID)
+    };
+}
+
 router.get("/themes", async (_req, res, next) => {
     try {
-        res.json(await Promise.all(themeLoader.themes.map(async theme => ({
-            themeID: theme.themeID,
-            title: theme.title,
-            description: theme.description,
-            imageURI: theme.imageURI,
-            genre: theme.genre,
-            choices: theme.choices,
-            topicality: await utilAPI.calcTopicality(theme.themeID)
-        }))));
+        res.json(await Promise.all(themeLoader.themes
+            .map(theme => getTheme(theme))));
     } catch (e) {
         console.log(e);
         next(createError(500));
@@ -30,27 +36,13 @@ router.get("/themes", async (_req, res, next) => {
 
 router.get("/themes/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
-    let theme;
-    try {
-        theme = themeLoader.theme(themeID);
-    } catch{
-        console.log("The themeID is invalid");
-        return next(createError(400));
-    }
 
     try {
-        res.json({
-            themeID: themeID,
-            title: theme.title,
-            description: theme.description,
-            imageURI: theme.imageURI,
-            genre: theme.genre,
-            choices: theme.choices,
-            topicality: await utilAPI.calcTopicality(themeID)
-        });
+        const theme = themeLoader.theme(themeID);
+        res.json(await getTheme(theme));
     } catch (e) {
         console.log(e);
-        next(createError(500));
+        next(createError(400));
     }
 });
 

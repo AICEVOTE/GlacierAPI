@@ -1,19 +1,24 @@
 import express from "express";
 import createError from "http-errors";
 import * as commentAPI from "../api/comment";
-import themeLoader from "../api/theme";
+import { themeLoader } from "../api/theme";
+import type { Theme } from "../api/theme";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
 const router = express.Router();
 
 
-router.get("/results", (_req, res, _next) => {
-    res.json(themeLoader.themes.map(theme => ({
+function getResults(theme: Theme) {
+    return {
         themeID: theme.themeID,
         results: theme.realtimeResult,
         counts: theme.realtimeCount
-    })));
+    };
+}
+
+router.get("/results", (_req, res, _next) => {
+    res.json(themeLoader.themes.map(theme => getResults(theme)));
 });
 
 router.get("/results/:themeid", (req, res, next) => {
@@ -21,17 +26,22 @@ router.get("/results/:themeid", (req, res, next) => {
 
     try {
         const theme = themeLoader.theme(themeID);
-        res.json({
-            themeID: themeID,
-            results: theme.realtimeResult,
-            counts: theme.realtimeCount
-        });
-
+        res.json(getResults(theme));
     } catch (e) {
         console.log("The themeID is invalid");
         next(createError(404));
     }
 });
+
+async function getVotes(themeID: number,
+    friends: { userProvider: string, userID: string }[],
+    influencers: { userProvider: string, userID: string }[]) {
+    return {
+        themeID: themeID,
+        votes: await voteAPI.getVotes(themeID, friends),
+        votesFromInfluencer: await voteAPI.getVotes(themeID, influencers)
+    };
+}
 
 router.get("/votes", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
@@ -39,20 +49,14 @@ router.get("/votes", async (req, res, next) => {
     try {
         const friends = utilAPI.isString(sessionToken)
             ? (await userAPI.getMe(sessionToken))
-                .friends
-                .map(userID => ({
+                .friends.map(userID => ({
                     userProvider: "twitter",
                     userID: userID
                 }))
             : [];
         const influencers = await userAPI.getInfluencers();
-        res.json(await Promise.all(themeLoader.themes.map(async theme => {
-            return {
-                themeID: theme.themeID,
-                votes: await voteAPI.getVotes(theme.themeID, friends),
-                votesFromInfluencer: await voteAPI.getVotes(theme.themeID, influencers)
-            };
-        })));
+        res.json(await Promise.all(themeLoader.themes
+            .map(theme => getVotes(theme.themeID, friends, influencers))));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -74,11 +78,7 @@ router.get("/votes/:themeid", async (req, res, next) => {
             : [];
         const influencers = await userAPI.getInfluencers();
 
-        res.json({
-            themeID: themeID,
-            votes: await voteAPI.getVotes(themeID, friends),
-            votesFromInfluencer: await voteAPI.getVotes(themeID, influencers)
-        });
+        res.json(await getVotes(themeID, friends, influencers));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -103,12 +103,16 @@ router.put("/votes/:themeid", async (req, res, next) => {
     }
 });
 
-router.get("/transitions", (_req, res, _next) => {
-    res.json(themeLoader.themes.map(theme => ({
+function getTransitions(theme: Theme) {
+    return {
         themeID: theme.themeID,
         shortTransition: theme.shortTransition,
         longTransition: theme.longTransition
-    })));
+    };
+}
+
+router.get("/transitions", (_req, res, _next) => {
+    res.json(themeLoader.themes.map(theme => getTransitions(theme)));
 });
 
 router.get("/transitions/:themeid", (req, res, next) => {
@@ -116,24 +120,24 @@ router.get("/transitions/:themeid", (req, res, next) => {
 
     try {
         const theme = themeLoader.theme(themeID);
-
-        res.json({
-            themeID: themeID,
-            shortTransition: theme.shortTransition,
-            longTransition: theme.longTransition
-        });
+        res.json(getTransitions(theme));
     } catch (e) {
         console.log("The themeID is invalid");
         return next(createError(404));
     }
 });
 
+async function getComments(themeID: number) {
+    return {
+        themeID: themeID,
+        comments: await commentAPI.getComments(themeID)
+    };
+}
+
 router.get("/comments", async (_req, res, next) => {
     try {
-        res.json(await Promise.all(themeLoader.themes.map(async theme => ({
-            themeID: theme.themeID,
-            comments: await commentAPI.getComments(theme.themeID)
-        }))));
+        res.json(await Promise.all(themeLoader.themes
+            .map(theme => getComments(theme.themeID))));
     } catch (e) {
         console.log(e);
         next(createError(404));
@@ -144,10 +148,7 @@ router.get("/comments/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     try {
-        res.json({
-            themeID: themeID,
-            comments: await commentAPI.getComments(themeID)
-        });
+        res.json(getComments(themeID));
     } catch (e) {
         console.log(e);
         next(createError(404));

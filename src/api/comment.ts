@@ -1,6 +1,6 @@
 import XSSFilters from "xss-filters";
 import * as db from "../model";
-import themeLoader from "./theme";
+import { themeLoader } from "./theme";
 import * as userAPI from "./user";
 
 export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {

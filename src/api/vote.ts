@@ -1,5 +1,5 @@
 import * as db from "../model";
-import themeLoader from "./theme";
+import { themeLoader } from "./theme";
 import * as userAPI from "./user";
 
 export async function getVotes(themeID?: number, users?: { userProvider: string, userID: string }[]) {

@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import themeLoader from "./api/theme";
+import { themeLoader } from "./api/theme";
 import * as db from "./model";
 
 export function initialize(io: SocketIO.Server) {

@@ -1,7 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import * as newsAPI from "../api/news";
-import themeLoader from "../api/theme";
+import { themeLoader } from "../api/theme";
 const router = express.Router();
 
 

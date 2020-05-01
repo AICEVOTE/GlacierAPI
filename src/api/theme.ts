@@ -166,6 +166,5 @@ class ThemeLoader {
     }
 }
 
-const themeLoader = new ThemeLoader();
-
-export default themeLoader
+export type { Theme };
+export const themeLoader = new ThemeLoader();

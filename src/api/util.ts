@@ -1,5 +1,5 @@
 import * as db from "../model";
-import themeLoader from "./theme";
+import { themeLoader } from "./theme";
 
 export async function calcTopicality(themeID: number) {
     if (!themeLoader.exists(themeID)) {
