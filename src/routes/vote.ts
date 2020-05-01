@@ -148,7 +148,7 @@ router.get("/comments/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     try {
-        res.json(getComments(themeID));
+        res.json(await getComments(themeID));
     } catch (e) {
         console.log(e);
         next(createError(404));
