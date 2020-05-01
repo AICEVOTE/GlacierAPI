@@ -19,6 +19,8 @@ interface Profile {
 }
 
 async function saveSession(profile: Profile, accessToken: string, refreshToken: string, sessionID: string) {
+    const now = Date.now();
+
     await model.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
         $set: {
             name: profile.name,
@@ -34,9 +36,9 @@ async function saveSession(profile: Profile, accessToken: string, refreshToken: 
         accessToken: accessToken,
         refreshToken: refreshToken,
         sessionID: sessionID,
-        sessionIDExpire: Date.now() + oneMonth,
+        sessionIDExpire: now + oneMonth,
         sessionToken: uuidv4(),
-        sessionTokenExpire: Date.now() + oneHour
+        sessionTokenExpire: now + oneHour
     }).save();
 }
 
@@ -129,12 +131,20 @@ if (process.env.ROLE == "MASTER") {
     setInterval(async () => {
         try {
             // Refresh session token
-            await model.Session.updateMany({ sessionTokenExpire: { $lt: Date.now() } }, {
-                $set: {
-                    sessionToken: uuidv4(),
-                    sessionTokenExpire: Date.now() + oneHour
-                }
-            });
+            const expiredSessions = await model.Session.find({
+                sessionTokenExpire: { $lt: Date.now() }
+            }), now = Date.now();
+
+            for (const session of expiredSessions) {
+                await model.Session.update({
+                    sessionID: session.sessionID
+                }, {
+                    $set: {
+                        sessionToken: uuidv4(),
+                        sessionTokenExpire: now + oneHour
+                    }
+                });
+            }
 
             // Delete expired session
             await model.Session.deleteMany({ sessionIDExpire: { $lt: Date.now() } });
