@@ -3,6 +3,8 @@ const router = express.Router();
 
 import themeLoader from "../api/theme";
 import * as voteAPI from "../api/vote";
+import * as commentAPI from "../api/comment";
+import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
@@ -36,14 +38,14 @@ router.get("/votes", async (req, res, next) => {
 
     try {
         const friends = utilAPI.isString(sessionToken)
-            ? (await voteAPI.getMe(sessionToken))
+            ? (await userAPI.getMe(sessionToken))
                 .friends
                 .map(userID => ({
                     userProvider: "twitter",
                     userID: userID
                 }))
             : [];
-        const influencers = await voteAPI.getInfluencers();
+        const influencers = await userAPI.getInfluencers();
         res.json(await Promise.all(themeLoader.themes.map(async theme => {
             return {
                 themeID: theme.themeID,
@@ -63,14 +65,14 @@ router.get("/votes/:themeid", async (req, res, next) => {
 
     try {
         const friends = utilAPI.isString(sessionToken)
-            ? (await voteAPI.getMe(sessionToken))
+            ? (await userAPI.getMe(sessionToken))
                 .friends
                 .map(userID => ({
                     userProvider: "twitter",
                     userID: userID
                 }))
             : [];
-        const influencers = await voteAPI.getInfluencers();
+        const influencers = await userAPI.getInfluencers();
 
         res.json({
             themeID: themeID,
@@ -130,7 +132,7 @@ router.get("/comments", async (_req, res, next) => {
     try {
         res.json(await Promise.all(themeLoader.themes.map(async theme => ({
             themeID: theme.themeID,
-            comments: await voteAPI.getComments(theme.themeID)
+            comments: await commentAPI.getComments(theme.themeID)
         }))));
     } catch (e) {
         console.log(e);
@@ -144,7 +146,7 @@ router.get("/comments/:themeid", async (req, res, next) => {
     try {
         res.json({
             themeID: themeID,
-            comments: await voteAPI.getComments(themeID)
+            comments: await commentAPI.getComments(themeID)
         });
     } catch (e) {
         console.log(e);
@@ -162,7 +164,7 @@ router.post("/comments/:themeid", async (req, res, next) => {
     }
 
     try {
-        await voteAPI.postComment(themeID, sessionToken, message);
+        await commentAPI.postComment(themeID, sessionToken, message);
         res.status(201).send("");
     } catch (e) {
         console.log(e);

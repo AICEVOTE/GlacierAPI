@@ -1,11 +1,33 @@
 import * as model from "../model";
 import * as voteAPI from "./vote";
+import * as commentAPI from "./comment";
+
+if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
+    throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured");
+}
+const numOfInfuencersFollower = parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
 
 function isInfluencer(numOfFollowers: number) {
-    if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
-        throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured");
-    }
-    return numOfFollowers > parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
+    return numOfFollowers > numOfInfuencersFollower;
+}
+
+export async function getInfluencers() {
+    return await model.User.find({
+        numOfFollowers: { $gt: numOfInfuencersFollower }
+    }).exec();
+}
+
+// Get user infomation from session token
+export async function getMe(sessionToken: string) {
+    const session = await model.Session.findOne({ sessionToken: sessionToken }).exec();
+    if (!session) { throw new Error("Invalid sessionToken"); }
+
+    const user = await model.User.findOne({
+        userProvider: session.userProvider,
+        userID: session.userID
+    }).exec();
+    if (!user) { throw new Error("User not found"); }
+    return user;
 }
 
 export async function getProfile(userProvider: string, userID: string) {
@@ -19,7 +41,7 @@ export async function getProfile(userProvider: string, userID: string) {
         userProvider: userProvider,
         userID: userID
     }]);
-    const comments = await voteAPI.getComments(undefined, [{
+    const comments = await commentAPI.getComments(undefined, [{
         userProvider: userProvider,
         userID: userID
     }]);

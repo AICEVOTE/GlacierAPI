@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import themeLoader from "../api/theme";
-import * as indexAPI from "../api/index";
+import * as feedbackAPI from "../api/feedback";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
@@ -20,7 +20,7 @@ router.get("/themes", async (_req, res, next) => {
             imageURI: theme.imageURI,
             genre: theme.genre,
             choices: theme.choices,
-            topicality: await indexAPI.calcTopicality(theme.themeID)
+            topicality: await utilAPI.calcTopicality(theme.themeID)
         }))));
     } catch (e) {
         console.log(e);
@@ -46,7 +46,7 @@ router.get("/themes/:themeid", async (req, res, next) => {
             imageURI: theme.imageURI,
             genre: theme.genre,
             choices: theme.choices,
-            topicality: await indexAPI.calcTopicality(themeID)
+            topicality: await utilAPI.calcTopicality(themeID)
         });
     } catch (e) {
         console.log(e);
@@ -62,7 +62,7 @@ router.post("/feedback", async (req, res, next) => {
 
     try {
         res.status(201).json({
-            message: await indexAPI.saveFeedback(message, "Feedback")
+            message: await feedbackAPI.saveFeedback(message, "Feedback")
         });
     } catch (e) {
         console.log(e);
@@ -78,7 +78,7 @@ router.post("/application", async (req, res, next) => {
 
     try {
         res.status(201).json({
-            message: await indexAPI.saveFeedback(message, "Application")
+            message: await feedbackAPI.saveFeedback(message, "Application")
         });
     } catch (e) {
         console.log(e);

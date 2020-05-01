@@ -2,7 +2,6 @@ import express from "express";
 const router = express.Router();
 
 import * as userAPI from "../api/user";
-import * as voteAPI from "../api/vote";
 import * as utilAPI from "../api/util";
 import createError from "http-errors";
 
@@ -14,7 +13,7 @@ router.get("/profiles", async (req, res, next) => {
     }
 
     try {
-        const me = await voteAPI.getMe(sessionToken);
+        const me = await userAPI.getMe(sessionToken);
         res.json(await userAPI.getProfile(me.userProvider, me.userID));
     } catch (e) {
         console.log(e);
