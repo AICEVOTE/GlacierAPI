@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "description": "AICEVOTE API Server",
   "main": "./dist/bin/www.js",
-  "repository": "https://github.com/yujixr/GlacierAPI",
+  "repository": "https://github.com/aicevote/GlacierAPI",
   "author": "YUJI",
   "license": "AGPL-3.0",
   "scripts": {
+    "dev": "yarn tsc && node ./dist/bin/www.js",
     "prestart": "yarn tsc",
     "start": "NODE_ENV=\"production\" yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
     "stop": "yarn pm2 stop GlacierAPI",

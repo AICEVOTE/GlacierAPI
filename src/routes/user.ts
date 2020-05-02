@@ -35,27 +35,15 @@ router.post("/profiles", async (req, res, next) => {
                     throw new Error("Invalid request");
                 }
                 return { userProvider: userProvider, userID: userID }
-            })
-        const profiles = (await Promise
-            .all(users.map(user => userAPI.getProfile(user.userProvider, user.userID))))
-            .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
+            }),
+            profiles = (await Promise
+                .all(users.map(user => userAPI.getProfile(user.userProvider, user.userID))))
+                .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
 
         res.json(profiles);
     } catch (e) {
         console.log(e);
         next(createError(400));
-    }
-});
-
-router.get("/:userprovider/:userid", async (req, res, next) => {
-    const userProvider = req.params.userprovider;
-    const userID = req.params.userid;
-
-    try {
-        res.json(await userAPI.getProfile(userProvider, userID));
-    } catch (e) {
-        console.log(e);
-        next(createError(503));
     }
 });
 
