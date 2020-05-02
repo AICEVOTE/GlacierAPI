@@ -3,7 +3,7 @@ import * as themeAPI from "./theme";
 const NewsAPI = require("newsapi");
 const newsapi = new NewsAPI(process.env.NEWSAPI_KEY || "");
 
-interface INewsAPIArticle {
+interface NewsAPArticle {
     source?: { id?: string, name?: string; },
     author?: string,
     title?: string,
@@ -13,7 +13,7 @@ interface INewsAPIArticle {
     publishedAt?: string,
     content?: string
 }
-interface IArticle {
+interface Article {
     source: string,
     author: string,
     title: string,
@@ -23,7 +23,7 @@ interface IArticle {
     publishedAt: number
 }
 
-function convertArticle(article: INewsAPIArticle): IArticle {
+function convertArticle(article: NewsAPArticle): Article {
     let publishedAt = NaN;
     if (article.publishedAt) {
         publishedAt = Date.parse(article.publishedAt);
@@ -41,7 +41,7 @@ function convertArticle(article: INewsAPIArticle): IArticle {
 }
 
 // Get japan headline news
-async function getTopHeadlines(pageSize: number): Promise<INewsAPIArticle[]> {
+async function getTopHeadlines(pageSize: number): Promise<NewsAPArticle[]> {
     return (await newsapi.v2.topHeadlines({
         country: "jp",
         category: "general",
@@ -51,7 +51,7 @@ async function getTopHeadlines(pageSize: number): Promise<INewsAPIArticle[]> {
 
 // Get all articles about the keyword
 async function getEverything(keyword: string, pageSize: number)
-    : Promise<INewsAPIArticle[]> {
+    : Promise<NewsAPArticle[]> {
     return (await newsapi.v2.everything({
         q: keyword,
         language: "jp",
@@ -61,8 +61,8 @@ async function getEverything(keyword: string, pageSize: number)
 }
 
 async function getAllNews(): Promise<{
-    latest: IArticle[];
-    related: { themeID: number; articles: IArticle[]; }[];
+    latest: Article[];
+    related: { themeID: number; articles: Article[]; }[];
 }> {
     const headlines = (await getTopHeadlines(15))
         .map(article => convertArticle(article))
@@ -85,8 +85,8 @@ async function getAllNews(): Promise<{
 }
 
 export let articles: {
-    latest: IArticle[];
-    related: { themeID: number; articles: IArticle[]; }[];
+    latest: Article[];
+    related: { themeID: number; articles: Article[]; }[];
 };
 
 getAllNews()

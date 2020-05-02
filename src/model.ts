@@ -8,12 +8,15 @@ mongoose.connect(process.env.MONGO_URI || "", {
 export interface ThemeModel extends mongoose.Document {
     isEnabled: boolean,
     themeID: number,
+    userProvider: string,
+    userID: string,
     title: string,
     description: string,
     imageURI: string,
     genre: number,
     choices: string[],
     keywords: string[],
+    DRClass: number,
     formula: string,
     saveInterval: number
 };
@@ -69,12 +72,15 @@ export interface FeedbackModel extends mongoose.Document {
 const ThemeSchema = new mongoose.Schema<ThemeModel>({
     isEnabled: Boolean,
     themeID: Number,
+    userProvider: String,
+    userID: String,
     title: String,
     description: String,
     imageURI: String,
     genre: Number,
     choices: [String],
     keywords: [String],
+    DRClass: Number,
     formula: String,
     saveInterval: Number
 });

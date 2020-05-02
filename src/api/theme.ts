@@ -1,10 +1,14 @@
 import * as db from "../model";
 import type { ThemeModel } from "../model";
+import * as userAPI from "./user";
 
 export async function exists(themeID: number): Promise<boolean> {
     try {
         const theme = await db.Theme.findOne({ themeID: themeID }).exec();
-        return theme != null;
+        if (!theme || theme.isEnabled == false) {
+            return false;
+        }
+        return true;
     } catch (e) {
         console.log(e);
         return false;
@@ -13,14 +17,42 @@ export async function exists(themeID: number): Promise<boolean> {
 
 export async function getTheme(themeID: number): Promise<ThemeModel> {
     const theme = await db.Theme.findOne({ themeID: themeID }).exec();
-    if (!theme) {
+    if (!theme || theme.isEnabled == false) {
         throw new Error("Invalid themeID");
     }
     return theme;
 }
 
 export async function getAllThemes(): Promise<ThemeModel[]> {
-    return await db.Theme.find({}).exec();
+    const themes = await db.Theme.find({}).exec();
+    return themes.filter(theme => theme.isEnabled);
+}
+
+export async function updateTheme(sessionToken: string,
+    isEnabled: boolean, themeID: number, title: string,
+    description: string, imageURI: string, genre: number,
+    choices: string[], keywords: string[], DRClass: number): Promise<void> {
+    const me = await userAPI.getMe(sessionToken);
+
+    try {
+        const theme = await getTheme(themeID);
+        if (theme.userProvider != me.userProvider
+            || theme.userID != me.userID) {
+            throw new Error("This theme ID is already taken");
+        }
+    } catch (e) { }
+
+    await db.Theme.updateOne({
+        themeID,
+        userProvider: me.userProvider,
+        userID: me.userID
+    }, {
+        $set: {
+            isEnabled, title, description,
+            imageURI, genre, choices,
+            keywords, DRClass
+        }
+    }, { upsert: true });
 }
 
 export async function calcTopicality(themeID: number): Promise<number> {
@@ -32,11 +64,11 @@ export async function calcTopicality(themeID: number): Promise<number> {
     const votes = await db.Vote.find({
         themeID: themeID,
         createdAt: { $gt: startsAt }
-    }).countDocuments().exec();
+    }).count().exec();
     const comments = await db.Comment.find({
         themeID: themeID,
         createdAt: { $gt: startsAt }
-    }).countDocuments().exec();
+    }).count().exec();
 
     return votes + comments;
 }

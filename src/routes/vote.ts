@@ -95,7 +95,7 @@ router.put("/votes/:themeid", async (req, res, next) => {
     }
 
     try {
-        await voteAPI.putVote(themeID, sessionToken, parseInt(answer, 10));
+        await voteAPI.vote(themeID, sessionToken, parseInt(answer, 10));
         res.status(200).send("");
     } catch (e) {
         console.log(e);
@@ -165,7 +165,7 @@ router.post("/comments/:themeid", async (req, res, next) => {
     }
 
     try {
-        await commentAPI.postComment(themeID, sessionToken, message);
+        await commentAPI.comment(themeID, sessionToken, message);
         res.status(201).send("");
     } catch (e) {
         console.log(e);

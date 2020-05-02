@@ -23,7 +23,7 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
     return await db.Vote.find(query).exec();
 }
 
-export async function putVote(themeID: number, sessionToken: string, answer: number) {
+export async function vote(themeID: number, sessionToken: string, answer: number) {
     const theme = await themeAPI.getTheme(themeID);
     if (theme.choices[answer] == undefined) {
         throw new Error("Invalid answer");

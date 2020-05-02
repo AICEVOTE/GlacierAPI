@@ -1,12 +1,12 @@
 import * as db from "./model";
 
-interface ITransition { timestamp: number, percentage: number[] };
+interface Transition { timestamp: number, percentage: number[] };
 
 class Theme {
     private _counts: number[] = [];
     private _results: number[] = [];
-    private _shortTransition: ITransition[] = [];
-    private _longTransition: ITransition[] = [];
+    private _shortTransition: Transition[] = [];
+    private _longTransition: Transition[] = [];
     private _lastTransitionUpdate = Date.now();
 
     constructor(readonly themeID: number,
@@ -107,8 +107,8 @@ class Theme {
     }
 
     private async updateTransition(now: number): Promise<{
-        shortTransition: ITransition[],
-        longTransition: ITransition[]
+        shortTransition: Transition[],
+        longTransition: Transition[]
     }> {
         const docs = await db.Result.find({
             themeID: this.themeID,
