@@ -20,10 +20,7 @@ router.get("/articles/:themeid", async (req, res, next) => {
         .articles.related
         .find(articles => articles.themeID == themeID)?.articles || []
 
-    res.json({
-        themeID: themeID,
-        articles: articles
-    });
+    res.json({ themeID, articles });
 });
 
 export default router;

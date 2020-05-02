@@ -12,8 +12,7 @@ export function initialize(io: SocketIO.Server) {
             }).exec();
 
             io.emit("comments", {
-                from: startsAt,
-                comments: comments
+                from: startsAt, comments
             });
         } catch (e) {
             console.log(e);

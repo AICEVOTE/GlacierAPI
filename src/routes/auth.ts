@@ -15,14 +15,14 @@ router.get("/sessiontoken", async (req, res, next) => {
 
     try {
         res.json({
-            sessionID: sessionID,
+            sessionID,
             sessionToken: await sessionAPI.getSessionToken(sessionID)
         });
     } catch (e) {
         console.log(e);
         next(createError(401));
     }
-})
+});
 
 router.get("/twitter", (req, _res, next) => {
     const callbackURI: unknown = req.query.callback;
@@ -48,22 +48,12 @@ router.get("/twitter/callback", authAPI.twitterAuth, (req, res, next) => {
     }
 
     if (!utilAPI.isString(req.session.callbackURI)) {
-        return res.json({ sessionID: sessionID });
+        return res.json({ sessionID });
     }
 
     const redirectTo = req.session.callbackURI + "?sessionid=" + sessionID;
     req.session.callbackURI = undefined;
     res.redirect(redirectTo);
-});
-
-router.post("/app", authAPI.appAuth, (req, res, next) => {
-    const sessionID: unknown = req.session?.passport?.user;
-
-    if (!utilAPI.isString(sessionID)) {
-        return next(createError(401));
-    }
-
-    res.json({ sessionID: sessionID });
 });
 
 export default router;

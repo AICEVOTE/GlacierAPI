@@ -69,6 +69,14 @@ export interface FeedbackModel extends mongoose.Document {
     feedbackType: string
 };
 
+export interface FCMListenerModel extends mongoose.Document {
+    deviceToken: string,
+    users: {
+        userProvider: string,
+        userID: string
+    }[]
+};
+
 const ThemeSchema = new mongoose.Schema<ThemeModel>({
     isEnabled: Boolean,
     themeID: Number,
@@ -131,6 +139,14 @@ const FeedbackSchema = new mongoose.Schema<FeedbackModel>({
     feedbackType: String
 });
 
+const FCMListenerSchema = new mongoose.Schema<FeedbackModel>({
+    deviceToken: String,
+    users: [{
+        userProvider: String,
+        userID: String
+    }]
+});
+
 export const Theme = mongoose.model<ThemeModel>("Theme", ThemeSchema, "themes");
 export const User = mongoose.model<UserModel>("User", UserSchema, "users");
 export const Session = mongoose.model<SessionModel>("Session", SessionSchema, "sessions");
@@ -138,3 +154,4 @@ export const Vote = mongoose.model<VoteModel>("Vote", VoteSchema, "votes");
 export const Comment = mongoose.model<CommentModel>("Comment", CommentSchema, "comments");
 export const Result = mongoose.model<ResultModel>("Result", ResultSchema, "results");
 export const Feedback = mongoose.model<FeedbackModel>("Feedback", FeedbackSchema, "feedbacks");
+export const FCMListener = mongoose.model<FCMListenerModel>("FCMListener", FCMListenerSchema, "fcmlisteners");

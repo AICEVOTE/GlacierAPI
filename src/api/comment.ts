@@ -1,7 +1,8 @@
 import XSSFilters from "xss-filters";
 import * as db from "../model";
-import * as userAPI from "./user";
+import * as firebaseAPI from "./firebase";
 import * as themeAPI from "./theme";
+import * as userAPI from "./user";
 
 export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {
     if (themeID != undefined
@@ -15,8 +16,8 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
 
     const query = themeID != undefined
         ? users
-            ? { themeID: themeID, $or: users }
-            : { themeID: themeID }
+            ? { themeID, $or: users }
+            : { themeID }
         : users
             ? { $or: users }
             : {};
@@ -30,9 +31,12 @@ export async function comment(themeID: number, sessionToken: string, message: st
     }
 
     const user = await userAPI.getMe(sessionToken);
+    message = XSSFilters.inHTMLData(message);
+    await firebaseAPI.sendNotification(
+        user.userProvider, user.userID, message);
+
     await new db.Comment({
-        themeID: themeID,
-        message: XSSFilters.inHTMLData(message),
+        themeID, message,
         userProvider: user.userProvider,
         userID: user.userID,
         createdAt: Date.now()

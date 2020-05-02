@@ -4,7 +4,7 @@ import * as userAPI from "./user";
 
 export async function exists(themeID: number): Promise<boolean> {
     try {
-        const theme = await db.Theme.findOne({ themeID: themeID }).exec();
+        const theme = await db.Theme.findOne({ themeID }).exec();
         if (!theme || theme.isEnabled == false) {
             return false;
         }
@@ -16,7 +16,7 @@ export async function exists(themeID: number): Promise<boolean> {
 }
 
 export async function getTheme(themeID: number): Promise<ThemeModel> {
-    const theme = await db.Theme.findOne({ themeID: themeID }).exec();
+    const theme = await db.Theme.findOne({ themeID }).exec();
     if (!theme || theme.isEnabled == false) {
         throw new Error("Invalid themeID");
     }
@@ -62,12 +62,10 @@ export async function calcTopicality(themeID: number): Promise<number> {
 
     const startsAt = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const votes = await db.Vote.find({
-        themeID: themeID,
-        createdAt: { $gt: startsAt }
+        themeID, createdAt: { $gt: startsAt }
     }).count().exec();
     const comments = await db.Comment.find({
-        themeID: themeID,
-        createdAt: { $gt: startsAt }
+        themeID, createdAt: { $gt: startsAt }
     }).count().exec();
 
     return votes + comments;

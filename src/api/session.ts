@@ -36,7 +36,7 @@ export async function saveSession(profile: Profile, sessionID: string) {
     await new db.Session({
         userProvider: profile.userProvider,
         userID: profile.userID,
-        sessionID: sessionID,
+        sessionID,
         sessionIDExpire: now + oneMonth,
         sessionToken: uuidv4(),
         sessionTokenExpire: now + oneHour
@@ -52,7 +52,7 @@ if (process.env.ROLE == "MASTER") {
             }), now = Date.now();
 
             for (const session of expiredSessions) {
-                await db.Session.update({
+                await db.Session.updateOne({
                     sessionID: session.sessionID
                 }, {
                     $set: {

@@ -17,6 +17,7 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import voteRouter from "./routes/vote";
 import newsRouter from "./routes/news";
+import appRouter from "./routes/app";
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/vote", voteRouter);
 app.use("/news", newsRouter);
+app.use("/app", appRouter);
 
 // catch 404 and forward to error handler
 app.use((_req, _res, next) => {

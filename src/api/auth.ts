@@ -39,8 +39,7 @@ passport.use(new TwitterStrategy({
             userID: profile.id,
             userProvider: profile.provider,
             name: profile.username || "",
-            friends: friends,
-            imageURI: imageURI,
+            friends, imageURI,
             numOfFollowers: profile._json.followers_count
         }, sessionID);
     } catch (e) {
@@ -72,7 +71,7 @@ passport.use(new LocalStrategy({
             name: res.screen_name,
             userProvider: "twitter",
             userID: res.id_str,
-            friends: friends,
+            friends,
             imageURI: res.profile_image_url_https,
             numOfFollowers: res.followers_count
         }, sessionID);

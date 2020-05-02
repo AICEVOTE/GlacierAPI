@@ -32,23 +32,19 @@ export async function getMe(sessionToken: string) {
 
 export async function getProfile(userProvider: string, userID: string) {
     const user = await db.User.findOne({
-        userProvider: userProvider,
-        userID: userID
+        userProvider, userID
     });
     if (!user) { return undefined; }
 
     const votes = await voteAPI.getVotes(undefined, [{
-        userProvider: userProvider,
-        userID: userID
+        userProvider, userID
     }]);
     const comments = await commentAPI.getComments(undefined, [{
-        userProvider: userProvider,
-        userID: userID
+        userProvider, userID
     }]);
 
     return {
-        userProvider: userProvider,
-        userID: userID,
+        userProvider, userID,
         name: user.name,
         imageURI: user.imageURI,
         isInfluencer: isInfluencer(user.numOfFollowers),

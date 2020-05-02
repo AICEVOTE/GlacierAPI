@@ -14,8 +14,8 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
 
     const query = themeID != undefined
         ? users
-            ? { themeID: themeID, $or: users, expiredAt: { $exists: false } }
-            : { themeID: themeID, expiredAt: { $exists: false } }
+            ? { themeID, $or: users, expiredAt: { $exists: false } }
+            : { themeID, expiredAt: { $exists: false } }
         : users
             ? { $or: users, expiredAt: { $exists: false } }
             : { expiredAt: { $exists: false } };
@@ -32,18 +32,18 @@ export async function vote(themeID: number, sessionToken: string, answer: number
     const user = await userAPI.getMe(sessionToken);
     const now = Date.now();
 
-    await db.Vote.update({
-        themeID: themeID,
+    await db.Vote.updateOne({
+        themeID,
         userID: user.userID,
         userProvider: user.userProvider,
         expiredAt: { $exists: false }
     }, { $set: { expiredAt: now } }).exec();
 
     await new db.Vote({
-        themeID: themeID,
+        themeID,
         userID: user.userID,
         userProvider: user.userProvider,
-        answer: answer,
+        answer,
         createdAt: now
     }).save();
 }

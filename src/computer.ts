@@ -24,7 +24,7 @@ function getResultInterval(DRClass: number): number {
     }
 }
 
-function evalFormula(elapsed: number, meltingRate: number) {
+function evalFormula(elapsed: number, meltingRate: number): number {
     const val = elapsed / meltingRate;
     return (4.0 * val + 5.0) / (val * val + 4.0 * val + 5.0);
 }
@@ -36,7 +36,7 @@ function calcResult(now: number, theme: ThemeModel, votes: VoteModel[]): number[
     for (const vote of votes) {
         if (vote.themeID == theme.themeID
             && vote.createdAt <= now
-            && (vote.expiredAt == undefined || vote.expiredAt > now)) {
+            && (vote.expiredAt == 0 || vote.expiredAt > now)) {
             points[vote.answer] += evalFormula(now - vote.createdAt, meltingRate);
         }
     }

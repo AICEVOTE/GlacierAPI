@@ -6,7 +6,7 @@ export async function saveFeedback(message: string, feedbackType: string) {
 
     await new db.Feedback({
         message: sanitizedMessage,
-        feedbackType: feedbackType
+        feedbackType
     }).save();
     return sanitizedMessage;
 }

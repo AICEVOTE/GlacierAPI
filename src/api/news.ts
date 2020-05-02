@@ -36,7 +36,7 @@ function convertArticle(article: NewsAPArticle): Article {
         description: article.description || "",
         uri: article.url || "",
         uriToImage: article.urlToImage || "",
-        publishedAt: publishedAt
+        publishedAt
     }
 }
 
@@ -45,7 +45,7 @@ async function getTopHeadlines(pageSize: number): Promise<NewsAPArticle[]> {
     return (await newsapi.v2.topHeadlines({
         country: "jp",
         category: "general",
-        pageSize: pageSize
+        pageSize
     })).articles || [];
 }
 
@@ -56,7 +56,7 @@ async function getEverything(keyword: string, pageSize: number)
         q: keyword,
         language: "jp",
         sortBy: "relevancy",
-        pageSize: pageSize
+        pageSize
     })).articles || [];
 }
 
@@ -81,7 +81,7 @@ async function getAllNews(): Promise<{
         })
     ));
 
-    return { latest: headlines, related: related };
+    return { latest: headlines, related };
 }
 
 export let articles: {

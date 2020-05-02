@@ -37,7 +37,7 @@ async function getVotes(themeID: number,
     friends: { userProvider: string, userID: string }[],
     influencers: { userProvider: string, userID: string }[]) {
     return {
-        themeID: themeID,
+        themeID,
         votes: await voteAPI.getVotes(themeID, friends),
         votesFromInfluencer: await voteAPI.getVotes(themeID, influencers)
     };
@@ -51,7 +51,7 @@ router.get("/votes", async (req, res, next) => {
             ? (await userAPI.getMe(sessionToken))
                 .friends.map(userID => ({
                     userProvider: "twitter",
-                    userID: userID
+                    userID
                 }))
             : [];
         const influencers = await userAPI.getInfluencers();
@@ -73,7 +73,7 @@ router.get("/votes/:themeid", async (req, res, next) => {
                 .friends
                 .map(userID => ({
                     userProvider: "twitter",
-                    userID: userID
+                    userID
                 }))
             : [];
         const influencers = await userAPI.getInfluencers();
@@ -129,7 +129,7 @@ router.get("/transitions/:themeid", (req, res, next) => {
 
 async function getComments(themeID: number) {
     return {
-        themeID: themeID,
+        themeID,
         comments: await commentAPI.getComments(themeID)
     };
 }

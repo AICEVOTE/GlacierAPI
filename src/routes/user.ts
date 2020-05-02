@@ -34,7 +34,7 @@ router.post("/profiles", async (req, res, next) => {
                 if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
                     throw new Error("Invalid request");
                 }
-                return { userProvider: userProvider, userID: userID }
+                return { userProvider, userID };
             }),
             profiles = (await Promise
                 .all(users.map(user => userAPI.getProfile(user.userProvider, user.userID))))
