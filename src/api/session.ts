@@ -21,7 +21,7 @@ export async function getSessionToken(sessionID: string): Promise<string> {
     return session.sessionToken;
 }
 
-export async function saveSession(profile: Profile, accessToken: string, refreshToken: string, sessionID: string) {
+export async function saveSession(profile: Profile, sessionID: string) {
     const now = Date.now();
 
     await db.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
@@ -36,8 +36,6 @@ export async function saveSession(profile: Profile, accessToken: string, refresh
     await new db.Session({
         userProvider: profile.userProvider,
         userID: profile.userID,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
         sessionID: sessionID,
         sessionIDExpire: now + oneMonth,
         sessionToken: uuidv4(),

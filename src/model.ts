@@ -91,8 +91,6 @@ const UserSchema = new mongoose.Schema<UserModel>({
 const SessionSchema = new mongoose.Schema<SessionModel>({
     userProvider: String,
     userID: String,
-    accessToken: String,
-    refreshToken: String,
     sessionID: String,
     sessionIDExpire: Number,
     sessionToken: String,

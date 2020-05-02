@@ -42,7 +42,7 @@ passport.use(new TwitterStrategy({
             friends: friends,
             imageURI: imageURI,
             numOfFollowers: profile._json.followers_count
-        }, accessToken, refreshToken, sessionID);
+        }, sessionID);
     } catch (e) {
         return done(null, false);
     }
@@ -75,7 +75,7 @@ passport.use(new LocalStrategy({
             friends: friends,
             imageURI: res.profile_image_url_https,
             numOfFollowers: res.followers_count
-        }, accessToken, refreshToken, sessionID);
+        }, sessionID);
     } catch (e) {
         return done(null, false);
     }
