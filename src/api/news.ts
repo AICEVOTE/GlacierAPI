@@ -1,4 +1,4 @@
-import { themeLoader } from "./theme";
+import * as themeAPI from "./theme";
 
 const NewsAPI = require("newsapi");
 const newsapi = new NewsAPI(process.env.NEWSAPI_KEY || "");
@@ -68,7 +68,8 @@ async function getAllNews(): Promise<{
         .map(article => convertArticle(article))
         .sort((a, b) => a.publishedAt - b.publishedAt);
 
-    const related = await Promise.all(themeLoader.themes.map(
+    const themes = await themeAPI.getAllThemes();
+    const related = await Promise.all(themes.map(
         async theme => ({
             themeID: theme.themeID,
             articles: (await Promise.all(theme.keywords.map(

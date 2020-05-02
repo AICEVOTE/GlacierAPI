@@ -48,6 +48,7 @@ $ yarn start
 |app.ts|HTTP server configuration|
 |websocket.ts|WebSocket server configuration|
 |model.ts|MongoDB model configuration|
+|theme.ts|vote result calculator|
 
 - `api` : database controller
 - `routes` : HTTP request procedure

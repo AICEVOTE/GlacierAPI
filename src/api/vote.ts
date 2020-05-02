@@ -1,9 +1,10 @@
 import * as db from "../model";
-import { themeLoader } from "./theme";
 import * as userAPI from "./user";
+import * as themeAPI from "./theme";
 
 export async function getVotes(themeID?: number, users?: { userProvider: string, userID: string }[]) {
-    if (themeID != undefined && !themeLoader.exists(themeID)) {
+    if (themeID != undefined
+        && await themeAPI.exists(themeID) == false) {
         throw new Error("Invalid themeID");
     }
 
@@ -23,7 +24,7 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
 }
 
 export async function putVote(themeID: number, sessionToken: string, answer: number) {
-    const theme = themeLoader.theme(themeID);
+    const theme = await themeAPI.getTheme(themeID);
     if (theme.choices[answer] == undefined) {
         throw new Error("Invalid answer");
     }

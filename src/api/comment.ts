@@ -1,10 +1,11 @@
 import XSSFilters from "xss-filters";
 import * as db from "../model";
-import { themeLoader } from "./theme";
 import * as userAPI from "./user";
+import * as themeAPI from "./theme";
 
 export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {
-    if (themeID != undefined && !themeLoader.exists(themeID)) {
+    if (themeID != undefined
+        && (await themeAPI.exists(themeID)) == false) {
         throw new Error("Invalid themeID");
     }
 
@@ -24,7 +25,7 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
 }
 
 export async function postComment(themeID: number, sessionToken: string, message: string) {
-    if (!themeLoader.exists(themeID)) {
+    if ((await themeAPI.exists(themeID)) == false) {
         throw new Error("Invalid themeID");
     }
 

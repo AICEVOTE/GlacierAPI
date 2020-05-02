@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
-import { themeLoader } from "./api/theme";
 import * as db from "./model";
+import { themeLoader } from "./theme";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");

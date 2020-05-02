@@ -1,11 +1,11 @@
 import express from "express";
 import createError from "http-errors";
 import * as commentAPI from "../api/comment";
-import { themeLoader } from "../api/theme";
-import type { Theme } from "../api/theme";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
+import { themeLoader } from "../theme";
+import type { Theme } from "../theme";
 const router = express.Router();
 
 

@@ -1,9 +1,9 @@
 import express from "express";
 import createError from "http-errors";
 import * as feedbackAPI from "../api/feedback";
-import { themeLoader } from "../api/theme";
-import type { Theme } from "../api/theme";
+import * as themeAPI from "../api/theme";
 import * as utilAPI from "../api/util";
+import type { ThemeModel } from "../model";
 const router = express.Router();
 
 
@@ -12,7 +12,7 @@ router.get("/", function (_req, res, _next) {
     res.render("index", { title: "Glacier API" });
 });
 
-async function getTheme(theme: Theme) {
+async function getTheme(theme: ThemeModel) {
     return {
         themeID: theme.themeID,
         title: theme.title,
@@ -20,13 +20,14 @@ async function getTheme(theme: Theme) {
         imageURI: theme.imageURI,
         genre: theme.genre,
         choices: theme.choices,
-        topicality: await utilAPI.calcTopicality(theme.themeID)
+        topicality: await themeAPI.calcTopicality(theme.themeID)
     };
 }
 
 router.get("/themes", async (_req, res, next) => {
     try {
-        res.json(await Promise.all(themeLoader.themes
+        const themes = await themeAPI.getAllThemes();
+        res.json(await Promise.all(themes
             .map(theme => getTheme(theme))));
     } catch (e) {
         console.log(e);
@@ -38,7 +39,7 @@ router.get("/themes/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     try {
-        const theme = themeLoader.theme(themeID);
+        const theme = await themeAPI.getTheme(themeID);
         res.json(await getTheme(theme));
     } catch (e) {
         console.log(e);

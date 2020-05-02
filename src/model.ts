@@ -5,7 +5,7 @@ mongoose.connect(process.env.MONGO_URI || "", {
     useUnifiedTopology: true
 });
 
-interface ThemeModel extends mongoose.Document {
+export interface ThemeModel extends mongoose.Document {
     isEnabled: boolean,
     themeID: number,
     title: string,
@@ -18,7 +18,7 @@ interface ThemeModel extends mongoose.Document {
     saveInterval: number
 };
 
-interface UserModel extends mongoose.Document {
+export interface UserModel extends mongoose.Document {
     name: string,
     userProvider: string,
     userID: string,
@@ -27,7 +27,7 @@ interface UserModel extends mongoose.Document {
     numOfFollowers: number
 };
 
-interface SessionModel extends mongoose.Document {
+export interface SessionModel extends mongoose.Document {
     userProvider: string,
     userID: string,
     accessToken: string,
@@ -38,7 +38,7 @@ interface SessionModel extends mongoose.Document {
     sessionTokenExpire: number
 };
 
-interface VoteModel extends mongoose.Document {
+export interface VoteModel extends mongoose.Document {
     themeID: number,
     answer: number,
     userProvider: string,
@@ -47,7 +47,7 @@ interface VoteModel extends mongoose.Document {
     expiredAt: number
 };
 
-interface CommentModel extends mongoose.Document {
+export interface CommentModel extends mongoose.Document {
     themeID: number,
     message: string,
     userProvider: string,
@@ -55,13 +55,13 @@ interface CommentModel extends mongoose.Document {
     createdAt: number,
 };
 
-interface ResultModel extends mongoose.Document {
+export interface ResultModel extends mongoose.Document {
     themeID: number,
     timestamp: number,
     percentage: number[]
 };
 
-interface FeedbackModel extends mongoose.Document {
+export interface FeedbackModel extends mongoose.Document {
     message: string,
     feedbackType: string
 };
