@@ -23,14 +23,13 @@ export async function sendNotification(userProvider: string, userID: string, mes
     const listeners = await db.FCMListener.find({
         users: { $elemMatch: { userProvider, userID } }
     }).exec();
-
-    const tokens = listeners.map(listener => listener.deviceToken);
-    if (tokens.length == 0) { return; }
+    if (listeners.length == 0) { return; }
 
     await admin.messaging().sendMulticast({
         notification: {
             title: `@${user.name} commented`,
             body: message
-        }, tokens
+        },
+        tokens: listeners.map(listener => listener.deviceToken)
     });
 }

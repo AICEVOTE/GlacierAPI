@@ -1,8 +1,8 @@
 import * as themeAPI from "./api/theme";
-import * as voteAPI from "./api/vote";
+import * as db from "./model";
 import { ThemeModel, VoteModel } from "./model";
 
-interface Transition { timestamp: number, percentage: number[] };
+export interface Transition { timestamp: number, percentage: number[] };
 
 function getMeltingRate(DRClass: number): number {
     switch (DRClass) {
@@ -33,13 +33,13 @@ function calcResult(now: number, theme: ThemeModel, votes: VoteModel[]): number[
     const meltingRate = getMeltingRate(theme.DRClass);
     let points = Array<number>(theme.choices.length).fill(0);
 
-    for (const vote of votes) {
-        if (vote.themeID == theme.themeID
+    votes
+        .filter(vote => vote.themeID == theme.themeID
             && vote.createdAt <= now
-            && (vote.expiredAt == 0 || vote.expiredAt > now)) {
+            && (vote.expiredAt == undefined || vote.expiredAt > now))
+        .forEach(vote => {
             points[vote.answer] += evalFormula(now - vote.createdAt, meltingRate);
-        }
-    }
+        });
 
     const sum = points.reduce((pre, cur) => pre + cur);
     return points.map(point => (Math.round(point / sum * 1000000) / 10000) || 0);
@@ -72,16 +72,13 @@ async function updateAllTransitions(): Promise<{
     longTransition: Transition[];
 }[]> {
     const now = Date.now();
-    const votes = await voteAPI.getVotes();
+    const votes = await db.Vote.find({}).exec();
     const themes = await themeAPI.getAllThemes();
-    return themes.map(theme => {
-        const transition = calcTransition(now, theme, votes);
-        return {
-            themeID: theme.themeID,
-            shortTransition: transition.shortTransition,
-            longTransition: transition.longTransition
-        };
-    });
+    
+    return themes.map(theme => ({
+        themeID: theme.themeID,
+        ...calcTransition(now, theme, votes)
+    }));
 }
 
 export let transitions: {

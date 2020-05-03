@@ -1,6 +1,7 @@
 import SocketIO from "socket.io";
+import * as voteAPI from "./api/vote";
+import { transitions } from "./computer";
 import * as db from "./model";
-import { themeLoader } from "./theme";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");
@@ -18,11 +19,11 @@ export function initialize(io: SocketIO.Server) {
             console.log(e);
         }
 
-        for (const theme of themeLoader.themes) {
+        for (const transition of transitions) {
             io.emit("result", {
-                themeID: theme.themeID,
-                results: theme.realtimeResult,
-                counts: theme.realtimeCount,
+                themeID: transition.themeID,
+                results: transition.shortTransition[0].percentage,
+                counts: await voteAPI.getVoteCounts(transition.themeID),
             });
         }
     }, 2 * 1000);

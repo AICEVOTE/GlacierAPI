@@ -51,3 +51,14 @@ export async function vote(themeID: number, sessionToken: string, answer: number
         createdAt: now
     }).save();
 }
+
+export async function getVoteCounts(themeID: number): Promise<number[]> {
+    const theme = await themeAPI.getTheme(themeID);
+    const votes = await getVotes(themeID);
+
+    let counts = Array<number>(theme.choices.length).fill(0);
+    votes.forEach(vote => {
+        counts[vote.answer]++;
+    });
+    return counts;
+}

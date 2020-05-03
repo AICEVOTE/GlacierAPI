@@ -88,7 +88,10 @@ async function getAllNews(): Promise<{
 
 export let articles: {
     latest: Article[];
-    related: { themeID: number; articles: Article[]; }[];
+    related: {
+        themeID: number;
+        articles: Article[];
+    }[];
 };
 
 getAllNews()

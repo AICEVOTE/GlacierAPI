@@ -1,8 +1,8 @@
 import express from "express";
 import createError from "http-errors";
 import * as authAPI from "../api/auth";
-import * as utilAPI from "../api/util";
 import * as firebaseAPI from "../api/firebase";
+import * as utilAPI from "../api/util";
 const router = express.Router();
 
 

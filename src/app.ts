@@ -13,6 +13,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import indexRouter from "./routes/index";
+import themeRouter from "./routes/theme";
 import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import voteRouter from "./routes/vote";
@@ -53,6 +54,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/", indexRouter);
+app.use("/theme", themeRouter);
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/vote", voteRouter);

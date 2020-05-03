@@ -4,33 +4,39 @@ import * as commentAPI from "../api/comment";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
-import { themeLoader } from "../theme";
-import type { Theme } from "../theme";
+import { transitions } from "../computer";
+import type { Transition } from "../computer";
 const router = express.Router();
 
 
-function getResults(theme: Theme) {
+async function getResults(transition: {
+    themeID: number;
+    shortTransition: Transition[];
+    longTransition: Transition[];
+}): Promise<{
+    themeID: number;
+    results: number[];
+    counts: number[];
+}> {
+
     return {
-        themeID: theme.themeID,
-        results: theme.realtimeResult,
-        counts: theme.realtimeCount
+        themeID: transition.themeID,
+        results: transition.shortTransition[0].percentage,
+        counts: await voteAPI.getVoteCounts(transition.themeID)
     };
 }
 
-router.get("/results", (_req, res, _next) => {
-    res.json(themeLoader.themes.map(theme => getResults(theme)));
+router.get("/results", async (_req, res, _next) => {
+    res.json(await Promise.all(transitions.map(transition => getResults(transition))));
 });
 
-router.get("/results/:themeid", (req, res, next) => {
+router.get("/results/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    try {
-        const theme = themeLoader.theme(themeID);
-        res.json(getResults(theme));
-    } catch (e) {
-        console.log("The themeID is invalid");
-        next(createError(404));
-    }
+    const transition = transitions.find(transition => transition.themeID == themeID);
+    if (!transition) { return next(createError(404)); }
+
+    res.json(await getResults(transition));
 });
 
 async function getVotes(themeID: number,
@@ -55,8 +61,8 @@ router.get("/votes", async (req, res, next) => {
                 }))
             : [];
         const influencers = await userAPI.getInfluencers();
-        res.json(await Promise.all(themeLoader.themes
-            .map(theme => getVotes(theme.themeID, friends, influencers))));
+        res.json(await Promise.all(transitions
+            .map(({ themeID }) => getVotes(themeID, friends, influencers))));
     } catch (e) {
         console.log(e);
         next(createError(400));
@@ -103,28 +109,33 @@ router.put("/votes/:themeid", async (req, res, next) => {
     }
 });
 
-function getTransitions(theme: Theme) {
+function getTransitions(transition: {
+    themeID: number;
+    shortTransition: Transition[];
+    longTransition: Transition[];
+}): {
+    themeID: number;
+    shortTransition: Transition[];
+    longTransition: Transition[];
+} {
     return {
-        themeID: theme.themeID,
-        shortTransition: theme.shortTransition,
-        longTransition: theme.longTransition
+        themeID: transition.themeID,
+        shortTransition: transition.shortTransition,
+        longTransition: transition.longTransition
     };
 }
 
-router.get("/transitions", (_req, res, _next) => {
-    res.json(themeLoader.themes.map(theme => getTransitions(theme)));
+router.get("/transitions", async (_req, res, _next) => {
+    res.json(transitions.map(transition => getTransitions(transition)));
 });
 
 router.get("/transitions/:themeid", (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    try {
-        const theme = themeLoader.theme(themeID);
-        res.json(getTransitions(theme));
-    } catch (e) {
-        console.log("The themeID is invalid");
-        return next(createError(404));
-    }
+    const transition = transitions.find(transition => transition.themeID == themeID);
+    if (!transition) { return next(createError(404)); }
+
+    res.json(getTransitions(transition));
 });
 
 async function getComments(themeID: number) {
@@ -136,8 +147,8 @@ async function getComments(themeID: number) {
 
 router.get("/comments", async (_req, res, next) => {
     try {
-        res.json(await Promise.all(themeLoader.themes
-            .map(theme => getComments(theme.themeID))));
+        res.json(await Promise.all(transitions
+            .map(({ themeID }) => getComments(themeID))));
     } catch (e) {
         console.log(e);
         next(createError(404));
