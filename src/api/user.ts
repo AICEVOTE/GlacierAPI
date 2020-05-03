@@ -3,10 +3,9 @@ import type { UserModel } from "../model";
 import * as commentAPI from "./comment";
 import * as voteAPI from "./vote";
 
-if (!process.env.NUM_OF_INFLUENCERS_FOLLOWER) {
-    throw new Error("NUM_OF_INFLUENCERS_FOLLOWER not configured");
-}
-const numOfInfuencersFollower = parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER);
+const numOfInfuencersFollower = process.env.NUM_OF_INFLUENCERS_FOLLOWER
+    ? parseInt(process.env.NUM_OF_INFLUENCERS_FOLLOWER)
+    : 10000;
 
 function isInfluencer(numOfFollowers: number) {
     return numOfFollowers > numOfInfuencersFollower;

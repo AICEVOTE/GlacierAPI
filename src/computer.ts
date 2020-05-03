@@ -72,16 +72,20 @@ async function updateAllResults(): Promise<{
     result: number[];
 }[]> {
     const now = Date.now();
-    const votes = await db.Vote.find({}).exec();
     const themes = await themeAPI.getAllThemes();
+    const votes = await db.Vote.find({
+        themeID: { $in: themes.map(({ themeID }) => themeID) },
+        expiredAt: { $exists: false }
+    }).exec();
 
     return themes.map(theme => {
         const meltingRate = getMeltingRate(theme.DRClass),
-            curVotes = votes.filter(vote => vote.themeID == theme.themeID);
+            curVotes = votes.filter(vote => vote.themeID == theme.themeID),
+            numOfChoices = theme.choices.length;
 
         return {
             themeID: theme.themeID,
-            result: calcResult(now, meltingRate, theme.choices.length, curVotes)
+            result: calcResult(now, meltingRate, numOfChoices, curVotes)
         };
     });
 }
@@ -92,8 +96,10 @@ async function updateAllTransitions(): Promise<{
     longTransition: Transition[];
 }[]> {
     const now = Date.now();
-    const votes = await db.Vote.find({}).exec();
     const themes = await themeAPI.getAllThemes();
+    const votes = await db.Vote.find({
+        themeID: { $in: themes.map(({ themeID }) => themeID) }
+    }).exec();
 
     return themes.map(theme => ({
         themeID: theme.themeID,

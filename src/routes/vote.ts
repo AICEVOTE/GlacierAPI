@@ -100,7 +100,7 @@ router.put("/votes/:themeid", async (req, res, next) => {
         await voteAPI.vote(themeID, sessionToken, parseInt(answer, 10));
         res.status(200).send("");
     } catch (e) {
-        next(createError(400));
+        next(createError(401));
     }
 });
 
@@ -152,7 +152,7 @@ router.post("/comments/:themeid", async (req, res, next) => {
         await commentAPI.comment(themeID, sessionToken, message);
         res.status(201).send("");
     } catch (e) {
-        next(createError(400));
+        next(createError(401));
     }
 });
 

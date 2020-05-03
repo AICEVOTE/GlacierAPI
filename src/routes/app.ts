@@ -25,12 +25,8 @@ router.post("/receiver", async (req, res, next) => {
         return;
     }
 
-    try {
-        await firebaseAPI.updateListener(deviceToken, users);
-        res.status(200).send("");
-    } catch (e) {
-        next(createError(400));
-    }
+    await firebaseAPI.updateListener(deviceToken, users);
+    res.status(200).send("");
 });
 
 export default router;

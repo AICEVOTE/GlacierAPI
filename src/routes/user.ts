@@ -27,15 +27,10 @@ router.post("/profiles", async (req, res, next) => {
         return;
     }
 
-    try {
-        const profiles = (await Promise
-            .all(query.map(user => userAPI.getProfile(user.userProvider, user.userID))))
-            .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
-
-        res.json(profiles);
-    } catch (e) {
-        next(createError(400));
-    }
+    const profiles = (await Promise
+        .all(query.map(user => userAPI.getProfile(user.userProvider, user.userID))))
+        .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
+    res.json(profiles);
 });
 
 export default router;
