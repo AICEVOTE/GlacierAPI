@@ -24,11 +24,13 @@ export async function sendNotification(userProvider: string, userID: string, mes
         users: { $elemMatch: { userProvider, userID } }
     }).exec();
 
+    const tokens = listeners.map(listener => listener.deviceToken);
+    if (tokens.length == 0) { return; }
+
     await admin.messaging().sendMulticast({
         notification: {
             title: `@${user.name} commented`,
             body: message
-        },
-        tokens: listeners.map(listener => listener.deviceToken)
+        }, tokens
     });
 }
