@@ -29,13 +29,11 @@ function evalFormula(elapsed: number, meltingRate: number): number {
     return (4.0 * val + 5.0) / (val * val + 4.0 * val + 5.0);
 }
 
-function calcResult(now: number, theme: ThemeModel, votes: VoteModel[]): number[] {
-    const meltingRate = getMeltingRate(theme.DRClass);
-    let points = Array<number>(theme.choices.length).fill(0);
+function calcResult(now: number, meltingRate: number, numOfChoices: number, votes: VoteModel[]): number[] {
+    let points = Array<number>(numOfChoices).fill(0);
 
     votes
-        .filter(vote => vote.themeID == theme.themeID
-            && vote.createdAt <= now
+        .filter(vote => vote.createdAt <= now
             && (vote.expiredAt == undefined || vote.expiredAt > now))
         .forEach(vote => {
             points[vote.answer] += evalFormula(now - vote.createdAt, meltingRate);
@@ -49,17 +47,20 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
     shortTransition: Transition[];
     longTransition: Transition[];
 } {
-    const resultInterval = getResultInterval(theme.DRClass);
+    const resultInterval = getResultInterval(theme.DRClass),
+        meltingRate = getMeltingRate(theme.DRClass),
+        numOfChoices = theme.choices.length,
+        curVotes = votes.filter(vote => vote.themeID == theme.themeID);
     let shortTransition: Transition[] = [],
         longTransition: Transition[] = [];
 
     for (let i = 0; i < 60; i++) {
         let timestamp = now - i * resultInterval;
-        let result = calcResult(timestamp, theme, votes);
+        let result = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
         shortTransition.push({ timestamp, percentage: result });
 
         timestamp = now - i * resultInterval * 24;
-        result = calcResult(timestamp, theme, votes);
+        result = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
         longTransition.push({ timestamp, percentage: result });
     }
 
@@ -74,7 +75,7 @@ async function updateAllTransitions(): Promise<{
     const now = Date.now();
     const votes = await db.Vote.find({}).exec();
     const themes = await themeAPI.getAllThemes();
-    
+
     return themes.map(theme => ({
         themeID: theme.themeID,
         ...calcTransition(now, theme, votes)
@@ -85,7 +86,7 @@ export let transitions: {
     themeID: number;
     shortTransition: Transition[];
     longTransition: Transition[];
-}[];
+}[] = [];
 
 setInterval(async () => {
     try {
@@ -93,4 +94,4 @@ setInterval(async () => {
     } catch (e) {
         console.log(e);
     }
-}, 10 * 1000);
+}, 2 * 1000);

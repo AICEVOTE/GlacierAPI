@@ -58,12 +58,6 @@ export interface CommentModel extends mongoose.Document {
     createdAt: number,
 };
 
-export interface ResultModel extends mongoose.Document {
-    themeID: number,
-    timestamp: number,
-    percentage: number[]
-};
-
 export interface FeedbackModel extends mongoose.Document {
     message: string,
     feedbackType: string
@@ -128,18 +122,12 @@ const CommentSchema = new mongoose.Schema<CommentModel>({
     createdAt: Number,
 });
 
-const ResultSchema = new mongoose.Schema<ResultModel>({
-    themeID: Number,
-    timestamp: Number,
-    percentage: [Number]
-});
-
 const FeedbackSchema = new mongoose.Schema<FeedbackModel>({
     message: String,
     feedbackType: String
 });
 
-const FCMListenerSchema = new mongoose.Schema<FeedbackModel>({
+const FCMListenerSchema = new mongoose.Schema<FCMListenerModel>({
     deviceToken: String,
     users: [{
         userProvider: String,
@@ -152,6 +140,5 @@ export const User = mongoose.model<UserModel>("User", UserSchema, "users");
 export const Session = mongoose.model<SessionModel>("Session", SessionSchema, "sessions");
 export const Vote = mongoose.model<VoteModel>("Vote", VoteSchema, "votes");
 export const Comment = mongoose.model<CommentModel>("Comment", CommentSchema, "comments");
-export const Result = mongoose.model<ResultModel>("Result", ResultSchema, "results");
 export const Feedback = mongoose.model<FeedbackModel>("Feedback", FeedbackSchema, "feedbacks");
 export const FCMListener = mongoose.model<FCMListenerModel>("FCMListener", FCMListenerSchema, "fcmlisteners");

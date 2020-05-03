@@ -7,7 +7,13 @@ const router = express.Router();
 
 async function getTheme(theme: ThemeModel) {
     return {
-        ...theme,
+        themeID: theme.themeID,
+        title: theme.title,
+        description: theme.description,
+        imageURI: theme.imageURI,
+        genre: theme.genre,
+        choices: theme.choices,
+        keywords: theme.keywords,
         topicality: await themeAPI.calcTopicality(theme.themeID)
     };
 }

@@ -19,12 +19,12 @@ export function initialize(io: SocketIO.Server) {
             console.log(e);
         }
 
-        for (const transition of transitions) {
+        transitions.forEach(async transition => {
             io.emit("result", {
                 themeID: transition.themeID,
                 results: transition.shortTransition[0].percentage,
                 counts: await voteAPI.getVoteCounts(transition.themeID),
             });
-        }
+        });
     }, 2 * 1000);
 }
