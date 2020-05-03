@@ -63,10 +63,10 @@ export async function calcTopicality(themeID: number): Promise<number> {
     const startsAt = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const votes = await db.Vote.find({
         themeID, createdAt: { $gt: startsAt }
-    }).count().exec();
+    }).countDocuments().exec();
     const comments = await db.Comment.find({
         themeID, createdAt: { $gt: startsAt }
-    }).count().exec();
+    }).countDocuments().exec();
 
     return votes + comments;
 }
