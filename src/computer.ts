@@ -40,7 +40,7 @@ function calcResult(now: number, meltingRate: number, numOfChoices: number, vote
         });
 
     const sum = points.reduce((pre, cur) => pre + cur);
-    return points.map(point => (Math.round(point / sum * 1000000) / 10000) || 0);
+    return points.map(point => Math.round(point / sum * 1000000) / 10000);
 }
 
 function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
@@ -67,6 +67,24 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
     return { shortTransition, longTransition };
 }
 
+async function updateAllResults(): Promise<{
+    themeID: number;
+    result: number[];
+}[]> {
+    const now = Date.now();
+    const votes = await db.Vote.find({}).exec();
+    const themes = await themeAPI.getAllThemes();
+
+    return themes.map(theme => {
+        const meltingRate = getMeltingRate(theme.DRClass);
+
+        return {
+            themeID: theme.themeID,
+            result: calcResult(now, meltingRate, theme.choices.length, votes)
+        };
+    });
+}
+
 async function updateAllTransitions(): Promise<{
     themeID: number;
     shortTransition: Transition[];
@@ -82,11 +100,32 @@ async function updateAllTransitions(): Promise<{
     }));
 }
 
+export let results: {
+    themeID: number;
+    result: number[];
+}[] = [];
+
 export let transitions: {
     themeID: number;
     shortTransition: Transition[];
     longTransition: Transition[];
 }[] = [];
+
+updateAllResults()
+    .then(_results => results = _results)
+    .catch(e => console.log(e));
+
+updateAllTransitions()
+    .then(_transitions => transitions = _transitions)
+    .catch(e => console.log(e));
+
+setInterval(async () => {
+    try {
+        results = await updateAllResults();
+    } catch (e) {
+        console.log(e);
+    }
+}, 2 * 1000);
 
 setInterval(async () => {
     try {
@@ -94,4 +133,4 @@ setInterval(async () => {
     } catch (e) {
         console.log(e);
     }
-}, 2 * 1000);
+}, 100 * 1000);

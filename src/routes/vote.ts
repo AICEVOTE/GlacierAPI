@@ -4,15 +4,14 @@ import * as commentAPI from "../api/comment";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
-import { transitions } from "../computer";
+import { results, transitions } from "../computer";
 import type { Transition } from "../computer";
 const router = express.Router();
 
 
-async function getResults(transition: {
+async function getResults(result: {
     themeID: number;
-    shortTransition: Transition[];
-    longTransition: Transition[];
+    result: number[];
 }): Promise<{
     themeID: number;
     results: number[];
@@ -20,23 +19,23 @@ async function getResults(transition: {
 }> {
 
     return {
-        themeID: transition.themeID,
-        results: transition.shortTransition[0].percentage,
-        counts: await voteAPI.getVoteCounts(transition.themeID)
+        themeID: result.themeID,
+        results: result.result,
+        counts: await voteAPI.getVoteCounts(result.themeID)
     };
 }
 
 router.get("/results", async (_req, res, _next) => {
-    res.json(await Promise.all(transitions.map(transition => getResults(transition))));
+    res.json(await Promise.all(results.map(result => getResults(result))));
 });
 
 router.get("/results/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
-    const transition = transitions.find(transition => transition.themeID == themeID);
-    if (!transition) { return next(createError(404)); }
+    const result = results.find(result => result.themeID == themeID);
+    if (!result) { return next(createError(404)); }
 
-    res.json(await getResults(transition));
+    res.json(await getResults(result));
 });
 
 async function getVotes(themeID: number,
