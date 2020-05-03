@@ -50,8 +50,7 @@ async function getTopHeadlines(pageSize: number): Promise<NewsAPArticle[]> {
 }
 
 // Get all articles about the keyword
-async function getEverything(keyword: string, pageSize: number)
-    : Promise<NewsAPArticle[]> {
+async function getEverything(keyword: string, pageSize: number): Promise<NewsAPArticle[]> {
     return (await newsapi.v2.everything({
         q: keyword,
         language: "jp",
@@ -62,7 +61,10 @@ async function getEverything(keyword: string, pageSize: number)
 
 async function getAllNews(): Promise<{
     latest: Article[];
-    related: { themeID: number; articles: Article[]; }[];
+    related: {
+        themeID: number;
+        articles: Article[];
+    }[];
 }> {
     const headlines = (await getTopHeadlines(15))
         .map(article => convertArticle(article))

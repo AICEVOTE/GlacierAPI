@@ -1,18 +1,9 @@
+import type { ParamsDictionary, Query, RequestHandler } from "express-serve-static-core";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as TwitterStrategy } from "passport-twitter";
-import Twitter from "twitter";
-import { v4 as uuidv4 } from "uuid";
 import * as sessionAPI from "./session";
-
-export const twitterAuth = passport.authenticate("twitter");
-export const appAuth = passport.authenticate("local");
-
-async function getTwitterFriends(twitterClient: Twitter, twitterID: string): Promise<string[]> {
-    const res = await twitterClient.get("friends/ids",
-        { user_id: twitterID, stringify_ids: true });
-    return res.ids;
-}
+import * as twitterAPI from "./twitter";
 
 // Authorize with web twitter authentication
 passport.use(new TwitterStrategy({
@@ -20,28 +11,24 @@ passport.use(new TwitterStrategy({
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET || "",
     callbackURL: process.env.TWITTER_CALLBACK || ""
 }, async (accessToken, refreshToken, profile, done) => {
-    const sessionID = uuidv4();
+    let sessionID = "";
 
     try {
-        const twitterClient = new Twitter({
-            consumer_key: process.env.TWITTER_CONSUMER_KEY || "",
-            consumer_secret: process.env.TWITTER_CONSUMER_SECRET || "",
-            access_token_key: accessToken,
-            access_token_secret: refreshToken
-        });
-        const friends = await getTwitterFriends(twitterClient, profile.id);
+        const twitterClient = twitterAPI.connect(accessToken, refreshToken);
+        const friends = await twitterAPI.getTwitterFriends(twitterClient, profile.id);
         let imageURI = "";
         if (profile.photos && profile.photos[0]) {
             imageURI = profile.photos[0].value;
         }
 
-        await sessionAPI.saveSession({
-            userID: profile.id,
-            userProvider: profile.provider,
-            name: profile.username || "",
-            friends, imageURI,
-            numOfFollowers: profile._json.followers_count
-        }, sessionID);
+        sessionID = await sessionAPI.createSession(
+            {
+                userProvider: profile.provider,
+                userID: profile.id,
+                name: profile.username || "",
+                friends, imageURI,
+                numOfFollowers: profile._json.followers_count
+            });
     } catch (e) {
         return done(null, false);
     }
@@ -55,26 +42,12 @@ passport.use(new LocalStrategy({
     passwordField: "refreshToken",
     session: false
 }, async (accessToken, refreshToken, done) => {
-    const sessionID = uuidv4();
+    let sessionID = "";
 
     try {
-        const twitterClient = new Twitter({
-            consumer_key: process.env.TWITTER_CONSUMER_KEY || "",
-            consumer_secret: process.env.TWITTER_CONSUMER_SECRET || "",
-            access_token_key: accessToken,
-            access_token_secret: refreshToken
-        });
-        const res = await twitterClient.get("account/verify_credentials", {});
-        const friends = await getTwitterFriends(twitterClient, res.id_str);
-
-        await sessionAPI.saveSession({
-            name: res.screen_name,
-            userProvider: "twitter",
-            userID: res.id_str,
-            friends,
-            imageURI: res.profile_image_url_https,
-            numOfFollowers: res.followers_count
-        }, sessionID);
+        const twitterClient = twitterAPI.connect(accessToken, refreshToken);
+        const profile = await twitterAPI.getProfile(twitterClient);
+        sessionID = await sessionAPI.createSession(profile);
     } catch (e) {
         return done(null, false);
     }
@@ -84,3 +57,7 @@ passport.use(new LocalStrategy({
 
 passport.serializeUser((user, done) => { done(null, user); });
 passport.deserializeUser((user, done) => { done(null, user); });
+
+type ReqHandler = RequestHandler<ParamsDictionary, any, any, Query>;
+export const twitterAuth: ReqHandler = passport.authenticate("twitter");
+export const appAuth: ReqHandler = passport.authenticate("local");

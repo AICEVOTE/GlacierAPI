@@ -1,8 +1,12 @@
 import * as db from "../model";
-import * as userAPI from "./user";
+import type { VoteModel } from "../model";
 import * as themeAPI from "./theme";
+import * as userAPI from "./user";
 
-export async function getVotes(themeID?: number, users?: { userProvider: string, userID: string }[]) {
+export async function getVotes(themeID?: number, users?: {
+    userProvider: string;
+    userID: string;
+}[]): Promise<VoteModel[]> {
     if (themeID != undefined
         && await themeAPI.exists(themeID) == false) {
         throw new Error("Invalid themeID");
@@ -23,7 +27,7 @@ export async function getVotes(themeID?: number, users?: { userProvider: string,
     return await db.Vote.find(query).exec();
 }
 
-export async function vote(themeID: number, sessionToken: string, answer: number) {
+export async function vote(themeID: number, sessionToken: string, answer: number): Promise<void> {
     const theme = await themeAPI.getTheme(themeID);
     if (theme.choices[answer] == undefined) {
         throw new Error("Invalid answer");

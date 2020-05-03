@@ -1,10 +1,14 @@
 import XSSFilters from "xss-filters";
 import * as db from "../model";
+import type { CommentModel } from "../model";
 import * as firebaseAPI from "./firebase";
 import * as themeAPI from "./theme";
 import * as userAPI from "./user";
 
-export async function getComments(themeID?: number, users?: { userProvider: string, userID: string }[]) {
+export async function getComments(themeID?: number, users?: {
+    userProvider: string;
+    userID: string;
+}[]): Promise<CommentModel[]> {
     if (themeID != undefined
         && (await themeAPI.exists(themeID)) == false) {
         throw new Error("Invalid themeID");
@@ -25,7 +29,7 @@ export async function getComments(themeID?: number, users?: { userProvider: stri
     return await db.Comment.find(query).exec();
 }
 
-export async function comment(themeID: number, sessionToken: string, message: string) {
+export async function comment(themeID: number, sessionToken: string, message: string): Promise<void> {
     if ((await themeAPI.exists(themeID)) == false) {
         throw new Error("Invalid themeID");
     }

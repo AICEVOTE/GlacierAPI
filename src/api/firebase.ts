@@ -8,15 +8,15 @@ admin.initializeApp({
 });
 
 export async function updateListener(deviceToken: string, users: {
-    userProvider: string, userID: string
+    userProvider: string;
+    userID: string;
 }[]): Promise<void> {
     await db.FCMListener.updateOne({ deviceToken }, {
         $set: { users }
     }, { upsert: true });
 }
 
-export async function sendNotification(
-    userProvider: string, userID: string, message: string): Promise<void> {
+export async function sendNotification(userProvider: string, userID: string, message: string): Promise<void> {
     const user = await userAPI.getProfile(userProvider, userID);
     if (!user) { throw new Error("User not found"); }
 

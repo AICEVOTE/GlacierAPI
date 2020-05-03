@@ -5,26 +5,27 @@ const oneHour = 60 * 60 * 1000;
 const oneDay = oneHour * 24;
 const oneMonth = oneDay * 31;
 
-interface Profile {
-    name: string,
-    userProvider: string,
-    userID: string,
-    friends: string[],
-    imageURI: string,
-    numOfFollowers: number
-}
+export interface Profile {
+    userProvider: string, userID: string,
+    name: string, friends: string[],
+    imageURI: string, numOfFollowers: number
+};
 
 export async function getSessionToken(sessionID: string): Promise<string> {
-    const session = await db.Session.findOne({ sessionID: sessionID }).exec();
+    const session = await db.Session.findOne({ sessionID }).exec();
     if (!session) { throw new Error("Invalid sessionID"); }
 
     return session.sessionToken;
 }
 
-export async function saveSession(profile: Profile, sessionID: string) {
+export async function createSession(profile: Profile): Promise<string> {
+    const sessionID = uuidv4();
     const now = Date.now();
 
-    await db.User.updateOne({ userID: profile.userID, userProvider: profile.userProvider }, {
+    await db.User.updateOne({
+        userProvider: profile.userProvider,
+        userID: profile.userID
+    }, {
         $set: {
             name: profile.name,
             friends: profile.friends,
@@ -41,6 +42,8 @@ export async function saveSession(profile: Profile, sessionID: string) {
         sessionToken: uuidv4(),
         sessionTokenExpire: now + oneHour
     }).save();
+
+    return sessionID;
 }
 
 if (process.env.ROLE == "MASTER") {
@@ -51,10 +54,8 @@ if (process.env.ROLE == "MASTER") {
                 sessionTokenExpire: { $lt: Date.now() }
             }), now = Date.now();
 
-            for (const session of expiredSessions) {
-                await db.Session.updateOne({
-                    sessionID: session.sessionID
-                }, {
+            for (const { sessionID } of expiredSessions) {
+                await db.Session.updateOne({ sessionID }, {
                     $set: {
                         sessionToken: uuidv4(),
                         sessionTokenExpire: now + oneHour
