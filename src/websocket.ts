@@ -1,30 +1,24 @@
 import SocketIO from "socket.io";
-import * as voteAPI from "./api/vote";
-import { transitions } from "./computer";
+import { results } from "./computer";
 import * as db from "./model";
 
 export function initialize(io: SocketIO.Server) {
     io.origins("*:*");
     setInterval(async () => {
-        try {
-            const startsAt = Date.now() - 2 * 1000;
-            const comments = await db.Comment.find({
-                createdAt: { $gt: startsAt }
-            }).exec();
+        const startsAt = Date.now() - 2 * 1000;
+        const comments = await db.Comment.find({
+            createdAt: { $gt: startsAt }
+        }).exec();
 
-            io.emit("comments", {
-                from: startsAt, comments
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        io.emit("comments", {
+            from: startsAt, comments
+        });
 
-        transitions.forEach(async transition => {
+        results.forEach(async result => {
             io.emit("result", {
-                themeID: transition.themeID,
-                results: transition.shortTransition[0].percentage,
-                counts: await voteAPI.getVoteCounts(transition.themeID),
+                themeID: result.themeID,
+                results: result.result
             });
         });
-    }, 2 * 1000);
+    }, 3 * 1000);
 }

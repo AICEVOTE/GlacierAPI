@@ -16,9 +16,7 @@ export interface ThemeModel extends mongoose.Document {
     genre: number,
     choices: string[],
     keywords: string[],
-    DRClass: number,
-    formula: string,
-    saveInterval: number
+    DRClass: number
 };
 
 export interface UserModel extends mongoose.Document {
@@ -82,9 +80,7 @@ const ThemeSchema = new mongoose.Schema<ThemeModel>({
     genre: Number,
     choices: [String],
     keywords: [String],
-    DRClass: Number,
-    formula: String,
-    saveInterval: Number
+    DRClass: Number
 });
 
 const UserSchema = new mongoose.Schema<UserModel>({

@@ -19,7 +19,6 @@ router.get("/sessiontoken", async (req, res, next) => {
             sessionToken: await sessionAPI.getSessionToken(sessionID)
         });
     } catch (e) {
-        console.log(e);
         next(createError(401));
     }
 });

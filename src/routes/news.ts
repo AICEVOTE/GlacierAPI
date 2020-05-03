@@ -13,7 +13,6 @@ router.get("/articles/:themeid", async (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     if ((await themeAPI.exists(themeID)) == false) {
-        console.log("Invalid themeID");
         return next(createError(404));
     }
     const articles = newsAPI

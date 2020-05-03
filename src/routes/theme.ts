@@ -18,15 +18,10 @@ async function getTheme(theme: ThemeModel) {
     };
 }
 
-router.get("/themes", async (_req, res, next) => {
-    try {
-        const themes = await themeAPI.getAllThemes();
-        res.json(await Promise.all(themes
-            .map(theme => getTheme(theme))));
-    } catch (e) {
-        console.log(e);
-        next(createError(500));
-    }
+router.get("/themes", async (_req, res, _next) => {
+    const themes = await themeAPI.getAllThemes();
+    res.json(await Promise.all(themes
+        .map(theme => getTheme(theme))));
 });
 
 router.get("/themes/:themeid", async (req, res, next) => {
@@ -36,8 +31,7 @@ router.get("/themes/:themeid", async (req, res, next) => {
         const theme = await themeAPI.getTheme(themeID);
         res.json(await getTheme(theme));
     } catch (e) {
-        console.log(e);
-        next(createError(400));
+        next(createError(404));
     }
 });
 

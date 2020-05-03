@@ -76,11 +76,12 @@ async function updateAllResults(): Promise<{
     const themes = await themeAPI.getAllThemes();
 
     return themes.map(theme => {
-        const meltingRate = getMeltingRate(theme.DRClass);
+        const meltingRate = getMeltingRate(theme.DRClass),
+            curVotes = votes.filter(vote => vote.themeID == theme.themeID);
 
         return {
             themeID: theme.themeID,
-            result: calcResult(now, meltingRate, theme.choices.length, votes)
+            result: calcResult(now, meltingRate, theme.choices.length, curVotes)
         };
     });
 }
@@ -112,25 +113,15 @@ export let transitions: {
 }[] = [];
 
 updateAllResults()
-    .then(_results => results = _results)
-    .catch(e => console.log(e));
+    .then(_results => results = _results);
 
 updateAllTransitions()
-    .then(_transitions => transitions = _transitions)
-    .catch(e => console.log(e));
+    .then(_transitions => transitions = _transitions);
 
 setInterval(async () => {
-    try {
-        results = await updateAllResults();
-    } catch (e) {
-        console.log(e);
-    }
-}, 2 * 1000);
+    results = await updateAllResults();
+}, 3 * 1000);
 
 setInterval(async () => {
-    try {
-        transitions = await updateAllTransitions();
-    } catch (e) {
-        console.log(e);
-    }
-}, 100 * 1000);
+    transitions = await updateAllTransitions();
+}, 120 * 1000);

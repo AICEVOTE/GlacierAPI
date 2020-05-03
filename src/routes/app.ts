@@ -20,22 +20,15 @@ router.post("/receiver", async (req, res, next) => {
     const query = req.body;
     const deviceToken = query.deviceToken;
     const users = query.users;
-    if (!utilAPI.isString(deviceToken) || !utilAPI.isArray(users)) {
+    if (!utilAPI.isString(deviceToken) || !utilAPI.isUserList(users)) {
         next(createError(400));
         return;
     }
 
     try {
-        await firebaseAPI.updateListener(deviceToken,
-            users.map(({ userProvider, userID }: { userProvider: unknown, userID: unknown }) => {
-                if (!utilAPI.isString(userProvider) || !utilAPI.isString(userID)) {
-                    throw new Error("Invalid request");
-                }
-                return { userProvider, userID };
-            }))
+        await firebaseAPI.updateListener(deviceToken, users);
         res.status(200).send("");
     } catch (e) {
-        console.log(e);
         next(createError(400));
     }
 });

@@ -16,14 +16,9 @@ router.post("/feedback", async (req, res, next) => {
         return next(createError(400));
     }
 
-    try {
-        res.status(201).json({
-            message: await feedbackAPI.saveFeedback(message, "Feedback")
-        });
-    } catch (e) {
-        console.log(e);
-        next(createError(500));
-    }
+    res.status(201).json({
+        message: await feedbackAPI.saveFeedback(message, "Feedback")
+    });
 });
 
 router.post("/application", async (req, res, next) => {
@@ -32,14 +27,9 @@ router.post("/application", async (req, res, next) => {
         return next(createError(400));
     }
 
-    try {
-        res.status(201).json({
-            message: await feedbackAPI.saveFeedback(message, "Application")
-        });
-    } catch (e) {
-        console.log(e);
-        next(createError(500));
-    }
+    res.status(201).json({
+        message: await feedbackAPI.saveFeedback(message, "Application")
+    });
 });
 
 router.get("/418", (_req, _res, next) => {

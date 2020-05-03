@@ -47,24 +47,20 @@ export async function createSession(profile: Profile): Promise<string> {
 }
 
 setInterval(async () => {
-    try {
-        // Refresh session token
-        const expiredSessions = await db.Session.find({
-            sessionTokenExpire: { $lt: Date.now() }
-        }), now = Date.now();
+    // Refresh session token
+    const expiredSessions = await db.Session.find({
+        sessionTokenExpire: { $lt: Date.now() }
+    }), now = Date.now();
 
-        expiredSessions.forEach(async ({ sessionID }) => {
-            await db.Session.updateOne({ sessionID }, {
-                $set: {
-                    sessionToken: uuidv4(),
-                    sessionTokenExpire: now + oneHour
-                }
-            });
+    expiredSessions.forEach(async ({ sessionID }) => {
+        await db.Session.updateOne({ sessionID }, {
+            $set: {
+                sessionToken: uuidv4(),
+                sessionTokenExpire: now + oneHour
+            }
         });
+    });
 
-        // Delete expired session
-        await db.Session.deleteMany({ sessionIDExpire: { $lt: Date.now() } });
-    } catch (e) {
-        console.log(e);
-    }
+    // Delete expired session
+    await db.Session.deleteMany({ sessionIDExpire: { $lt: Date.now() } });
 }, oneHour);

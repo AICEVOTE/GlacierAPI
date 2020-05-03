@@ -95,13 +95,8 @@ export let articles: {
 };
 
 getAllNews()
-    .then(_articles => articles = _articles)
-    .catch(e => console.log(e));
+    .then(_articles => articles = _articles);
 
 setInterval(async () => {
-    try {
-        articles = await getAllNews();
-    } catch (e) {
-        console.log(e);
-    }
+    articles = await getAllNews();
 }, 8 * 60 * 60 * 1000);

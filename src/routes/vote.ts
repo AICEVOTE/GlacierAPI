@@ -5,7 +5,6 @@ import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
 import { results, transitions } from "../computer";
-import type { Transition } from "../computer";
 const router = express.Router();
 
 
@@ -60,11 +59,10 @@ router.get("/votes", async (req, res, next) => {
                 }))
             : [];
         const influencers = await userAPI.getInfluencers();
-        res.json(await Promise.all(transitions
+        res.json(await Promise.all(results
             .map(({ themeID }) => getVotes(themeID, friends, influencers))));
     } catch (e) {
-        console.log(e);
-        next(createError(400));
+        next(createError(401));
     }
 });
 
@@ -85,7 +83,6 @@ router.get("/votes/:themeid", async (req, res, next) => {
 
         res.json(await getVotes(themeID, friends, influencers));
     } catch (e) {
-        console.log(e);
         next(createError(400));
     }
 });
@@ -103,29 +100,12 @@ router.put("/votes/:themeid", async (req, res, next) => {
         await voteAPI.vote(themeID, sessionToken, parseInt(answer, 10));
         res.status(200).send("");
     } catch (e) {
-        console.log(e);
         next(createError(400));
     }
 });
 
-function getTransitions(transition: {
-    themeID: number;
-    shortTransition: Transition[];
-    longTransition: Transition[];
-}): {
-    themeID: number;
-    shortTransition: Transition[];
-    longTransition: Transition[];
-} {
-    return {
-        themeID: transition.themeID,
-        shortTransition: transition.shortTransition,
-        longTransition: transition.longTransition
-    };
-}
-
 router.get("/transitions", async (_req, res, _next) => {
-    res.json(transitions.map(transition => getTransitions(transition)));
+    res.json(transitions);
 });
 
 router.get("/transitions/:themeid", (req, res, next) => {
@@ -134,7 +114,7 @@ router.get("/transitions/:themeid", (req, res, next) => {
     const transition = transitions.find(transition => transition.themeID == themeID);
     if (!transition) { return next(createError(404)); }
 
-    res.json(getTransitions(transition));
+    res.json(transition);
 });
 
 async function getComments(themeID: number) {
@@ -144,14 +124,9 @@ async function getComments(themeID: number) {
     };
 }
 
-router.get("/comments", async (_req, res, next) => {
-    try {
-        res.json(await Promise.all(transitions
-            .map(({ themeID }) => getComments(themeID))));
-    } catch (e) {
-        console.log(e);
-        next(createError(404));
-    }
+router.get("/comments", async (_req, res, _next) => {
+    res.json(await Promise.all(results
+        .map(({ themeID }) => getComments(themeID))));
 });
 
 router.get("/comments/:themeid", async (req, res, next) => {
@@ -160,7 +135,6 @@ router.get("/comments/:themeid", async (req, res, next) => {
     try {
         res.json(await getComments(themeID));
     } catch (e) {
-        console.log(e);
         next(createError(404));
     }
 });
@@ -178,7 +152,6 @@ router.post("/comments/:themeid", async (req, res, next) => {
         await commentAPI.comment(themeID, sessionToken, message);
         res.status(201).send("");
     } catch (e) {
-        console.log(e);
         next(createError(400));
     }
 });
