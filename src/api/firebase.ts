@@ -17,9 +17,7 @@ export async function updateListener(deviceToken: string, users: {
 }
 
 export async function sendNotification(userProvider: string, userID: string, message: string): Promise<void> {
-    const user = await userAPI.getProfile(userProvider, userID);
-    if (!user) { throw new Error("User not found"); }
-
+    const user = await userAPI.getUser(userProvider, userID);
     const listeners = await db.FCMListener.find({
         users: { $elemMatch: { userProvider, userID } }
     }).exec();

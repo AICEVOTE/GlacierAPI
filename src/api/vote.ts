@@ -1,7 +1,7 @@
 import * as db from "../model";
 import type { VoteModel } from "../model";
+import * as sessionAPI from "./session";
 import * as themeAPI from "./theme";
-import * as userAPI from "./user";
 
 export async function getVotes(themeID?: number, users?: {
     userProvider: string;
@@ -33,32 +33,17 @@ export async function vote(themeID: number, sessionToken: string, answer: number
         throw new Error("Invalid answer");
     }
 
-    const user = await userAPI.getMe(sessionToken);
+    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
     const now = Date.now();
 
     await db.Vote.updateOne({
-        themeID,
-        userID: user.userID,
-        userProvider: user.userProvider,
+        themeID, userID, userProvider,
         expiredAt: { $exists: false }
     }, { $set: { expiredAt: now } }).exec();
 
     await new db.Vote({
-        themeID,
-        userID: user.userID,
-        userProvider: user.userProvider,
+        themeID, userID, userProvider,
         answer,
         createdAt: now
     }).save();
-}
-
-export async function getVoteCounts(themeID: number): Promise<number[]> {
-    const theme = await themeAPI.getTheme(themeID);
-    const votes = await getVotes(themeID);
-
-    let counts = Array<number>(theme.choices.length).fill(0);
-    votes.forEach(vote => {
-        counts[vote.answer]++;
-    });
-    return counts;
 }

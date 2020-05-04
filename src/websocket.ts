@@ -15,10 +15,7 @@ export function initialize(io: SocketIO.Server) {
         });
 
         results.forEach(async result => {
-            io.emit("result", {
-                themeID: result.themeID,
-                results: result.result
-            });
+            io.emit("result", result);
         });
     }, 3 * 1000);
 }

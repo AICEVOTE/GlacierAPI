@@ -13,7 +13,7 @@ export function isArray(obj: unknown | null | undefined): obj is any[] {
     return Object.prototype.toString.call(obj) == "[object Array]";
 }
 
-export function isUserList(obj: unknown | null | undefined): obj is {
+export function isUserlist(obj: unknown | null | undefined): obj is {
     userProvider: string;
     userID: string;
 }[] {

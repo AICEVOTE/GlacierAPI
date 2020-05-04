@@ -1,9 +1,9 @@
 {
   "name": "glacierapi",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "AICEVOTE API Server",
   "main": "./dist/bin/www.js",
-  "repository": "https://github.com/aicevote/GlacierAPI",
+  "repository": "https://github.com/aicevote/glacierapi",
   "author": "YUJI",
   "license": "AGPL-3.0",
   "scripts": {

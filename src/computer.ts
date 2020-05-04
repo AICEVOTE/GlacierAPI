@@ -69,7 +69,8 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
 
 async function updateAllResults(): Promise<{
     themeID: number;
-    result: number[];
+    results: number[];
+    counts: number[];
 }[]> {
     const now = Date.now();
     const themes = await themeAPI.getAllThemes();
@@ -83,9 +84,15 @@ async function updateAllResults(): Promise<{
             curVotes = votes.filter(vote => vote.themeID == theme.themeID),
             numOfChoices = theme.choices.length;
 
+        let counts = Array<number>(theme.choices.length).fill(0);
+        votes.forEach(vote => {
+            counts[vote.answer]++;
+        });
+
         return {
             themeID: theme.themeID,
-            result: calcResult(now, meltingRate, numOfChoices, curVotes)
+            results: calcResult(now, meltingRate, numOfChoices, curVotes),
+            counts
         };
     });
 }
@@ -109,7 +116,8 @@ async function updateAllTransitions(): Promise<{
 
 export let results: {
     themeID: number;
-    result: number[];
+    results: number[];
+    counts: number[];
 }[] = [];
 
 export let transitions: {
@@ -130,4 +138,4 @@ setInterval(async () => {
 
 setInterval(async () => {
     transitions = await updateAllTransitions();
-}, 120 * 1000);
+}, 180 * 1000);

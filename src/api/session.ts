@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import * as db from "../model";
+import type { SessionModel } from "../model";
 
 const oneHour = 60 * 60 * 1000;
 const oneDay = oneHour * 24;
@@ -10,6 +11,12 @@ export interface Profile {
     name: string, friends: string[],
     imageURI: string, numOfFollowers: number
 };
+
+export async function getMySession(sessionToken: string): Promise<SessionModel> {
+    const session = await db.Session.findOne({ sessionToken }).exec();
+    if (!session) { throw new Error("Invalid sessionID"); }
+    return session;
+}
 
 export async function getSessionToken(sessionID: string): Promise<string> {
     const session = await db.Session.findOne({ sessionID }).exec();

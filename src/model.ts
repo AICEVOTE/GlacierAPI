@@ -31,8 +31,6 @@ export interface UserModel extends mongoose.Document {
 export interface SessionModel extends mongoose.Document {
     userProvider: string,
     userID: string,
-    accessToken: string,
-    refreshToken: string,
     sessionID: string,
     sessionIDExpire: number,
     sessionToken: string,

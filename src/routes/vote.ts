@@ -1,6 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import * as commentAPI from "../api/comment";
+import * as sessionAPI from "../api/session";
 import * as userAPI from "../api/user";
 import * as utilAPI from "../api/util";
 import * as voteAPI from "../api/vote";
@@ -8,33 +9,17 @@ import { results, transitions } from "../computer";
 const router = express.Router();
 
 
-async function getResults(result: {
-    themeID: number;
-    result: number[];
-}): Promise<{
-    themeID: number;
-    results: number[];
-    counts: number[];
-}> {
-
-    return {
-        themeID: result.themeID,
-        results: result.result,
-        counts: await voteAPI.getVoteCounts(result.themeID)
-    };
-}
-
-router.get("/results", async (_req, res, _next) => {
-    res.json(await Promise.all(results.map(result => getResults(result))));
+router.get("/results", (_req, res, _next) => {
+    res.json(results);
 });
 
-router.get("/results/:themeid", async (req, res, next) => {
+router.get("/results/:themeid",  (req, res, next) => {
     const themeID = parseInt(req.params.themeid, 10);
 
     const result = results.find(result => result.themeID == themeID);
     if (!result) { return next(createError(404)); }
 
-    res.json(await getResults(result));
+    res.json(result);
 });
 
 async function getVotes(themeID: number,
@@ -47,17 +32,26 @@ async function getVotes(themeID: number,
     };
 }
 
+async function getFriends(sessionToken: string): Promise<{
+    userProvider: string;
+    userID: string;
+}[]> {
+    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
+    const user = await userAPI.getUser(userProvider, userID);
+    return user.friends.map(userID => ({
+        userProvider: "twitter",
+        userID
+    }));
+}
+
 router.get("/votes", async (req, res, next) => {
     const sessionToken: unknown = req.query.sessiontoken;
 
     try {
         const friends = utilAPI.isString(sessionToken)
-            ? (await userAPI.getMe(sessionToken))
-                .friends.map(userID => ({
-                    userProvider: "twitter",
-                    userID
-                }))
+            ? await getFriends(sessionToken)
             : [];
+
         const influencers = await userAPI.getInfluencers();
         res.json(await Promise.all(results
             .map(({ themeID }) => getVotes(themeID, friends, influencers))));
@@ -72,13 +66,9 @@ router.get("/votes/:themeid", async (req, res, next) => {
 
     try {
         const friends = utilAPI.isString(sessionToken)
-            ? (await userAPI.getMe(sessionToken))
-                .friends
-                .map(userID => ({
-                    userProvider: "twitter",
-                    userID
-                }))
+            ? await getFriends(sessionToken)
             : [];
+
         const influencers = await userAPI.getInfluencers();
 
         res.json(await getVotes(themeID, friends, influencers));

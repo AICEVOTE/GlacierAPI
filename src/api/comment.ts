@@ -2,8 +2,8 @@ import XSSFilters from "xss-filters";
 import * as db from "../model";
 import type { CommentModel } from "../model";
 import * as firebaseAPI from "./firebase";
+import * as sessionAPI from "./session";
 import * as themeAPI from "./theme";
-import * as userAPI from "./user";
 
 export async function getComments(themeID?: number, users?: {
     userProvider: string;
@@ -34,15 +34,13 @@ export async function comment(themeID: number, sessionToken: string, message: st
         throw new Error("Invalid themeID");
     }
 
-    const user = await userAPI.getMe(sessionToken);
+    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
     message = XSSFilters.inHTMLData(message);
-    await firebaseAPI.sendNotification(
-        user.userProvider, user.userID, message);
+    await firebaseAPI.sendNotification(userProvider, userID, message);
 
     await new db.Comment({
         themeID, message,
-        userProvider: user.userProvider,
-        userID: user.userID,
+        userProvider, userID,
         createdAt: Date.now()
     }).save();
 }

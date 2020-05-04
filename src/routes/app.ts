@@ -20,7 +20,7 @@ router.post("/receiver", async (req, res, next) => {
     const query = req.body;
     const deviceToken = query.deviceToken;
     const users = query.users;
-    if (!utilAPI.isString(deviceToken) || !utilAPI.isUserList(users)) {
+    if (!utilAPI.isString(deviceToken) || !utilAPI.isUserlist(users)) {
         next(createError(400));
         return;
     }
