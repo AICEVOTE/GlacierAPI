@@ -85,7 +85,7 @@ async function updateAllResults(): Promise<{
             numOfChoices = theme.choices.length;
 
         let counts = Array<number>(theme.choices.length).fill(0);
-        votes.forEach(vote => {
+        curVotes.forEach(vote => {
             counts[vote.answer]++;
         });
 
