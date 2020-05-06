@@ -6,7 +6,8 @@
 
 import app from "../app";
 import debug from "debug";
-import http from "http";
+import https from "https";
+import fs from "fs";
 
 import SocketIO from "socket.io";
 import * as ws from "../websocket"
@@ -19,10 +20,14 @@ const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
 
-const server = http.createServer(app);
+const options = {
+    key: fs.readFileSync(process.env.SSL_KEY || ""),
+    cert: fs.readFileSync(process.env.SSL_CERT || "")
+}
+const server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
