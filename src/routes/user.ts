@@ -33,7 +33,11 @@ async function getProfile({ userProvider, userID }: UserIdentifier): Promise<{
         const themes = await themeAPI.getThemesByUser({ userProvider, userID });
 
         return {
-            ...user, votes, comments, themes,
+            name: user.name,
+            userProvider: user.userProvider,
+            userID: user.userID,
+            imageURI: user.imageURI,
+            votes, comments, themes,
             isInfluencer: userAPI.isInfluencer(user.numOfFollowers)
         }
     } catch (e) {
