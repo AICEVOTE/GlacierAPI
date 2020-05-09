@@ -1,10 +1,14 @@
+import XSSFilters from "xss-filters";
 import * as db from "../model";
 import type { ThemeModel } from "../model";
+import * as firebaseAPI from "./firebase";
 import * as sessionAPI from "./session";
+import * as userAPI from "./user";
+import type { UserIdentifier } from "./user";
 
 export async function exists(themeID: number): Promise<boolean> {
-    const num = await db.Theme.countDocuments({ themeID, isEnabled: true }).exec();
-    if (num != 1) { return false; }
+    const theme = await db.Theme.findOne({ themeID, isEnabled: true }).exec();
+    if (!theme) { return false; }
     return true;
 }
 
@@ -18,22 +22,47 @@ export async function getAllThemes(): Promise<ThemeModel[]> {
     return await db.Theme.find({ isEnabled: true }).exec();
 }
 
-export async function updateTheme(sessionToken: string,
-    isEnabled: boolean, themeID: number, title: string,
-    description: string, imageURI: string, genre: number,
-    choices: string[], keywords: string[], DRClass: number): Promise<void> {
-    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
+export async function getThemesByUser({ userProvider, userID }: UserIdentifier): Promise<ThemeModel[]> {
+    return await db.Theme.find({ isEnabled: true, userProvider, userID }).exec();
+}
+
+export async function updateTheme(sessionToken: string, isEnabled: boolean,
+    themeID: number, title: string, description: string, imageURI: string,
+    genre: number, choices: string[], DRClass: number): Promise<void> {
+
+    const { userProvider, userID } = await sessionAPI.getMySession({ sessionToken });
+
+    if ([1, 2, 3, 4, 5].find(val => val == DRClass) == undefined) {
+        throw new Error("Invalid DRClass");
+    }
+
+    if (isNaN(themeID) || isNaN(genre)) {
+        throw new Error("NaN is not allowed");
+    }
+
+    const theme = await db.Theme.findOne({ themeID }).exec();
+    if (theme && (theme.userProvider != userProvider || theme.userID != userID)) {
+        throw new Error("The specified themeID is already in use");
+    }
+
+    title = XSSFilters.inHTMLData(title);
+    description = XSSFilters.inHTMLData(description);
+    imageURI = XSSFilters.inHTMLData(imageURI);
+    choices = choices.map(choice => XSSFilters.inHTMLData(choice));
 
     await db.Theme.updateOne({
-        themeID
+        themeID, userProvider, userID
     }, {
         $set: {
-            userProvider, userID,
             isEnabled, title, description,
-            imageURI, genre, choices,
-            keywords, DRClass
+            imageURI, genre,
+            choices, keywords: [],
+            DRClass
         }
     }, { upsert: true });
+
+    const user = await userAPI.getUser({ userProvider, userID });
+    await firebaseAPI.sendNotification(user, `@${user.name} updated a theme`, title);
 }
 
 export async function calcTopicality(themeID: number): Promise<number> {

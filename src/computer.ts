@@ -56,12 +56,12 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
 
     for (let i = 0; i < 60; i++) {
         let timestamp = now - i * resultInterval;
-        let result = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
-        shortTransition.push({ timestamp, percentage: result });
+        let percentage = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
+        shortTransition.push({ timestamp, percentage });
 
         timestamp = now - i * resultInterval * 24;
-        result = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
-        longTransition.push({ timestamp, percentage: result });
+        percentage = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
+        longTransition.push({ timestamp, percentage });
     }
 
     return { shortTransition, longTransition };
@@ -69,8 +69,7 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
 
 async function updateAllResults(): Promise<{
     themeID: number;
-    results: number[];
-    counts: number[];
+    percentage: number[];
 }[]> {
     const now = Date.now();
     const themes = await themeAPI.getAllThemes();
@@ -84,15 +83,9 @@ async function updateAllResults(): Promise<{
             curVotes = votes.filter(vote => vote.themeID == theme.themeID),
             numOfChoices = theme.choices.length;
 
-        let counts = Array<number>(theme.choices.length).fill(0);
-        curVotes.forEach(vote => {
-            counts[vote.answer]++;
-        });
-
         return {
             themeID: theme.themeID,
-            results: calcResult(now, meltingRate, numOfChoices, curVotes),
-            counts
+            percentage: calcResult(now, meltingRate, numOfChoices, curVotes)
         };
     });
 }
@@ -116,8 +109,7 @@ async function updateAllTransitions(): Promise<{
 
 export let results: {
     themeID: number;
-    results: number[];
-    counts: number[];
+    percentage: number[];
 }[] = [];
 
 export let transitions: {

@@ -1,6 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import * as feedbackAPI from "../api/feedback";
+import * as newsAPI from "../api/news";
 import * as utilAPI from "../api/util";
 const router = express.Router();
 
@@ -8,6 +9,10 @@ const router = express.Router();
 /* GET home page. */
 router.get("/", function (_req, res, _next) {
     res.render("index", { title: "Glacier API" });
+});
+
+router.get("/articles", (_req, res, _next) => {
+    res.json(newsAPI.articles);
 });
 
 router.post("/feedback", async (req, res, next) => {

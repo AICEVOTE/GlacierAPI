@@ -1,3 +1,5 @@
+import type { UserIdentifier } from "./user";
+
 export function isString(obj: unknown | null | undefined): obj is string {
     if (obj == null || obj == undefined) { return false; }
     return typeof obj == "string";
@@ -13,10 +15,7 @@ export function isArray(obj: unknown | null | undefined): obj is any[] {
     return Object.prototype.toString.call(obj) == "[object Array]";
 }
 
-export function isUserlist(obj: unknown | null | undefined): obj is {
-    userProvider: string;
-    userID: string;
-}[] {
+export function isUserlist(obj: unknown | null | undefined): obj is UserIdentifier[] {
     if (!isArray(obj)) {
         return false;
     }

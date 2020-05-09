@@ -11,8 +11,6 @@ passport.use(new TwitterStrategy({
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET || "",
     callbackURL: process.env.TWITTER_CALLBACK || ""
 }, async (accessToken, refreshToken, profile, done) => {
-    let sessionID = "";
-
     try {
         const twitterClient = twitterAPI.connect(accessToken, refreshToken);
         const friends = await twitterAPI.getTwitterFriends(twitterClient, profile.id);
@@ -21,7 +19,7 @@ passport.use(new TwitterStrategy({
             imageURI = profile.photos[0].value;
         }
 
-        sessionID = await sessionAPI.createSession(
+        const sessionID = await sessionAPI.createSession(
             {
                 userProvider: profile.provider,
                 userID: profile.id,
@@ -29,11 +27,11 @@ passport.use(new TwitterStrategy({
                 friends, imageURI,
                 numOfFollowers: profile._json.followers_count
             });
+
+        done(null, sessionID);
     } catch (e) {
         return done(null, false);
     }
-
-    done(null, sessionID);
 }));
 
 // Authorize with accessToken & refreshToken
@@ -42,17 +40,14 @@ passport.use(new LocalStrategy({
     passwordField: "refreshToken",
     session: false
 }, async (accessToken, refreshToken, done) => {
-    let sessionID = "";
-
     try {
         const twitterClient = twitterAPI.connect(accessToken, refreshToken);
         const profile = await twitterAPI.getProfile(twitterClient);
-        sessionID = await sessionAPI.createSession(profile);
+        const sessionID = await sessionAPI.createSession(profile);
+        done(null, sessionID);
     } catch (e) {
         return done(null, false);
     }
-
-    done(null, sessionID);
 }));
 
 passport.serializeUser((user, done) => { done(null, user); });

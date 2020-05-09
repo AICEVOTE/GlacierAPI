@@ -12,17 +12,10 @@ export interface Profile {
     imageURI: string, numOfFollowers: number
 };
 
-export async function getMySession(sessionToken: string): Promise<SessionModel> {
-    const session = await db.Session.findOne({ sessionToken }).exec();
-    if (!session) { throw new Error("Invalid sessionID"); }
+export async function getMySession(query: { sessionToken: string } | { sessionID: string }): Promise<SessionModel> {
+    const session = await db.Session.findOne(query).exec();
+    if (!session) { throw new Error("Invalid query"); }
     return session;
-}
-
-export async function getSessionToken(sessionID: string): Promise<string> {
-    const session = await db.Session.findOne({ sessionID }).exec();
-    if (!session) { throw new Error("Invalid sessionID"); }
-
-    return session.sessionToken;
 }
 
 export async function createSession(profile: Profile): Promise<string> {

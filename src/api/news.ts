@@ -3,7 +3,7 @@ import * as themeAPI from "./theme";
 const NewsAPI = require("newsapi");
 const newsapi = new NewsAPI(process.env.NEWSAPI_KEY || "");
 
-interface NewsAPArticle {
+interface NewsAPIArticle {
     source?: { id?: string, name?: string; },
     author?: string,
     title?: string,
@@ -23,7 +23,7 @@ interface Article {
     publishedAt: number
 }
 
-function convertArticle(article: NewsAPArticle): Article {
+function convertArticle(article: NewsAPIArticle): Article {
     let publishedAt = NaN;
     if (article.publishedAt) {
         publishedAt = Date.parse(article.publishedAt);
@@ -41,7 +41,7 @@ function convertArticle(article: NewsAPArticle): Article {
 }
 
 // Get japan headline news
-async function getTopHeadlines(pageSize: number): Promise<NewsAPArticle[]> {
+async function getTopHeadlines(pageSize: number): Promise<NewsAPIArticle[]> {
     return (await newsapi.v2.topHeadlines({
         country: "jp",
         category: "general",
@@ -50,7 +50,7 @@ async function getTopHeadlines(pageSize: number): Promise<NewsAPArticle[]> {
 }
 
 // Get all articles about the keyword
-async function getEverything(keyword: string, pageSize: number): Promise<NewsAPArticle[]> {
+async function getEverything(keyword: string, pageSize: number): Promise<NewsAPIArticle[]> {
     return (await newsapi.v2.everything({
         q: keyword,
         language: "jp",

@@ -14,10 +14,7 @@ router.get("/sessiontoken", async (req, res, next) => {
     }
 
     try {
-        res.json({
-            sessionID,
-            sessionToken: await sessionAPI.getSessionToken(sessionID)
-        });
+        res.json(await sessionAPI.getMySession({ sessionID }));
     } catch (e) {
         next(createError(401));
     }

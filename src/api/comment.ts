@@ -4,11 +4,10 @@ import type { CommentModel } from "../model";
 import * as firebaseAPI from "./firebase";
 import * as sessionAPI from "./session";
 import * as themeAPI from "./theme";
+import * as userAPI from "./user";
+import type { UserIdentifier } from "./user";
 
-export async function getComments(themeID?: number, users?: {
-    userProvider: string;
-    userID: string;
-}[]): Promise<CommentModel[]> {
+export async function getComments(themeID?: number, users?: UserIdentifier[]): Promise<CommentModel[]> {
     if (themeID != undefined
         && (await themeAPI.exists(themeID)) == false) {
         throw new Error("Invalid themeID");
@@ -34,13 +33,19 @@ export async function comment(themeID: number, sessionToken: string, message: st
         throw new Error("Invalid themeID");
     }
 
-    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
+    const { userProvider, userID } = await sessionAPI.getMySession({ sessionToken });
+    const user = await userAPI.getUser({ userProvider, userID });
     message = XSSFilters.inHTMLData(message);
-    await firebaseAPI.sendNotification(userProvider, userID, message);
 
     await new db.Comment({
         themeID, message,
         userProvider, userID,
         createdAt: Date.now()
     }).save();
+
+    await firebaseAPI.sendNotification(
+        { userProvider, userID },
+        `@${user.name} commented`,
+        message
+    );
 }

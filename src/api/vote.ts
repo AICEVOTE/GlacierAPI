@@ -2,11 +2,9 @@ import * as db from "../model";
 import type { VoteModel } from "../model";
 import * as sessionAPI from "./session";
 import * as themeAPI from "./theme";
+import type { UserIdentifier } from "./user";
 
-export async function getVotes(themeID?: number, users?: {
-    userProvider: string;
-    userID: string;
-}[]): Promise<VoteModel[]> {
+export async function getVotes(themeID?: number, users?: UserIdentifier[]): Promise<VoteModel[]> {
     if (themeID != undefined
         && await themeAPI.exists(themeID) == false) {
         throw new Error("Invalid themeID");
@@ -33,7 +31,7 @@ export async function vote(themeID: number, sessionToken: string, answer: number
         throw new Error("Invalid answer");
     }
 
-    const { userProvider, userID } = await sessionAPI.getMySession(sessionToken);
+    const { userProvider, userID } = await sessionAPI.getMySession({ sessionToken });
     const now = Date.now();
 
     await db.Vote.updateOne({
