@@ -43,8 +43,13 @@ export async function comment(themeID: number, sessionToken: string, message: st
         createdAt: Date.now()
     }).save();
 
-    await firebaseAPI.sendNotification(
+    await firebaseAPI.sendUserNotification(
         { userProvider, userID },
+        `@${user.name} commented`,
+        message
+    );
+    await firebaseAPI.sendThemeNotification(
+        themeID,
         `@${user.name} commented`,
         message
     );

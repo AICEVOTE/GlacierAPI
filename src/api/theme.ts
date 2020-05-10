@@ -26,6 +26,10 @@ export async function getThemesByUser({ userProvider, userID }: UserIdentifier):
     return await db.Theme.find({ isEnabled: true, userProvider, userID }).exec();
 }
 
+export async function getThemesByRegex(q: string): Promise<ThemeModel[]> {
+    return await db.Theme.find({ isEnabled: true, description: { $regex: q } }).exec();
+}
+
 export async function updateTheme(sessionToken: string, isEnabled: boolean,
     themeID: number, title: string, description: string, imageURI: string,
     genre: number, choices: string[], DRClass: number): Promise<void> {
@@ -62,7 +66,7 @@ export async function updateTheme(sessionToken: string, isEnabled: boolean,
     }, { upsert: true });
 
     const user = await userAPI.getUser({ userProvider, userID });
-    await firebaseAPI.sendNotification(user, `@${user.name} updated a theme`, title);
+    await firebaseAPI.sendUserNotification(user, `@${user.name} updated a theme`, title);
 }
 
 export async function calcTopicality(themeID: number): Promise<number> {

@@ -64,7 +64,8 @@ export interface FCMListenerModel extends mongoose.Document {
     users: {
         userProvider: string,
         userID: string
-    }[]
+    }[],
+    themeIDs: number[]
 };
 
 const ThemeSchema = new mongoose.Schema<ThemeModel>({
@@ -126,7 +127,8 @@ const FCMListenerSchema = new mongoose.Schema<FCMListenerModel>({
     users: [{
         userProvider: String,
         userID: String
-    }]
+    }],
+    themeIDs: [Number]
 });
 
 export const Theme = mongoose.model<ThemeModel>("Theme", ThemeSchema, "themes");

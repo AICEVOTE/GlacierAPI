@@ -18,14 +18,17 @@ router.post("/auth", authAPI.appAuth, (req, res, next) => {
 
 router.post("/receiver", async (req, res, next) => {
     const query = req.body;
-    const deviceToken = query.deviceToken;
-    const users = query.users;
-    if (!utilAPI.isString(deviceToken) || !utilAPI.isUserlist(users)) {
+    const deviceToken: unknown = query.deviceToken;
+    const users: unknown = query.users;
+    const themeIDs: unknown = query.themeIDs;
+    if (!utilAPI.isString(deviceToken)
+        || !utilAPI.isUserlist(users)
+        || !utilAPI.isArray(themeIDs)) {
         next(createError(400));
         return;
     }
 
-    await firebaseAPI.updateListener(deviceToken, users);
+    await firebaseAPI.updateListener(deviceToken, users, themeIDs);
     res.status(200).send("");
 });
 

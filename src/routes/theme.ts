@@ -21,8 +21,12 @@ async function getTheme(theme: ThemeModel) {
     };
 }
 
-router.get("/themes", async (_req, res, _next) => {
-    const themes = await themeAPI.getAllThemes();
+router.get("/themes", async (req, res, _next) => {
+    const q = req.query.sessiontoken;
+
+    const themes = utilAPI.isString(q)
+        ? await themeAPI.getThemesByRegex(q)
+        : await themeAPI.getAllThemes();
     res.json(await Promise.all(themes
         .map(theme => getTheme(theme))));
 });

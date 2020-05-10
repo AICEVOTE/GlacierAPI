@@ -1,7 +1,5 @@
 # API Guide
 
-**Caution! This document may be out of date**
-
 ## / (root directory)
 
 GET /
@@ -16,7 +14,27 @@ POST /application?message=$MSG
 
 GET /app/auth
 
+``` json
+{
+    "accessToken": "xxx",
+    "refreshToken": "yyy",
+}
+```
+
 POST /app/receiver
+
+``` json
+{
+    "deviceToken": "xxx",
+    "users": [
+        {
+            "userProvider": "twitter",
+            "userID": "yyy"
+        }
+    ],
+    "themeIDs": [0, 1,]
+}
+```
 
 ## /auth
 
@@ -30,15 +48,28 @@ GET /auth/twitter/callback
 
 GET /theme/themes
 
+> If you want to search a theme, You can use regular expression
+>
+> GET /theme/themes?q=$REGEX
+
 GET /theme/themes/$TID
 
-PUT /theme/themes/$TID?sessionToken=$TOKEN&isenabled=true&title=$TITLE&description=$DESC&imageuri=$IMG&genre=$GENRE&choices=$CHOICES&DRClass=3
+PUT /theme/themes/$TID?sessionToken=$TOKEN&isenabled=true&title=$TITLE&description=$DESC&imageuri=$IMG&genre=$GENRE&choices=$CHOICES&drclass=3
 
 ## /user
 
 GET /user/profiles?sessiontoken=$TOKEN
 
 POST /user/profiles
+
+``` json
+[
+    {
+        "userProvider": "twitter",
+        "userID": "yyy"
+    }
+]
+```
 
 ## /vote
 
