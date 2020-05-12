@@ -6,7 +6,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/aicevote/GlacierAPI.svg?style=flat-square)](https://github.com/aicevote/GlacierAPI)
 ![TypeScript](https://img.shields.io/github/languages/top/aicevote/GlacierAPI.svg?style=flat-square)
 
-**This project will be frozen on May 18, 2020**
+**This project ends May 18, 2020**
 
 ## Table of Contents
 

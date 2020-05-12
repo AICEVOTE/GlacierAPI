@@ -71,6 +71,8 @@ POST /user/profiles
 ]
 ```
 
+GET /user/influencers
+
 ## /vote
 
 GET /vote/results/$TID

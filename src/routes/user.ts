@@ -16,6 +16,7 @@ async function getProfile({ userProvider, userID }: UserIdentifier): Promise<{
     userID: string;
     name: string;
     imageURI: string;
+    friends: string[];
     isInfluencer: boolean;
     votes: VoteModel[];
     comments: CommentModel[];
@@ -37,6 +38,7 @@ async function getProfile({ userProvider, userID }: UserIdentifier): Promise<{
             userProvider: user.userProvider,
             userID: user.userID,
             imageURI: user.imageURI,
+            friends: user.friends,
             votes, comments, themes,
             isInfluencer: userAPI.isInfluencer(user.numOfFollowers)
         }
@@ -73,6 +75,13 @@ router.post("/profiles", async (req, res, next) => {
         .all(query.map(async user => getProfile(user))))
         .filter(<T>(x: T): x is Exclude<T, undefined> => x != undefined);
     res.json(profiles);
+});
+
+router.get("/influencers", async (_req, res, _next) => {
+    const influencers = await userAPI.getInfluencers();
+    res.json(influencers.map(({ userProvider, userID }) => ({
+        userProvider, userID
+    })));
 });
 
 export default router;
