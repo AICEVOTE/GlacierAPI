@@ -17,6 +17,7 @@ async function getTheme(theme: ThemeModel) {
         genre: theme.genre,
         choices: theme.choices,
         keywords: theme.keywords,
+        isPersonalMatters: theme.isPersonalMatters,
         topicality: await themeAPI.calcTopicality(theme.themeID)
     };
 }
@@ -51,7 +52,8 @@ router.put("/themes/:themeid", async (req, res, next) => {
         imageURI: unknown = req.query.imageuri,
         genre: unknown = req.query.genre,
         choices: unknown = req.query.choices,
-        DRClass: unknown = req.query.drclass;
+        DRClass: unknown = req.query.drclass,
+        isPersonalMatters: unknown = req.query.ispersonalmatters;
 
     if (!utilAPI.isString(sessionToken)
         || !utilAPI.isString(isEnabled)
@@ -60,7 +62,8 @@ router.put("/themes/:themeid", async (req, res, next) => {
         || !utilAPI.isString(imageURI)
         || !utilAPI.isString(genre)
         || !utilAPI.isString(choices)
-        || !utilAPI.isString(DRClass)) {
+        || !utilAPI.isString(DRClass)
+        || !utilAPI.isString(isPersonalMatters)) {
         return next(createError(400));
     }
 
@@ -71,7 +74,8 @@ router.put("/themes/:themeid", async (req, res, next) => {
             themeID, title, description, imageURI,
             parseInt(genre, 10),
             choices.split(','),
-            parseInt(DRClass, 10)
+            parseInt(DRClass, 10),
+            isPersonalMatters == "true"
         );
         res.status(200).send("");
     } catch (e) {

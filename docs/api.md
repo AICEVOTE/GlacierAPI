@@ -54,7 +54,7 @@ GET /theme/themes
 
 GET /theme/themes/$TID
 
-PUT /theme/themes/$TID?sessionToken=$TOKEN&isenabled=true&title=$TITLE&description=$DESC&imageuri=$IMG&genre=$GENRE&choices=$CHOICES&drclass=3
+PUT /theme/themes/$TID?sessionToken=$TOKEN&isenabled=true&title=$TITLE&description=$DESC&imageuri=$IMG&genre=$GENRE&choices=$CHOICES&drclass=3&ispersonalmatters=true
 
 ## /user
 

@@ -32,7 +32,7 @@ export async function getThemesByRegex(q: string): Promise<ThemeModel[]> {
 
 export async function updateTheme(sessionToken: string, isEnabled: boolean,
     themeID: number, title: string, description: string, imageURI: string,
-    genre: number, choices: string[], DRClass: number): Promise<void> {
+    genre: number, choices: string[], DRClass: number, isPersonalMatters: boolean): Promise<void> {
 
     const { userProvider, userID } = await sessionAPI.getMySession({ sessionToken });
 
@@ -61,7 +61,7 @@ export async function updateTheme(sessionToken: string, isEnabled: boolean,
             isEnabled, title, description,
             imageURI, genre,
             choices, keywords: [],
-            DRClass
+            DRClass, isPersonalMatters
         }
     }, { upsert: true });
 
