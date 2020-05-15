@@ -23,7 +23,7 @@ async function getTheme(theme: ThemeModel) {
 }
 
 router.get("/themes", async (req, res, _next) => {
-    const q = req.query.sessiontoken;
+    const q = req.query.q;
 
     const themes = utilAPI.isString(q)
         ? await themeAPI.getThemesByRegex(q)
