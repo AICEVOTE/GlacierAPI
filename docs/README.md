@@ -12,5 +12,6 @@
 
 - [Contribution Guide](https://aicevote.github.io/GlacierAPI/contribution)
 - [API Guide](https://aicevote.github.io/GlacierAPI/api)
+- [Status Dashboard](https://aicevote.github.io/GlacierAPI/status)
 
 (C) 2020 mail@yuji.ne.jp
