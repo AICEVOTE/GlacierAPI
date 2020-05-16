@@ -73,7 +73,7 @@ router.put("/themes/:themeid", async (req, res, next) => {
             isEnabled == "true",
             themeID, title, description, imageURI,
             parseInt(genre, 10),
-            choices.split(','),
+            choices.split('.'),
             parseInt(DRClass, 10),
             isPersonalMatters == "true"
         );
