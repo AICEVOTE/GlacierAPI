@@ -54,7 +54,21 @@ GET /theme/themes
 
 GET /theme/themes/$TID
 
-PUT /theme/themes/$TID?sessionToken=$TOKEN&isenabled=true&title=$TITLE&description=$DESC&imageuri=$IMG&genre=$GENRE&choices=$CHOICE1.$CHOICE2.$CHOICE3.$CHOICE4&drclass=3&ispersonalmatters=true
+PUT /theme/themes/$TID
+
+``` json
+{
+    "sessionToken": "xxx",
+    "isEnabled": true,
+    "title": "yyy",
+    "description": "zzz",
+    "imageURI": "example.com/test.png",
+    "genre": 0,
+    "choices": ["A", "B"],
+    "DRClass": 3,
+    "isPersonalMatters": false
+}
+```
 
 ## /user
 

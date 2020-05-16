@@ -44,38 +44,35 @@ router.get("/themes/:themeid", async (req, res, next) => {
 });
 
 router.put("/themes/:themeid", async (req, res, next) => {
-    const themeID = parseInt(req.params.themeid, 10),
-        sessionToken: unknown = req.query.sessiontoken,
-        isEnabled: unknown = req.query.isenabled,
-        title: unknown = req.query.title,
-        description: unknown = req.query.description,
-        imageURI: unknown = req.query.imageuri,
-        genre: unknown = req.query.genre,
-        choices: unknown = req.query.choices,
-        DRClass: unknown = req.query.drclass,
-        isPersonalMatters: unknown = req.query.ispersonalmatters;
+    const query = req.body;
+    const themeID = parseInt(query.themeID, 10),
+        sessionToken: unknown = query.sessionToken,
+        isEnabled: unknown = query.isEnabled,
+        title: unknown = query.title,
+        description: unknown = query.description,
+        imageURI: unknown = query.imageURI,
+        genre: unknown = query.genre,
+        choices: unknown = query.choices,
+        DRClass: unknown = query.DRClass,
+        isPersonalMatters: unknown = query.isPersonalMatters;
 
     if (!utilAPI.isString(sessionToken)
-        || !utilAPI.isString(isEnabled)
+        || !utilAPI.isBoolean(isEnabled)
         || !utilAPI.isString(title)
         || !utilAPI.isString(description)
         || !utilAPI.isString(imageURI)
-        || !utilAPI.isString(genre)
-        || !utilAPI.isString(choices)
-        || !utilAPI.isString(DRClass)
-        || !utilAPI.isString(isPersonalMatters)) {
+        || !utilAPI.isNumber(genre)
+        || !utilAPI.isArray(choices)
+        || !utilAPI.isNumber(DRClass)
+        || !utilAPI.isBoolean(isPersonalMatters)) {
         return next(createError(400));
     }
 
     try {
         await themeAPI.updateTheme(
-            sessionToken,
-            isEnabled == "true",
+            sessionToken, isEnabled,
             themeID, title, description, imageURI,
-            parseInt(genre, 10),
-            choices.split('.'),
-            parseInt(DRClass, 10),
-            isPersonalMatters == "true"
+            genre, choices, DRClass, isPersonalMatters
         );
         res.status(200).send("");
     } catch (e) {
