@@ -8,13 +8,14 @@ admin.initializeApp({
 });
 
 export async function updateListener(deviceToken: string, users: UserIdentifier[], themeIDs: number[]): Promise<void> {
-    await db.FCMListener.updateOne({ deviceToken }, {
-        $set: { users, themeIDs }
-    }, { upsert: true });
+    await db.FCMListener.updateOne({ deviceToken },
+        { users, themeIDs }, { upsert: true });
 }
 
 export async function sendUserNotification({ userProvider, userID }: UserIdentifier, title: string, body: string): Promise<void> {
-    const listeners = await db.FCMListener.find({ users: { $elemMatch: { userProvider, userID } } }).exec();
+    const listeners = await db.FCMListener.find({
+        users: { $elemMatch: { userProvider, userID } }
+    }).exec();
     if (listeners.length == 0) { return; }
 
     await admin.messaging().sendMulticast({
