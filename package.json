@@ -10,7 +10,7 @@
     "dev": "yarn tsc && node ./dist/bin/www.js",
     "prestart": "yarn tsc",
     "start": "NODE_ENV=\"production\" yarn pm2 start ./dist/bin/www.js --name GlacierAPI",
-    "stop": "yarn pm2 stop GlacierAPI",
+    "stop": "yarn pm2 kill",
     "prerestart": "yarn tsc",
     "restart": "NODE_ENV=\"production\" yarn pm2 restart GlacierAPI --update-env"
   },

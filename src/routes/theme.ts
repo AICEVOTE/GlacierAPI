@@ -45,7 +45,7 @@ router.get("/themes/:themeid", async (req, res, next) => {
 
 router.put("/themes/:themeid", async (req, res, next) => {
     const query = req.body;
-    const themeID = parseInt(query.themeID, 10),
+    const themeID = parseInt(req.params.themeid, 10),
         sessionToken: unknown = query.sessionToken,
         isEnabled: unknown = query.isEnabled,
         title: unknown = query.title,
