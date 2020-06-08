@@ -71,7 +71,10 @@ async function getAllNews(): Promise<{
         .sort((a, b) => a.publishedAt - b.publishedAt);
 
     const themes = await themeAPI.getAllThemes();
-    const related = await Promise.all(themes.map(
+    const newsthemes = await Promise.all(themes.filter(
+        theme => theme.keywords.length != 0
+    ));
+    const related = await Promise.all(newsthemes.map(
         async theme => ({
             themeID: theme.themeID,
             articles: (await Promise.all(theme.keywords.map(
