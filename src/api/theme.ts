@@ -66,7 +66,7 @@ export async function updateTheme(sessionToken: string, isEnabled: boolean,
     }, { upsert: true });
 
     const user = await userAPI.getUser({ userProvider, userID });
-    await firebaseAPI.sendUserNotification(user, `@${user.name} updated a theme`, title);
+    await firebaseAPI.sendUserNotification(user, `@${user.name} さんがテーマを投稿しました`, title);
 }
 
 export async function calcTopicality(themeID: number): Promise<number> {

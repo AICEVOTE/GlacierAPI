@@ -45,12 +45,12 @@ export async function comment(themeID: number, sessionToken: string, message: st
 
     await firebaseAPI.sendUserNotification(
         { userProvider, userID },
-        `@${user.name} commented`,
+        `@${user.name} さんがコメントしました`,
         message
     );
     await firebaseAPI.sendThemeNotification(
         themeID,
-        `@${user.name} commented`,
+        `@${user.name} さんがコメントしました`,
         message
     );
 }
