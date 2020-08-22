@@ -1,4 +1,4 @@
-# Glacier API - AICEVOTE API SERVER -
+# Glacier API -AICEVOTE API SERVER-
 
 [![website](https://img.shields.io/website?url=https://api.aicevote.com&style=flat-square)](https://api.aicevote.com)
 [![mozilla-observatory](https://img.shields.io/mozilla-observatory/grade/api.aicevote.com?publish&style=flat-square)](https://observatory.mozilla.org/analyze/api.aicevote.com)
