@@ -1,5 +1,5 @@
 FROM node:alpine
 
 RUN apk update \
-    && apk upgrade \
-    && apk add git
+    && apk add --no-cache git \
+    && rm -rf /var/cache/apk/*

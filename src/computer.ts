@@ -26,7 +26,7 @@ function getResultInterval(DRClass: number): number {
 
 function evalFormula(elapsed: number, meltingRate: number): number {
     const val = elapsed / meltingRate;
-    return (4.0 * val + 5.0) / (val * val + 4.0 * val + 5.0);
+    return (4 * val + 5) / (val * val + 4 * val + 5);
 }
 
 function calcResult(now: number, meltingRate: number, numOfChoices: number, votes: VoteModel[]): number[] {
@@ -34,7 +34,7 @@ function calcResult(now: number, meltingRate: number, numOfChoices: number, vote
 
     votes
         .filter(vote => vote.createdAt <= now
-            && (vote.expiredAt == undefined || vote.expiredAt > now))
+            && (vote.expiredAt === undefined || vote.expiredAt > now))
         .forEach(vote => {
             points[vote.answer] += evalFormula(now - vote.createdAt, meltingRate);
         });
@@ -50,37 +50,30 @@ function calcTransition(now: number, theme: ThemeModel, votes: VoteModel[]): {
     const resultInterval = getResultInterval(theme.DRClass),
         meltingRate = getMeltingRate(theme.DRClass),
         numOfChoices = theme.choices.length,
-        curVotes = votes.filter(vote => vote.themeID == theme.themeID);
-    let shortTransition: Transition[] = [],
-        longTransition: Transition[] = [];
+        curVotes = votes.filter(vote => vote.themeID === theme.themeID),
+        array60 = [...Array(60).keys()],
+        callback = (i: number) => {
+            const timestamp = now - i * resultInterval;
+            return {
+                timestamp, percentage: calcResult(
+                    timestamp, meltingRate, numOfChoices, curVotes)
+            };
+        };
 
-    for (let i = 0; i < 60; i++) {
-        let timestamp = now - i * resultInterval;
-        let percentage = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
-        shortTransition.push({ timestamp, percentage });
-
-        timestamp = now - i * resultInterval * 24;
-        percentage = calcResult(timestamp, meltingRate, numOfChoices, curVotes);
-        longTransition.push({ timestamp, percentage });
-    }
-
-    return { shortTransition, longTransition };
+    return {
+        shortTransition: array60.map(callback),
+        longTransition: array60.map(i => i * 24).map(callback)
+    };
 }
 
-async function updateAllResults(): Promise<{
+async function updateAllResults(themes: db.ThemeModel[], votes: db.VoteModel[]): Promise<{
     themeID: number;
     percentage: number[];
 }[]> {
     const now = Date.now();
-    const themes = await themeAPI.getAllThemes();
-    const votes = await db.Vote.find({
-        themeID: { $in: themes.map(({ themeID }) => themeID) },
-        expiredAt: { $exists: false }
-    }).exec();
-
     return themes.map(theme => {
         const meltingRate = getMeltingRate(theme.DRClass),
-            curVotes = votes.filter(vote => vote.themeID == theme.themeID),
+            curVotes = votes.filter(vote => vote.themeID === theme.themeID),
             numOfChoices = theme.choices.length;
 
         return {
@@ -90,17 +83,12 @@ async function updateAllResults(): Promise<{
     });
 }
 
-async function updateAllTransitions(): Promise<{
+async function updateAllTransitions(themes: db.ThemeModel[], votes: db.VoteModel[]): Promise<{
     themeID: number;
     shortTransition: Transition[];
     longTransition: Transition[];
 }[]> {
     const now = Date.now();
-    const themes = await themeAPI.getAllThemes();
-    const votes = await db.Vote.find({
-        themeID: { $in: themes.map(({ themeID }) => themeID) }
-    }).exec();
-
     return themes.map(theme => ({
         themeID: theme.themeID,
         ...calcTransition(now, theme, votes)
@@ -118,16 +106,23 @@ export let transitions: {
     longTransition: Transition[];
 }[] = [];
 
-updateAllResults()
-    .then(_results => results = _results);
+setTimeout(async () => {
+    let themes: db.ThemeModel[] = await themeAPI.getAllThemes();
+    let votes: db.VoteModel[] = await db.Vote.find({
+        themeID: { $in: themes.map(({ themeID }) => themeID) }
+    }).exec();
+    results = await updateAllResults(themes, votes);
+    transitions = await updateAllTransitions(themes, votes);
 
-updateAllTransitions()
-    .then(_transitions => transitions = _transitions);
+    setInterval(async () => {
+        votes = await db.Vote.find({
+            themeID: { $in: themes.map(({ themeID }) => themeID) }
+        }).exec()
+        results = await updateAllResults(themes, votes);
+    }, 3 * 1000);
 
-setInterval(async () => {
-    results = await updateAllResults();
-}, 3 * 1000);
-
-setInterval(async () => {
-    transitions = await updateAllTransitions();
-}, 180 * 1000);
+    setInterval(async () => {
+        themes = await themeAPI.getAllThemes();
+        transitions = await updateAllTransitions(themes, votes);
+    }, 3 * 60 * 1000);
+}, 0);
