@@ -7,7 +7,6 @@
 import app from "../app";
 import debug from "debug";
 import http from "http";
-import fs from "fs";
 
 import SocketIO from "socket.io";
 import * as ws from "../websocket"
